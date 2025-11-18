@@ -1,15 +1,26 @@
 import React from "react";
 import { Home, ShoppingBag, Package, Grid } from "lucide-react";
+import { Link } from "@inertiajs/react";
 
 interface PrimarySidebarProps {
     active?: string;
 }
 
 const primaryMenuItems = [
-    { key: "dashboard", label: "Dashboard", icon: <Home size={20} /> },
-    { key: "products", label: "Products", icon: <ShoppingBag size={20} /> },
-    { key: "orders", label: "Orders", icon: <Package size={20} /> },
-    { key: "more", label: "More", icon: <Grid size={20} /> },
+    {
+        key: "dashboard",
+        label: "Dashboard",
+        icon: <Home size={20} />,
+        route: route("admin.dashboard"),
+    },
+    {
+        key: "products",
+        label: "Products",
+        icon: <ShoppingBag size={20} />,
+        route: route("admin.products.index"),
+    },
+    { key: "orders", label: "Orders", icon: <Package size={20} />, route: "#" },
+    { key: "more", label: "More", icon: <Grid size={20} />, route: "#" },
 ];
 
 const PrimarySidebar: React.FC<PrimarySidebarProps> = ({ active }) => {
@@ -25,9 +36,9 @@ const PrimarySidebar: React.FC<PrimarySidebarProps> = ({ active }) => {
             {/* Primary Navigation */}
             <nav className="flex-1 space-y-4">
                 {primaryMenuItems.map((item) => (
-                    <a
+                    <Link
                         key={item.key}
-                        href="#"
+                        href={item.route}
                         className={`flex flex-col items-center p-3 rounded-lg transition-all ${
                             active === item.key
                                 ? "bg-[#0F1A18] text-[#2DE3A7]"
@@ -36,7 +47,7 @@ const PrimarySidebar: React.FC<PrimarySidebarProps> = ({ active }) => {
                     >
                         {item.icon}
                         <span className="text-xs mt-1">{item.label}</span>
-                    </a>
+                    </Link>
                 ))}
             </nav>
 
