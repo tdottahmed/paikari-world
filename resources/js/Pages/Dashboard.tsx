@@ -1,10 +1,10 @@
-import MasterLayout from '@/Layouts/Master';
+import Master from "@/Layouts/Master";
 
 export default function Dashboard() {
     return (
-        <MasterLayout>
+        <Master>
             <h2 className="mb-4 text-xl font-bold">Dashboard</h2>
             <p>Welcome to your dashboard.</p>
-        </MasterLayout>
+        </Master>
     );
 }
