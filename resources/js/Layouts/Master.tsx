@@ -18,16 +18,23 @@ const Master: React.FC<LayoutProps> = ({ children, active, head, title }) => {
     return (
         <div className="flex min-h-screen bg-[#0C1311] text-gray-100">
             <Head title={title} />
-            <div className="hidden md:flex flex-1">
-                <PrimarySidebar active={active} />
 
-                <SecondarySidebar
-                    isOpen={isSecondarySidebarOpen}
-                    onClose={() => setIsSecondarySidebarOpen(false)}
+            {/* Desktop Layout */}
+            <div className="hidden md:flex flex-1">
+                <PrimarySidebar
+                    active={active}
+                    onMoreClick={() => setIsSecondarySidebarOpen(true)}
                 />
 
+                {/* Secondary Sidebar - Only shown when isSecondarySidebarOpen is true */}
+                {isSecondarySidebarOpen && (
+                    <SecondarySidebar
+                        isOpen={isSecondarySidebarOpen}
+                        onClose={() => setIsSecondarySidebarOpen(false)}
+                    />
+                )}
+
                 <div className="flex-1 flex flex-col min-w-0">
-                    {/* Desktop Head */}
                     {head ? head : <Header showUserMenu={true} />}
                     <main className="flex-1 overflow-auto p-6">{children}</main>
                 </div>
@@ -35,8 +42,7 @@ const Master: React.FC<LayoutProps> = ({ children, active, head, title }) => {
 
             {/* Mobile Layout */}
             <div className="flex flex-1 flex-col md:hidden">
-                {/* Mobile Head — SAME component */}
-                {head ? head : <Head showUserMenu={true} />}
+                {head ? head : <Header showUserMenu={true} />}
 
                 <main className="flex-1 overflow-auto p-4 pb-20">
                     {children}
@@ -58,7 +64,7 @@ const Master: React.FC<LayoutProps> = ({ children, active, head, title }) => {
                 />
             )}
 
-            {/* Mobile Slide-Up Secondary Sidebar */}
+            {/* Mobile Secondary Sidebar */}
             <div
                 className={`
                     fixed bottom-0 left-0 right-0 z-50 
