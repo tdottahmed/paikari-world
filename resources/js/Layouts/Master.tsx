@@ -1,4 +1,4 @@
-import Header from "@/Components/Layouts/Header";
+import Head from "@/Components/Layouts/Head";
 import MobileBottomNav from "@/Components/Layouts/MobileBottomNav";
 import PrimarySidebar from "@/Components/Layouts/PrimarySidebar";
 import SecondarySidebar from "@/Components/Layouts/SecondarySidebar";
@@ -7,10 +7,10 @@ import React, { useState } from "react";
 interface LayoutProps {
     children: React.ReactNode;
     active?: string;
-    header?: React.ReactNode;
+    head?: React.ReactNode;
 }
 
-const Master: React.FC<LayoutProps> = ({ children, active, header }) => {
+const Master: React.FC<LayoutProps> = ({ children, active, head }) => {
     const [isSecondarySidebarOpen, setIsSecondarySidebarOpen] = useState(false);
 
     return (
@@ -18,22 +18,28 @@ const Master: React.FC<LayoutProps> = ({ children, active, header }) => {
             {/* Desktop Layout */}
             <div className="hidden md:flex flex-1">
                 <PrimarySidebar active={active} />
+
                 <SecondarySidebar
                     isOpen={isSecondarySidebarOpen}
                     onClose={() => setIsSecondarySidebarOpen(false)}
                 />
+
                 <div className="flex-1 flex flex-col min-w-0">
-                    <Header />
+                    {/* Desktop Head */}
+                    {head ? head : <Head showUserMenu={true} />}
                     <main className="flex-1 overflow-auto p-6">{children}</main>
                 </div>
             </div>
 
             {/* Mobile Layout */}
             <div className="flex flex-1 flex-col md:hidden">
-                <Header />
+                {/* Mobile Head — SAME component */}
+                {head ? head : <Head showUserMenu={true} />}
+
                 <main className="flex-1 overflow-auto p-4 pb-20">
                     {children}
                 </main>
+
                 <MobileBottomNav
                     active={active}
                     onSecondaryToggle={() =>
@@ -42,23 +48,27 @@ const Master: React.FC<LayoutProps> = ({ children, active, header }) => {
                 />
             </div>
 
-            {/* Mobile Secondary Sidebar Overlay */}
+            {/* Mobile Overlay */}
             {isSecondarySidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
                     onClick={() => setIsSecondarySidebarOpen(false)}
                 />
             )}
 
-            {/* Mobile Secondary Sidebar */}
+            {/* Mobile Slide-Up Secondary Sidebar */}
             <div
                 className={`
-                fixed bottom-0 left-0 right-0 z-50 
-                transform transition-transform duration-300 ease-in-out
-                bg-[#0E1614] border-t border-gray-800
-                ${isSecondarySidebarOpen ? "translate-y-0" : "translate-y-full"}
-                md:hidden
-            `}
+                    fixed bottom-0 left-0 right-0 z-50 
+                    transform transition-transform duration-300 ease-in-out
+                    bg-[#0E1614] border-t border-gray-800
+                    ${
+                        isSecondarySidebarOpen
+                            ? "translate-y-0"
+                            : "translate-y-full"
+                    }
+                    md:hidden
+                `}
             >
                 <SecondarySidebar
                     isOpen={isSecondarySidebarOpen}

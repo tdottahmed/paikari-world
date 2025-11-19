@@ -1,0 +1,111 @@
+import React from "react";
+import UserMenu from "./UserMenu";
+import BrandLogo from "../Utility/BrandLogo";
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    image?: string | null;
+}
+
+interface HeaderProps {
+    title?: string;
+    subtitle?: string;
+    showLogo?: boolean;
+    logoSize?: "sm" | "md" | "lg";
+    showUserMenu?: boolean;
+    user?: User;
+    actions?: React.ReactNode;
+    breadcrumbs?: {
+        label: string;
+        href?: string;
+    }[];
+    className?: string;
+}
+
+const Head: React.FC<HeaderProps> = ({
+    title = "Dashboard",
+    subtitle,
+    showLogo = false,
+    logoSize = "md",
+    showUserMenu = false,
+    user,
+    actions,
+    breadcrumbs,
+    className = "",
+}) => {
+    return (
+        <header
+            className={`bg-[#0E1614] border-b border-[#1E2826] px-6 py-4 ${className}`}
+        >
+            <div className="flex items-center justify-between">
+                {/* Left Section - Logo & Title */}
+                <div className="flex items-center space-x-4">
+                    {showLogo && (
+                        <div className="hidden md:block">
+                            <BrandLogo size={logoSize} withText={false} />
+                        </div>
+                    )}
+
+                    <div className="flex flex-col">
+                        {breadcrumbs && breadcrumbs.length > 0 && (
+                            <nav className="flex items-center space-x-2 text-sm mb-1">
+                                {breadcrumbs.map((crumb, index) => (
+                                    <React.Fragment key={index}>
+                                        {crumb.href ? (
+                                            <a
+                                                href={crumb.href}
+                                                className="text-gray-400 hover:text-[#2DE3A7] transition-colors"
+                                            >
+                                                {crumb.label}
+                                            </a>
+                                        ) : (
+                                            <span className="text-gray-400">
+                                                {crumb.label}
+                                            </span>
+                                        )}
+                                        {index < breadcrumbs.length - 1 && (
+                                            <span className="text-gray-600">
+                                                /
+                                            </span>
+                                        )}
+                                    </React.Fragment>
+                                ))}
+                            </nav>
+                        )}
+
+                        {/* Main Title */}
+                        <div className="flex items-center space-x-3">
+                            <h1 className="text-xl font-semibold text-white md:text-2xl">
+                                {title}
+                            </h1>
+
+                            {/* Subtitle Badge */}
+                            {subtitle && (
+                                <span className="px-2 py-1 text-xs font-medium bg-[#2DE3A7]/10 text-[#2DE3A7] border border-[#2DE3A7]/20 rounded-full">
+                                    {subtitle}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Section - Actions & User Menu */}
+                <div className="flex items-center space-x-4">
+                    {/* Custom Actions */}
+                    {actions && (
+                        <div className="flex items-center space-x-2">
+                            {actions}
+                        </div>
+                    )}
+
+                    {/* User Menu */}
+                    {showUserMenu && <UserMenu />}
+                </div>
+            </div>
+        </header>
+    );
+};
+
+export default Head;

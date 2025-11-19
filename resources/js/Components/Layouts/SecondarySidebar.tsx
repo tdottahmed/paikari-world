@@ -110,7 +110,7 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
     return (
         <aside className="w-64 bg-[#0E1614] border-r border-gray-800 flex flex-col">
             {/* Header */}
-            <div className="p-6 border-b border-gray-800">
+            <div className="p-5">
                 <h2 className="text-xl font-semibold">Paikari World</h2>
                 <p className="text-sm text-gray-400">pw@gmail.com</p>
             </div>
