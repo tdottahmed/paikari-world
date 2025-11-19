@@ -1,10 +1,12 @@
 import PrimaryButton from "@/Components/Actions/PrimaryButton";
 import Header from "@/Components/Layouts/Header";
+import Search from "@/Components/Ui/Search";
 import Master from "@/Layouts/Master";
-import { Link } from "@inertiajs/react";
-import { Plus, BookOpen, Store, Settings, PenLine, Search } from "lucide-react";
+import { Plus, BookOpen, Store, Settings, PenLine } from "lucide-react";
+import { useState } from "react";
 
 export default function Index() {
+    const [searchTerm, setSearchTerm] = useState("");
     return (
         <Master
             title="Products"
@@ -35,17 +37,15 @@ export default function Index() {
                 </div>
 
                 {/* Search Bar */}
-                <div className="relative w-64">
-                    <Search
-                        className="absolute left-3 top-2.5 text-neutral-400"
-                        size={18}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="w-full bg-neutral-900 border border-neutral-700 text-neutral-200 pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:border-neutral-500"
-                    />
-                </div>
+                <Search
+                    value={searchTerm}
+                    onChange={setSearchTerm}
+                    onSubmit={(value) => {
+                        console.log("Searching for:", value);
+                        // Your search logic here
+                    }}
+                    placeholder="Search users..."
+                />
             </div>
 
             <h2 className="mb-4 text-xl font-bold">Products</h2>
