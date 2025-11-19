@@ -9,6 +9,7 @@ import {
     LogOutIcon,
     X,
 } from "lucide-react";
+import { useForm } from "@inertiajs/react";
 
 interface SecondarySidebarProps {
     isOpen: boolean;
@@ -16,7 +17,13 @@ interface SecondarySidebarProps {
     mobile?: boolean;
 }
 
-const secondaryMenuItems = [
+interface MenuItem {
+    key: string;
+    label: string;
+    icon: React.ReactNode;
+}
+
+const secondaryMenuItems: MenuItem[] = [
     {
         key: "categories",
         label: "Categories",
@@ -31,11 +38,38 @@ const secondaryMenuItems = [
     { key: "marketing", label: "Marketing", icon: <Target size={18} /> },
 ];
 
+// Reusable Menu Link Component
+const MenuLink = ({
+    item,
+    onClick,
+}: {
+    item: MenuItem;
+    onClick?: () => void;
+}) => (
+    <a
+        href="#"
+        onClick={onClick}
+        className="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-300 hover:bg-[#151F1D] hover:text-white transition-all"
+    >
+        {item.icon}
+        <span>{item.label}</span>
+    </a>
+);
+
 const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
     isOpen,
     onClose,
     mobile = false,
 }) => {
+    const { post } = useForm();
+
+    const handleLogout = () => {
+        post(route("logout"), {
+            onFinish: () => onClose(),
+        });
+    };
+
+    /* MOBILE SIDEBAR */
     if (mobile) {
         return (
             <div className="bg-[#0E1614] p-6 max-h-96 overflow-y-auto">
@@ -50,33 +84,29 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
                     </button>
                 </div>
 
-                {/* Secondary Navigation */}
+                {/* Menu Items */}
                 <nav className="space-y-2">
                     {secondaryMenuItems.map((item) => (
-                        <a
+                        <MenuLink
                             key={item.key}
-                            href="#"
-                            className="flex items-center gap-3 rounded-lg px-3 py-3 text-gray-300 hover:bg-[#151F1D] hover:text-white transition-all"
+                            item={item}
                             onClick={onClose}
-                        >
-                            {item.icon}
-                            <span>{item.label}</span>
-                        </a>
+                        />
                     ))}
 
-                    {/* Logout */}
-                    <a
-                        href="#"
-                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-red-400 hover:bg-red-600/10 transition-all"
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:bg-red-600/10 transition-all w-full text-left"
                     >
                         <LogOutIcon size={18} />
                         <span>Logout</span>
-                    </a>
+                    </button>
                 </nav>
             </div>
         );
     }
 
+    /* DESKTOP SIDEBAR */
     return (
         <aside className="w-64 bg-[#0E1614] border-r border-gray-800 flex flex-col">
             {/* Header */}
@@ -85,29 +115,22 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
                 <p className="text-sm text-gray-400">pw@gmail.com</p>
             </div>
 
-            {/* Secondary Navigation */}
+            {/* Navigation */}
             <nav className="flex-1 p-4 space-y-1">
                 {secondaryMenuItems.map((item) => (
-                    <a
-                        key={item.key}
-                        href="#"
-                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-gray-300 hover:bg-[#151F1D] hover:text-white transition-all"
-                    >
-                        {item.icon}
-                        <span>{item.label}</span>
-                    </a>
+                    <MenuLink key={item.key} item={item} />
                 ))}
             </nav>
 
             {/* Logout */}
             <div className="p-4 border-t border-gray-800">
-                <a
-                    href="#"
-                    className="flex items-center gap-3 rounded-lg px-3 py-3 text-red-400 hover:bg-red-600/10 transition-all"
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:bg-red-600/10 transition-all w-full text-left"
                 >
                     <LogOutIcon size={18} />
                     <span>Logout</span>
-                </a>
+                </button>
             </div>
         </aside>
     );

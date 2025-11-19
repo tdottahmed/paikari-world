@@ -1,59 +1,54 @@
-// components/Preloader.tsx
 import React, { useEffect, useState } from "react";
 
 const Preloader: React.FC = () => {
-    const [isVisible, setIsVisible] = useState(true);
+    const [loadingProgress, setLoadingProgress] = useState(0);
 
     useEffect(() => {
-        // Hide preloader after 3 seconds or when page is fully loaded
-        const timer = setTimeout(() => {
-            setIsVisible(false);
-        }, 3000);
+        // Fast progress animation - completes in ~800ms
+        const interval = setInterval(() => {
+            setLoadingProgress((prev) => {
+                const newProgress = prev + Math.random() * 40;
+                if (newProgress >= 100) {
+                    clearInterval(interval);
+                    return 100;
+                }
+                return newProgress;
+            });
+        }, 80);
 
-        // Also hide when page is fully loaded
-        window.addEventListener("load", () => {
-            setIsVisible(false);
-        });
-
-        return () => {
-            clearTimeout(timer);
-            window.removeEventListener("load", () => setIsVisible(false));
-        };
+        return () => clearInterval(interval);
     }, []);
-
-    if (!isVisible) return null;
 
     return (
         <div className="fixed inset-0 bg-[#0C1311] z-50 flex items-center justify-center">
             <div className="text-center">
-                {/* Animated Logo */}
-                <div className="mb-8">
-                    <div className="w-20 h-20 mx-auto mb-4 relative">
-                        <div className="absolute inset-0 border-4 border-[#2DE3A7] rounded-lg animate-ping opacity-75"></div>
-                        <div className="absolute inset-0 border-4 border-[#2DE3A7] rounded-lg"></div>
+                {/* Logo */}
+                <div className="mb-6">
+                    <div className="w-16 h-16 mx-auto mb-3 relative">
+                        <div className="absolute inset-0 border-3 border-[#2DE3A7] rounded-lg animate-pulse"></div>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-2xl font-bold text-[#2DE3A7]">
+                            <span className="text-xl font-bold text-[#2DE3A7]">
                                 PW
                             </span>
                         </div>
                     </div>
-                    <h1 className="text-3xl font-bold text-white mb-2">
+                    <h1 className="text-2xl font-bold text-white mb-1">
                         Paikari World
                     </h1>
-                    <p className="text-gray-400">Loading your dashboard...</p>
+                    <p className="text-gray-400 text-sm">Loading...</p>
                 </div>
 
-                {/* Loading Animation */}
-                <div className="flex justify-center space-x-2">
-                    <div className="w-3 h-3 bg-[#2DE3A7] rounded-full animate-bounce"></div>
+                {/* Progress Bar */}
+                <div className="w-48 mx-auto bg-gray-700 rounded-full h-1.5 mb-3">
                     <div
-                        className="w-3 h-3 bg-[#2DE3A7] rounded-full animate-bounce"
-                        style={{ animationDelay: "0.1s" }}
+                        className="bg-[#2DE3A7] h-1.5 rounded-full transition-all duration-100 ease-out"
+                        style={{ width: `${loadingProgress}%` }}
                     ></div>
-                    <div
-                        className="w-3 h-3 bg-[#2DE3A7] rounded-full animate-bounce"
-                        style={{ animationDelay: "0.2s" }}
-                    ></div>
+                </div>
+
+                {/* Loading Percentage */}
+                <div className="text-[#2DE3A7] text-xs font-medium">
+                    {Math.round(loadingProgress)}%
                 </div>
             </div>
         </div>

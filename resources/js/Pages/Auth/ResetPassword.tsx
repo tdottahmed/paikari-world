@@ -1,7 +1,7 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
+import PrimaryButton from '@/Components/Actions/PrimaryButton';
+import InputError from '@/Components/Ui/InputError';
+import InputLabel from '@/Components/Ui/InputLabel';
+import TextInput from '@/Components/Ui/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -73,6 +73,7 @@ export default function ResetPassword({
                     />
 
                     <TextInput
+                        id="password_confirmation"
                         type="password"
                         name="password_confirmation"
                         value={data.password_confirmation}

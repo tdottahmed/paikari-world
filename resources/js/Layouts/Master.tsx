@@ -3,11 +3,14 @@ import MobileBottomNav from "@/Components/Layouts/MobileBottomNav";
 import PrimarySidebar from "@/Components/Layouts/PrimarySidebar";
 import SecondarySidebar from "@/Components/Layouts/SecondarySidebar";
 import React, { useState } from "react";
+
 interface LayoutProps {
     children: React.ReactNode;
     active?: string;
+    header?: React.ReactNode;
 }
-const Master: React.FC<LayoutProps> = ({ children, active }) => {
+
+const Master: React.FC<LayoutProps> = ({ children, active, header }) => {
     const [isSecondarySidebarOpen, setIsSecondarySidebarOpen] = useState(false);
 
     return (
@@ -25,6 +28,7 @@ const Master: React.FC<LayoutProps> = ({ children, active }) => {
                 </div>
             </div>
 
+            {/* Mobile Layout */}
             <div className="flex flex-1 flex-col md:hidden">
                 <Header />
                 <main className="flex-1 overflow-auto p-4 pb-20">
@@ -37,12 +41,16 @@ const Master: React.FC<LayoutProps> = ({ children, active }) => {
                     }
                 />
             </div>
+
+            {/* Mobile Secondary Sidebar Overlay */}
             {isSecondarySidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
                     onClick={() => setIsSecondarySidebarOpen(false)}
                 />
             )}
+
+            {/* Mobile Secondary Sidebar */}
             <div
                 className={`
                 fixed bottom-0 left-0 right-0 z-50 
