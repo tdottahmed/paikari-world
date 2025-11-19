@@ -1,21 +1,23 @@
-import Head from "@/Components/Layouts/Head";
+import Header from "@/Components/Layouts/Header";
 import MobileBottomNav from "@/Components/Layouts/MobileBottomNav";
 import PrimarySidebar from "@/Components/Layouts/PrimarySidebar";
 import SecondarySidebar from "@/Components/Layouts/SecondarySidebar";
+import { Head } from "@inertiajs/react";
 import React, { useState } from "react";
 
 interface LayoutProps {
     children: React.ReactNode;
     active?: string;
     head?: React.ReactNode;
+    title?: string;
 }
 
-const Master: React.FC<LayoutProps> = ({ children, active, head }) => {
+const Master: React.FC<LayoutProps> = ({ children, active, head, title }) => {
     const [isSecondarySidebarOpen, setIsSecondarySidebarOpen] = useState(false);
 
     return (
         <div className="flex min-h-screen bg-[#0C1311] text-gray-100">
-            {/* Desktop Layout */}
+            <Head title={title} />
             <div className="hidden md:flex flex-1">
                 <PrimarySidebar active={active} />
 
@@ -26,7 +28,7 @@ const Master: React.FC<LayoutProps> = ({ children, active, head }) => {
 
                 <div className="flex-1 flex flex-col min-w-0">
                     {/* Desktop Head */}
-                    {head ? head : <Head showUserMenu={true} />}
+                    {head ? head : <Header showUserMenu={true} />}
                     <main className="flex-1 overflow-auto p-6">{children}</main>
                 </div>
             </div>

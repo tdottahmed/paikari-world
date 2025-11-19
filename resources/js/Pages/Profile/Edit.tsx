@@ -3,7 +3,7 @@ import DeleteUserForm from "./Partials/DeleteUserForm";
 import UpdatePasswordForm from "./Partials/UpdatePasswordForm";
 import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm";
 import Master from "@/Layouts/Master";
-import Head from "@/Components/Layouts/Head";
+import Header from "@/Components/Layouts/Header";
 
 export default function Edit({
     mustVerifyEmail,
@@ -11,8 +11,9 @@ export default function Edit({
 }: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
     return (
         <Master
+            title="Profile"
             head={
-                <Head
+                <Header
                     title="Profile"
                     subtitle="You can update your profile information and email address here."
                     showUserMenu={true}

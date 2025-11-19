@@ -24,7 +24,7 @@ interface HeaderProps {
     className?: string;
 }
 
-const Head: React.FC<HeaderProps> = ({
+const Header: React.FC<HeaderProps> = ({
     title = "Dashboard",
     subtitle,
     showLogo = false,
@@ -108,4 +108,4 @@ const Head: React.FC<HeaderProps> = ({
     );
 };
 
-export default Head;
+export default Header;

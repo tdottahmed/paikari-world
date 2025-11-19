@@ -1,9 +1,12 @@
-import Head from "@/Components/Layouts/Head";
+import Header from "@/Components/Layouts/Header";
 import Master from "@/Layouts/Master";
 
 export default function Dashboard() {
     return (
-        <Master head={<Head title="Dashboard" showUserMenu={true} />}>
+        <Master
+            title="Dashboard"
+            head={<Header title="Dashboard" showUserMenu={true} />}
+        >
             <div className="text-white">Your dashboard content</div>
         </Master>
     );
