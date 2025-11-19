@@ -2,6 +2,7 @@ import Header from "@/Components/Layouts/Header";
 import Card, { CardContent, CardHeader, CardTitle } from "@/Components/Ui/Card";
 import CollapsibleSection from "@/Components/Ui/CollapsibleSection";
 import InputLabel from "@/Components/Ui/InputLabel";
+import SelectInput from "@/Components/Ui/SelectInput";
 import TextInput from "@/Components/Ui/TextInput";
 import Master from "@/Layouts/Master";
 import { useForm } from "@inertiajs/react";
@@ -11,7 +12,14 @@ export default function Create() {
         name: "",
         price: "",
         supplier: "",
+        category: "",
+        description: "",
     });
+    const categories = {
+        1: "Electronics",
+        2: "Clothing",
+        3: "Toys",
+    };
     return (
         <Master
             title="Create Product"
@@ -66,6 +74,54 @@ export default function Create() {
                                         value={data.supplier}
                                         onChange={(e) =>
                                             setData("supplier", e.target.value)
+                                        }
+                                        required
+                                        className="mt-1 w-full"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
+                                <div className="w-full">
+                                    <InputLabel
+                                        htmlFor="category"
+                                        value="Category"
+                                    />
+                                    <SelectInput
+                                        id="category"
+                                        name="category"
+                                        options={Object.entries(categories).map(
+                                            ([value, label]) => ({
+                                                value,
+                                                label,
+                                            })
+                                        )}
+                                        value={data.category}
+                                        onChange={(value) =>
+                                            setData("category", value)
+                                        }
+                                        placeholder="Select a category"
+                                        isSearchable={false}
+                                        className="mt-1 w-full"
+                                    />
+                                </div>
+
+                                <div className="w-full">
+                                    <InputLabel
+                                        htmlFor="description"
+                                        value="Description"
+                                    />
+                                    <TextInput
+                                        id="description"
+                                        name="description"
+                                        placeholder="Enter your description"
+                                        autoComplete="description"
+                                        value={data.description}
+                                        onChange={(e) =>
+                                            setData(
+                                                "description",
+                                                e.target.value
+                                            )
                                         }
                                         required
                                         className="mt-1 w-full"
