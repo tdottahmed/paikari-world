@@ -14,7 +14,10 @@ export default function Index() {
         >
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-2">
-                    <PrimaryButton as="link" href="/dashboard">
+                    <PrimaryButton
+                        as="link"
+                        href={route("admin.products.create")}
+                    >
                         <Plus size={18} />
                         <span>Add New</span>
                     </PrimaryButton>
@@ -36,13 +39,11 @@ export default function Index() {
                     </button>
                 </div>
 
-                {/* Search Bar */}
                 <Search
                     value={searchTerm}
                     onChange={setSearchTerm}
                     onSubmit={(value) => {
                         console.log("Searching for:", value);
-                        // Your search logic here
                     }}
                     placeholder="Search users..."
                 />
