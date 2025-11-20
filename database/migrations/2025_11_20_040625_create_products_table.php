@@ -19,6 +19,7 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->double('purchase_price', 8, 2);
             $table->double('sale_price', 8, 2);
+            $table->double('moq_price', 8, 2);
             $table->double('uan_price', 8, 2);
             $table->longText('qty_price')->nullable();
             $table->integer('stock')->nullable();
