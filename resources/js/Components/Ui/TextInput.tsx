@@ -53,6 +53,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                     text-gray-100 placeholder-gray-500
                     focus:border-[#2DE3A7] focus:ring-1 focus:ring-[#2DE3A7]
                     transition-all duration-200 ease-in-out
+                    cursor-pointer
                     ${className}
                 `}
                 autoComplete={autoComplete}

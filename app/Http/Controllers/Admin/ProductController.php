@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Supplier;
 
 class ProductController extends Controller
 {
@@ -13,6 +15,11 @@ class ProductController extends Controller
 
     public function create()
     {
-        return inertia('Products/Create');
+        $categories = Category::select(['id', 'title'])->get();
+        $supplier = Supplier::select(['id', 'name'])->get();
+        return inertia('Products/Create', [
+            'categories' => $categories,
+            'suppliers' => $supplier,
+        ]);
     }
 }

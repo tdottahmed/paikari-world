@@ -2,135 +2,130 @@ import Header from "@/Components/Layouts/Header";
 import Card, { CardContent, CardHeader, CardTitle } from "@/Components/Ui/Card";
 import CollapsibleSection from "@/Components/Ui/CollapsibleSection";
 import InputLabel from "@/Components/Ui/InputLabel";
-import SelectInput from "@/Components/Ui/SelectInput";
 import TextInput from "@/Components/Ui/TextInput";
+import PrimaryButton from "@/Components/Actions/PrimaryButton";
 import Master from "@/Layouts/Master";
-import { useForm } from "@inertiajs/react";
 
-export default function Create() {
-    const { data, setData, post, processing, errors, reset } = useForm({
+import SelectInput from "@/Components/Ui/SelectInput"; // NEW component
+import { useForm } from "@inertiajs/react";
+import { CreatePageProps } from "@/types";
+import RichTextEditor from "@/Components/Ui/RichTextEditor";
+
+export default function Create({ categories, suppliers }: CreatePageProps) {
+    const { data, setData, post, processing, errors } = useForm({
         name: "",
         price: "",
         supplier: "",
         category: "",
         description: "",
     });
-    const categories = {
-        1: "Electronics",
-        2: "Clothing",
-        3: "Toys",
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(route("products.store"));
     };
+
     return (
         <Master
             title="Create Product"
             head={<Header title="Create Product" showUserMenu={true} />}
         >
             <div className="lg:p-6 sm:p-2">
-                <CollapsibleSection
-                    title="General Information"
-                    defaultOpen={true}
-                >
-                    <Card>
-                        <CardContent padding="lg">
-                            <InputLabel htmlFor="name" value="Name" />
-                            <TextInput
-                                id="name"
-                                name="name"
-                                placeholder="Enter your name"
-                                autoComplete="name"
-                                value={data.name}
-                                onChange={(e) =>
-                                    setData("name", e.target.value)
-                                }
-                                required
-                            />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
-                                <div className="w-full">
-                                    <InputLabel htmlFor="price" value="Price" />
+                <form onSubmit={handleSubmit}>
+                    <CollapsibleSection
+                        title="General Information"
+                        defaultOpen={true}
+                    >
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Product Details</CardTitle>
+                            </CardHeader>
+
+                            <CardContent padding="lg">
+                                {/* NAME */}
+                                <div className="mb-4">
+                                    <InputLabel
+                                        htmlFor="name"
+                                        value="Product Name"
+                                    />
                                     <TextInput
-                                        id="price"
-                                        name="price"
-                                        placeholder="Enter your price"
-                                        autoComplete="price"
-                                        value={data.price}
+                                        id="name"
+                                        name="name"
+                                        placeholder="Enter product name"
+                                        value={data.name}
                                         onChange={(e) =>
-                                            setData("price", e.target.value)
+                                            setData("name", e.target.value)
                                         }
                                         required
-                                        className="mt-1 w-full"
                                     />
                                 </div>
 
-                                <div className="w-full">
-                                    <InputLabel
-                                        htmlFor="supplier"
-                                        value="Supplier"
-                                    />
-                                    <TextInput
-                                        id="supplier"
-                                        name="supplier"
-                                        placeholder="Enter your supplier"
-                                        autoComplete="supplier"
-                                        value={data.supplier}
-                                        onChange={(e) =>
-                                            setData("supplier", e.target.value)
-                                        }
-                                        required
-                                        className="mt-1 w-full"
-                                    />
-                                </div>
-                            </div>
+                                {/* PRICE + SUPPLIER */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <InputLabel
+                                            htmlFor="category"
+                                            value="Category"
+                                        />
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
-                                <div className="w-full">
-                                    <InputLabel
-                                        htmlFor="category"
-                                        value="Category"
-                                    />
-                                    <SelectInput
-                                        id="category"
-                                        name="category"
-                                        options={Object.entries(categories).map(
-                                            ([value, label]) => ({
-                                                value,
-                                                label,
-                                            })
-                                        )}
-                                        value={data.category}
-                                        onChange={(value) =>
-                                            setData("category", value)
-                                        }
-                                        placeholder="Select a category"
-                                        isSearchable={false}
-                                        className="mt-1 w-full"
-                                    />
+                                        <SelectInput
+                                            id="category"
+                                            name="category"
+                                            value={data.category}
+                                            onChange={(val) =>
+                                                setData("category", val)
+                                            }
+                                            options={categories.map((c) => ({
+                                                value: c.id,
+                                                label: c.title,
+                                            }))}
+                                            placeholder="Select Category"
+                                            error={errors.category}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel
+                                            htmlFor="supplier"
+                                            value="Supplier"
+                                        />
+
+                                        <SelectInput
+                                            id="supplier"
+                                            name="supplier"
+                                            value={data.supplier}
+                                            onChange={(val) =>
+                                                setData("supplier", val)
+                                            }
+                                            options={suppliers.map((s) => ({
+                                                value: s.id,
+                                                label: s.name,
+                                            }))}
+                                            placeholder="Select Supplier"
+                                            error={errors.supplier}
+                                        />
+                                    </div>
                                 </div>
 
-                                <div className="w-full">
-                                    <InputLabel
-                                        htmlFor="description"
-                                        value="Description"
-                                    />
-                                    <TextInput
-                                        id="description"
-                                        name="description"
-                                        placeholder="Enter your description"
-                                        autoComplete="description"
-                                        value={data.description}
-                                        onChange={(e) =>
-                                            setData(
-                                                "description",
-                                                e.target.value
-                                            )
-                                        }
-                                        required
-                                        className="mt-1 w-full"
-                                    />
+                                {/* CATEGORY + DESCRIPTION */}
+                                <div className="grid grid-cols-1">
+                                    <div className="description">
+                                        <InputLabel
+                                            htmlFor="description"
+                                            value="Description"
+                                        />
+                                        <RichTextEditor
+                                            value={data.description}
+                                            onChange={(val) =>
+                                                setData("description", val)
+                                            }
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </CollapsibleSection>
+                            </CardContent>
+                        </Card>
+                    </CollapsibleSection>
+                </form>
             </div>
         </Master>
     );
