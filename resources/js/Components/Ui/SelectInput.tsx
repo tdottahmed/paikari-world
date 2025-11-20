@@ -40,7 +40,6 @@ const SelectInput: React.FC<SelectInputProps> = ({
 
     const selectedValue = options.find((option) => option.value === value);
 
-    // Custom styles for react-select
     const customStyles: StylesConfig<
         SelectOption,
         false,
