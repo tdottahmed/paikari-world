@@ -188,13 +188,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 pt-3 border-t border-[#1E2826]">
+                {/* <div className="flex gap-2 pt-3 border-t border-[#1E2826]">
                     <SecondaryButton
                         size="sm"
                         className="flex-1 flex items-center justify-center gap-2 text-xs"
                     >
                         <Edit2 size={14} />
-                        <span>Edit</span>
+                        <span className="hidden md:inline">Edit</span>
                     </SecondaryButton>
 
                     <DangerButton
@@ -203,9 +203,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         className="flex-1 flex items-center justify-center gap-2 text-xs"
                     >
                         <Trash2 size={14} />
-                        <span>Delete</span>
+                        <span className="hidden md:inline">Delete</span>
                     </DangerButton>
-                </div>
+                </div> */}
             </div>
         </div>
     );

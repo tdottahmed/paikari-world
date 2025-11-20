@@ -43,6 +43,7 @@ const Index: React.FC<ProductsIndexProps> = ({ products }) => {
     };
 
     const handleImport = () => {
+        // Implement import functionality
         console.log("Importing products...");
     };
 
@@ -159,6 +160,7 @@ const Index: React.FC<ProductsIndexProps> = ({ products }) => {
                     </div>
                 </div>
 
+                
                 {/* Products Grid/List */}
                 <div className="mt-6">
                     {viewMode === "grid" ? (
