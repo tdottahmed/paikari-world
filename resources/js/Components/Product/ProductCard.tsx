@@ -1,33 +1,113 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
+import { Edit2, Trash2, Eye } from "lucide-react";
+import PrimaryButton from "@/Components/Actions/PrimaryButton";
+import SecondaryButton from "@/Components/Actions/SecondaryButton";
+import DangerButton from "@/Components/Actions/DangerButton";
 
 interface Product {
     id: number;
     name: string;
-    description: string;
     images: string[];
     purchase_price: number;
     sale_price: number;
     stock: number;
-    // Add other fields as needed
 }
 
 interface ProductCardProps {
     product: Product;
+    onEdit?: (product: Product) => void;
+    onDelete?: (product: Product) => void;
+    onView?: (product: Product) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-    console.log(product);
-
+const ProductCard: React.FC<ProductCardProps> = ({
+    product,
+    onEdit,
+    onDelete,
+    onView,
+}) => {
     const profit = product.sale_price - product.purchase_price;
     const profitPercentage = ((profit / product.purchase_price) * 100).toFixed(
         1
     );
 
+    // Brand Colors
+    const BRAND_COLORS = {
+        primary: "#2DE3A7",
+        background: "#0C1311",
+        cardBackground: "#0E1614",
+        inputBackground: "#0F1A18",
+        border: "#1E2826",
+        text: {
+            primary: "#FFFFFF",
+            secondary: "#E5E7EB",
+            tertiary: "#9CA3AF",
+            inverse: "#0C1311",
+        },
+        success: "#10B981",
+        warning: "#F59E0B",
+        error: "#EF4444",
+    };
+
+    const getStockVariant = (stock: number) => {
+        if (stock > 15)
+            return {
+                color: "text-emerald-400",
+                bg: "bg-emerald-400/10",
+                border: "border-emerald-400/20",
+            };
+        if (stock > 5)
+            return {
+                color: "text-amber-400",
+                bg: "bg-amber-400/10",
+                border: "border-amber-400/20",
+            };
+        return {
+            color: "text-red-400",
+            bg: "bg-red-400/10",
+            border: "border-red-400/20",
+        };
+    };
+
+    const stockVariant = getStockVariant(product.stock);
+
+    const handleEdit = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (onEdit) {
+            onEdit(product);
+        } else {
+            // Default edit behavior
+            window.location.href = `/admin/products/${product.id}/edit`;
+        }
+    };
+
+    const handleDelete = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (onDelete) {
+            onDelete(product);
+        } else {
+            if (confirm("Are you sure you want to delete this product?")) {
+                // Default delete behavior
+                // You can implement your delete logic here
+            }
+        }
+    };
+
+    const handleView = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (onView) {
+            onView(product);
+        } else {
+            // Default view behavior
+            window.location.href = `/admin/products/${product.id}`;
+        }
+    };
+
     return (
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
-            {/* Product Image */}
-            <div className="relative aspect-square bg-gray-100">
+        <div className="bg-[#0E1614] border border-[#1E2826] rounded-lg shadow-sm hover:shadow-lg hover:border-[#2DE3A7]/30 transition-all duration-300 overflow-hidden group">
+            {/* Product Image with Overlay Actions */}
+            <div className="relative aspect-[4/3] bg-[#0F1A18] overflow-hidden">
                 <img
                     src={
                         product.images && product.images.length > 0
@@ -35,98 +115,96 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                             : "/images/placeholder-product.jpg"
                     }
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
 
-                {/* Stock Badge */}
+                {/* Stock Indicator */}
                 <div
-                    className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${
-                        product.stock > 10
-                            ? "bg-green-100 text-green-800"
-                            : product.stock > 0
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                    }`}
+                    className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold ${stockVariant.bg} ${stockVariant.color} ${stockVariant.border} border backdrop-blur-sm`}
                 >
-                    {product.stock > 0
-                        ? `${product.stock} in stock`
-                        : "Out of stock"}
+                    {product.stock} in stock
+                </div>
+
+                {/* Quick Actions Overlay */}
+                <div className="absolute inset-0 bg-[#0C1311] bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="flex gap-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <button
+                            onClick={handleView}
+                            className="p-3 bg-[#2DE3A7] text-[#0C1311] rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200"
+                            title="View product"
+                        >
+                            <Eye size={18} />
+                        </button>
+                        <button
+                            onClick={handleEdit}
+                            className="p-3 bg-[#2DE3A7] text-[#0C1311] rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200"
+                            title="Edit product"
+                        >
+                            <Edit2 size={18} />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Profit Badge */}
+                <div className="absolute top-3 left-3 bg-[#2DE3A7] text-[#0C1311] px-2 py-1 rounded-full text-xs font-bold backdrop-blur-sm">
+                    +{profitPercentage}%
                 </div>
             </div>
 
             {/* Product Info */}
             <div className="p-4">
                 {/* Product Name */}
-                <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2 h-14">
+                <h3 className="font-semibold text-white text-base mb-3 line-clamp-2 leading-tight min-h-[2.5rem]">
                     {product.name}
                 </h3>
 
-                {/* Product Description */}
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2 h-10">
-                    {product.description}
-                </p>
-
-                {/* Price Information */}
-                <div className="space-y-2 border-t border-gray-100 pt-3">
-                    {/* purchase Price */}
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-500">
-                            purchase
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900">
-                            ¥{product.purchase_price.toFixed(2)}
+                {/* Price & Stock Info */}
+                <div className="space-y-2 mb-4">
+                    {/* Purchase Price */}
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-400">Cost:</span>
+                        <span className="text-sm font-medium text-gray-300">
+                            ৳{product.purchase_price.toLocaleString()}
                         </span>
                     </div>
 
-                    {/* Sell Price */}
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-500">
-                            SELL
-                        </span>
-                        <span className="text-sm font-semibold text-green-600">
-                            ¥{product.sale_price.toFixed(2)}
+                    {/* Sale Price */}
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-400">Price:</span>
+                        <span className="text-sm font-semibold text-[#2DE3A7]">
+                            ৳{product.sale_price.toLocaleString()}
                         </span>
                     </div>
 
                     {/* Profit */}
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-500">
-                            PROFIT
-                        </span>
+                    <div className="flex items-center justify-between pt-2 border-t border-[#1E2826]">
+                        <span className="text-sm text-gray-400">Profit:</span>
                         <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-blue-600">
-                                ¥{profit.toFixed(2)}
-                            </span>
-                            <span className="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
-                                {profitPercentage}%
+                            <span className="text-sm font-bold text-[#2DE3A7]">
+                                ৳{profit.toLocaleString()}
                             </span>
                         </div>
                     </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 mt-4 pt-3 border-t border-gray-100">
-                    <Link
-                        href={route("admin.product.edit", product.id)}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-3 rounded text-sm font-medium transition-colors"
+                <div className="flex gap-2 pt-3 border-t border-[#1E2826]">
+                    <SecondaryButton
+                        size="sm"
+                        className="flex-1 flex items-center justify-center gap-2 text-xs"
                     >
-                        Edit
-                    </Link>
-                    <button
-                        onClick={() => {
-                            // Add delete functionality here
-                            if (
-                                confirm(
-                                    "Are you sure you want to delete this product?"
-                                )
-                            ) {
-                                // Handle delete
-                            }
-                        }}
-                        className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded text-sm font-medium transition-colors"
+                        <Edit2 size={14} />
+                        <span>Edit</span>
+                    </SecondaryButton>
+
+                    <DangerButton
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 flex items-center justify-center gap-2 text-xs"
                     >
-                        Delete
-                    </button>
+                        <Trash2 size={14} />
+                        <span>Delete</span>
+                    </DangerButton>
                 </div>
             </div>
         </div>
