@@ -11,10 +11,10 @@ class Product extends Model
     protected $casts = [
         'images' => 'json',
         'qty_price' => 'array',
-        'buy_price' => 'decimal:2',
-        'sale_price' => 'decimal:2',
-        'moq_price' => 'decimal:2',
-        'uan_price' => 'decimal:2',
+        'purchase_price' => 'float',
+        'sale_price' => 'float',
+        'moq_price' => 'float',
+        'uan_price' => 'float',
         'stock' => 'integer',
     ];
 

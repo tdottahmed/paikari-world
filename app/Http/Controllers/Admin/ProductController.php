@@ -16,7 +16,10 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return inertia('Products/Index');
+        $products = Product::with('category', 'supplier', 'product_variations')->get();
+        return inertia('Products/Index', [
+            'products' => $products,
+        ]);
     }
 
     public function create()

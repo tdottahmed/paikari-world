@@ -9,6 +9,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
   Route::get('products', [ProductController::class, 'index'])->name('products.index');
   Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
   Route::post('product/store', [ProductController::class, 'store'])->name('product.store');
+  Route::get('products/edit/{product}', [ProductController::class, 'edit'])->name('product.edit');
 
 
   // Settings Routes
