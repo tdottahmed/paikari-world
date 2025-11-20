@@ -25,7 +25,13 @@ export type Supplier = {
     name: string;
 };
 
+export type ProductAttribute = {
+    id: number;
+    name: string;
+};
+
 export interface CreatePageProps extends PageProps {
     categories: Category[];
     suppliers: Supplier[];
+    attributes: ProductAttribute[];
 }

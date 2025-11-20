@@ -23,7 +23,7 @@ return new class extends Migration
             $table->double('uan_price', 8, 2);
             $table->longText('qty_price')->nullable();
             $table->integer('stock')->nullable();
-            $table->string('image')->nullable();
+            $table->longText('images')->nullable();
             $table->timestamps();
         });
     }

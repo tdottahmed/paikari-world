@@ -21,8 +21,21 @@ interface QtyPrice {
     qty_price: string;
 }
 
-export default function Create({ categories, suppliers }: CreatePageProps) {
+interface Variation {
+    id: string;
+    attribute: string;
+    value: string;
+    stock?: string;
+    price?: string;
+}
+
+export default function Create({
+    categories,
+    suppliers,
+    attributes,
+}: CreatePageProps) {
     const [qtyPrices, setQtyPrices] = useState<QtyPrice[]>([]);
+    const [variations, setVariations] = useState<Variation[]>([]);
 
     const { data, setData, post, processing, errors } = useForm({
         name: "",
@@ -36,11 +49,14 @@ export default function Create({ categories, suppliers }: CreatePageProps) {
         uan_price: "",
         qty_prices: [] as QtyPrice[],
         images: [] as File[],
+        variations: [] as Variation[], // Add variations to form data
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route("products.store"));
+        post(route("admin.product.store"), {
+            forceFormData: true,
+        });
     };
 
     const addQtyPrice = () => {
@@ -71,6 +87,38 @@ export default function Create({ categories, suppliers }: CreatePageProps) {
         setData("qty_prices", updatedQtyPrices);
     };
 
+    // Variation functions
+    const addVariation = () => {
+        const newVariation: Variation = {
+            id: Date.now().toString(),
+            attribute: "",
+            value: "",
+            stock: "",
+            price: "",
+        };
+        setVariations([...variations, newVariation]);
+        setData("variations", [...variations, newVariation]);
+    };
+
+    const removeVariation = (id: string) => {
+        const updatedVariations = variations.filter((item) => item.id !== id);
+        setVariations(updatedVariations);
+        setData("variations", updatedVariations);
+    };
+
+    const updateVariation = (
+        id: string,
+        field: keyof Variation,
+        value: string
+    ) => {
+        const updatedVariations = variations.map((item) =>
+            item.id === id ? { ...item, [field]: value } : item
+        );
+        setVariations(updatedVariations);
+        setData("variations", updatedVariations);
+    };
+
+    // Handle image changes
     const handleImagesChange = (files: File[]) => {
         setData("images", files);
     };
@@ -386,14 +434,204 @@ export default function Create({ categories, suppliers }: CreatePageProps) {
                 </div>
                 <div className="lg:p-6 sm:p-2">
                     <Card className="mt-4">
-                        <CardTitle>Product Images & Variations</CardTitle>
-                        <CardContent>
-                            <ImageUploader
-                                label="Images"
-                                value={data.images}
-                                onChange={(images) => setData("images", images)}
-                                error={errors.images}
-                            />
+                        <CardHeader>
+                            <CardTitle>Product Images & Variations</CardTitle>
+                        </CardHeader>
+                        <CardContent padding="lg">
+                            {/* Image Uploader */}
+                            <div className="mb-8">
+                                <ImageUploader
+                                    label="Product Images"
+                                    value={data.images}
+                                    onChange={handleImagesChange}
+                                    error={errors.images}
+                                />
+                            </div>
+
+                            {/* Variations Section */}
+                            <div className="border-t pt-6">
+                                <div className="flex justify-between items-center mb-4">
+                                    <InputLabel
+                                        value="Product Variations"
+                                        htmlFor="product_variation"
+                                        className="text-lg font-semibold"
+                                    />
+                                    <PrimaryButton
+                                        as="button"
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={addVariation}
+                                    >
+                                        <PlusIcon size={16} className="mr-1" />
+                                        Add Variation
+                                    </PrimaryButton>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {variations.map((variation, index) => (
+                                        <Card
+                                            key={variation.id}
+                                            className="relative"
+                                        >
+                                            <CardContent className="pt-6">
+                                                {/* Remove Button */}
+                                                <div className="absolute top-3 right-3">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            removeVariation(
+                                                                variation.id
+                                                            )
+                                                        }
+                                                        className="text-red-500 hover:text-red-700 transition-colors"
+                                                        title="Remove variation"
+                                                    >
+                                                        <Trash2Icon size={18} />
+                                                    </button>
+                                                </div>
+
+                                                {/* Variation Fields */}
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                                    {/* Attribute Selection */}
+                                                    <div>
+                                                        <InputLabel
+                                                            htmlFor={`variation-attribute-${variation.id}`}
+                                                            value="Attribute"
+                                                            required
+                                                        />
+                                                        <SelectInput
+                                                            id={`variation-attribute-${variation.id}`}
+                                                            name={`variation-attribute-${variation.id}`}
+                                                            value={
+                                                                variation.attribute
+                                                            }
+                                                            onChange={(val) =>
+                                                                updateVariation(
+                                                                    variation.id,
+                                                                    "attribute",
+                                                                    val
+                                                                )
+                                                            }
+                                                            options={attributes.map(
+                                                                (attr) => ({
+                                                                    value: attr.id,
+                                                                    label: attr.name,
+                                                                })
+                                                            )}
+                                                            placeholder="Select Attribute"
+                                                        />
+                                                    </div>
+
+                                                    {/* Value */}
+                                                    <div>
+                                                        <InputLabel
+                                                            htmlFor={`variation-value-${variation.id}`}
+                                                            value="Value"
+                                                            required
+                                                        />
+                                                        <TextInput
+                                                            id={`variation-value-${variation.id}`}
+                                                            name={`variation-value-${variation.id}`}
+                                                            type="text"
+                                                            value={
+                                                                variation.value
+                                                            }
+                                                            placeholder="Enter value (e.g., Red, Large)"
+                                                            onChange={(e) =>
+                                                                updateVariation(
+                                                                    variation.id,
+                                                                    "value",
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    {/* Stock (Optional) */}
+                                                    <div>
+                                                        <InputLabel
+                                                            htmlFor={`variation-stock-${variation.id}`}
+                                                            value="Variation Stock"
+                                                        />
+                                                        <TextInput
+                                                            id={`variation-stock-${variation.id}`}
+                                                            name={`variation-stock-${variation.id}`}
+                                                            type="number"
+                                                            value={
+                                                                variation.stock ||
+                                                                ""
+                                                            }
+                                                            placeholder="Optional"
+                                                            onChange={(e) =>
+                                                                updateVariation(
+                                                                    variation.id,
+                                                                    "stock",
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    {/* Price (Optional) */}
+                                                    <div>
+                                                        <InputLabel
+                                                            htmlFor={`variation-price-${variation.id}`}
+                                                            value="Variation Price"
+                                                        />
+                                                        <TextInput
+                                                            id={`variation-price-${variation.id}`}
+                                                            name={`variation-price-${variation.id}`}
+                                                            type="number"
+                                                            value={
+                                                                variation.price ||
+                                                                ""
+                                                            }
+                                                            placeholder="Optional"
+                                                            onChange={(e) =>
+                                                                updateVariation(
+                                                                    variation.id,
+                                                                    "price",
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Helper Text */}
+                                                <div className="mt-3 text-xs text-gray-500">
+                                                    <p>
+                                                        Variation stock and
+                                                        price will override the
+                                                        main product stock and
+                                                        price for this specific
+                                                        variation. Leave empty
+                                                        to use main product
+                                                        values.
+                                                    </p>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+
+                                    {variations.length === 0 && (
+                                        <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                                            <p className="text-gray-500 mb-2">
+                                                No variations added yet
+                                            </p>
+                                            <p className="text-sm text-gray-400">
+                                                Add variations like size, color,
+                                                material, etc.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
