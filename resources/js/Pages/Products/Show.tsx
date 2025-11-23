@@ -10,12 +10,15 @@ import {
     ArrowLeftIcon,
     PackageIcon,
     DollarSignIcon,
+    TagIcon,
+    TruckIcon,
+    LayersIcon,
+    AlertTriangleIcon,
 } from "lucide-react";
 import ImageGallery from "@/Components/Ui/ImageGallery";
 import { formatCurrency } from "@/Utils/helpers";
 
 export default function Show({ product }: ShowPageProps) {
-   
     const getCategoryName = () => {
         return product.category?.title || "N/A";
     };
@@ -26,8 +29,11 @@ export default function Show({ product }: ShowPageProps) {
 
     const getAttributeName = (attributeId: number) => {
         return (
-            product.variations?.find((v) => v.attribute_id === attributeId)
-                ?.attribute?.name || attributeId.toString()
+            product.product_variations?.find(
+                (v) =>
+                    v.attribute_id === attributeId ||
+                    v.product_attribute_id === attributeId
+            )?.product_attribute?.name || attributeId.toString()
         );
     };
 
@@ -36,413 +42,348 @@ export default function Show({ product }: ShowPageProps) {
             title={product.name}
             head={<Header title={product.name} showUserMenu={true} />}
         >
-            <div className="lg:p-6 p-4">
+            <div className="lg:p-8 p-4 max-w-7xl mx-auto">
                 {/* Header Actions */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            {product.name}
-                        </h1>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">
-                            Product Details & Information
+                        <div className="flex items-center gap-3 mb-2">
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                                {product.name}
+                            </h1>
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                                Active
+                            </span>
+                        </div>
+                        <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                            <TagIcon size={14} />
+                            {getCategoryName()}
+                            <span className="mx-1">•</span>
+                            <span className="text-sm">
+                                {" "}
+                                SKU: {product.id
+                                    .toString()
+                                    .padStart(6, "0")}{" "}
+                            </span>
                         </p>
                     </div>
-                    <PrimaryButton
-                        as="link"
-                        href={route("admin.product.edit", product.id)}
-                        className="w-full sm:w-auto"
-                    >
-                        <EditIcon size={16} className="mr-2" />
-                        Edit Product
-                    </PrimaryButton>
+                    <div className="flex gap-3 w-full sm:w-auto">
+                        <PrimaryButton
+                            as="link"
+                            href={route("admin.products.index")}
+                            variant="outline"
+                            className="justify-center"
+                        >
+                            <ArrowLeftIcon size={16} className="mr-2" />
+                            Back
+                        </PrimaryButton>
+                        <PrimaryButton
+                            as="link"
+                            href={route("admin.product.edit", product.id)}
+                            className="justify-center"
+                        >
+                            <EditIcon size={16} className="mr-2" />
+                            Edit Product
+                        </PrimaryButton>
+                    </div>
                 </div>
 
-                {/* Product Images */}
-                {product.images && product.images.length > 0 && (
-                    <div className="mb-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Left Column - Images */}
+                    <div className="lg:col-span-5 space-y-6">
+                        <Card className="overflow-hidden border-0 shadow-sm">
+                            <CardContent
+                                padding="none"
+                                className="p-4 bg-white dark:bg-gray-800"
+                            >
+                                {product.images && product.images.length > 0 ? (
+                                    <ImageGallery
+                                        images={product.images.map(
+                                            (url, index) => ({
+                                                id: index.toString(),
+                                                url,
+                                                alt: `${product.name} image ${
+                                                    index + 1
+                                                }`,
+                                            })
+                                        )}
+                                    />
+                                ) : (
+                                    <div className="aspect-square flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-400">
+                                        <div className="text-center">
+                                            <PackageIcon className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                                            <p>No images available </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Quick Stats Card */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Product Images</CardTitle>
+                                <CardTitle className="text-base">
+                                    {" "}
+                                    Quick Stats{" "}
+                                </CardTitle>
                             </CardHeader>
-                            <CardContent padding="lg">
-                                <ImageGallery
-                                    images={product.images.map(
-                                        (url, index) => ({
-                                            id: index.toString(),
-                                            url,
-                                            alt: `${product.name} image ${
-                                                index + 1
-                                            }`,
-                                        })
-                                    )}
-                                />
+                            <CardContent padding="md">
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-600 dark:text-blue-400">
+                                                <LayersIcon size={18} />
+                                            </div>
+                                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                                {" "}
+                                                Stock{" "}
+                                            </span>
+                                        </div>
+                                        <div className="text-right">
+                                            <span
+                                                className={`text-lg font-bold ${
+                                                    product.stock <= 10
+                                                        ? "text-red-600"
+                                                        : "text-gray-900 dark:text-white"
+                                                }`}
+                                            >
+                                                {product.stock}
+                                            </span>
+                                            {product.stock <= 10 && (
+                                                <div className="flex items-center gap-1 text-xs text-red-500 mt-0.5">
+                                                    <AlertTriangleIcon
+                                                        size={10}
+                                                    />
+                                                    Low Stock
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-full text-purple-600 dark:text-purple-400">
+                                                <TruckIcon size={18} />
+                                            </div>
+                                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                                {" "}
+                                                Supplier{" "}
+                                            </span>
+                                        </div>
+                                        <span className="font-medium text-gray-900 dark:text-white">
+                                            {" "}
+                                            {getSupplierName()}{" "}
+                                        </span>
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
-                )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Main Information */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* General Information */}
-                        <CollapsibleSection
-                            title="General Information"
-                            defaultOpen={true}
-                        >
-                            <Card>
-                                <CardContent padding="lg">
-                                    <div className="space-y-4">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <InputLabel
-                                                    value="Product Name"
-                                                    htmlFor="name"
-                                                />
-                                                <p className="text-gray-900 dark:text-white font-medium">
-                                                    {product.name}
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <InputLabel
-                                                    value="Category"
-                                                    htmlFor="category"
-                                                />
-                                                <p className="text-gray-900 dark:text-white font-medium">
-                                                    {getCategoryName()}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <InputLabel
-                                                    value="Supplier"
-                                                    htmlFor="supplier"
-                                                />
-                                                <p className="text-gray-900 dark:text-white font-medium">
-                                                    {getSupplierName()}
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <InputLabel
-                                                    value="Stock"
-                                                    htmlFor="stock"
-                                                />
-                                                <p className="text-gray-900 dark:text-white font-medium">
-                                                    {product.stock}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <InputLabel
-                                                value="Description"
-                                                htmlFor="description"
-                                            />
-                                            <p className="text-gray-900 dark:text-white whitespace-pre-wrap">
-                                                {product.description ||
-                                                    "No description provided."}
-                                            </p>
-                                        </div>
+                    {/* Right Column - Details */}
+                    <div className="lg:col-span-7 space-y-6">
+                        {/* Pricing Card */}
+                        <Card className="border-l-4 border-l-emerald-500">
+                            <CardContent padding="lg">
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                                    <div>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                            {" "}
+                                            Sale Price{" "}
+                                        </p>
+                                        <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                                            {formatCurrency(product.sale_price)}
+                                        </p>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </CollapsibleSection>
-
-                        {/* Pricing & Stock */}
-                        <CollapsibleSection
-                            title="Pricing Information"
-                            defaultOpen={true}
-                        >
-                            <Card>
-                                <CardContent padding="lg">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                                        <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                            <InputLabel
-                                                value="Purchase Price"
-                                                htmlFor="purchase-price"
-                                            />
-                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                                {formatCurrency(
-                                                    product.purchase_price
-                                                )}
-                                            </p>
-                                        </div>
-                                        <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                            <DollarSignIcon className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                                            <InputLabel
-                                                value="Sale Price"
-                                                htmlFor="sale-price"
-                                            />
-                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                                {formatCurrency(
-                                                    product.sale_price
-                                                )}
-                                            </p>
-                                        </div>
-                                        <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                            <PackageIcon className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                                            <InputLabel
-                                                value="Current Stock"
-                                                htmlFor="stock"
-                                            />
-                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                                {product.stock}
-                                            </p>
-                                        </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                            {" "}
+                                            Purchase Price{" "}
+                                        </p>
+                                        <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                                            {formatCurrency(
+                                                product.purchase_price
+                                            )}
+                                        </p>
                                     </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <InputLabel
-                                                value="MOQ Price"
-                                                htmlFor="moq-price"
-                                            />
-                                            <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                                                {product.moq_price
-                                                    ? formatCurrency(
-                                                          product.moq_price
-                                                      )
-                                                    : "N/A"}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <InputLabel
-                                                value="UAN Price"
-                                                htmlFor="uan-price"
-                                            />
-                                            <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                                                {product.uan_price
-                                                    ? formatCurrency(
-                                                          product.uan_price
-                                                      )
-                                                    : "N/A"}
-                                            </p>
-                                        </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                            {" "}
+                                            MOQ Price{" "}
+                                        </p>
+                                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                            {product.moq_price
+                                                ? formatCurrency(
+                                                      product.moq_price
+                                                  )
+                                                : "N/A"}
+                                        </p>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </CollapsibleSection>
+                                    <div>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                            {" "}
+                                            UAN Price{" "}
+                                        </p>
+                                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                            {product.uan_price
+                                                ? formatCurrency(
+                                                      product.uan_price
+                                                  )
+                                                : "N/A"}
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Description */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Description </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300">
+                                    <p className="whitespace-pre-wrap leading-relaxed">
+                                        {product.description ||
+                                            "No description provided."}
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Variations */}
+                        {product.product_variations &&
+                            product.product_variations.length > 0 && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Variations </CardTitle>
+                                    </CardHeader>
+                                    <CardContent padding="none">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-sm text-left">
+                                                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-400">
+                                                    <tr>
+                                                        <th className="px-6 py-3">
+                                                            {" "}
+                                                            Attribute{" "}
+                                                        </th>
+                                                        <th className="px-6 py-3">
+                                                            {" "}
+                                                            Value{" "}
+                                                        </th>
+                                                        <th className="px-6 py-3">
+                                                            {" "}
+                                                            Stock{" "}
+                                                        </th>
+                                                        <th className="px-6 py-3">
+                                                            {" "}
+                                                            Price Override{" "}
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {product.product_variations.map(
+                                                        (variation, index) => (
+                                                            <tr
+                                                                key={
+                                                                    variation.id
+                                                                }
+                                                                className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                                                            >
+                                                                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                                                    {getAttributeName(
+                                                                        variation.attribute_id
+                                                                    )}
+                                                                </td>
+                                                                <td className="px-6 py-4">
+                                                                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-gray-700 dark:text-gray-300">
+                                                                        {
+                                                                            variation.value
+                                                                        }
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-6 py-4">
+                                                                    {variation.stock ? (
+                                                                        <span
+                                                                            className={
+                                                                                variation.stock <=
+                                                                                5
+                                                                                    ? "text-red-500 font-medium"
+                                                                                    : ""
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                variation.stock
+                                                                            }
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="text-gray-400 italic">
+                                                                            {" "}
+                                                                            Inherited{" "}
+                                                                        </span>
+                                                                    )}
+                                                                </td>
+                                                                <td className="px-6 py-4">
+                                                                    {variation.price ? (
+                                                                        <span className="font-medium text-emerald-600">
+                                                                            {formatCurrency(
+                                                                                variation.price
+                                                                            )}
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="text-gray-400 italic">
+                                                                            {" "}
+                                                                            Inherited{" "}
+                                                                        </span>
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
 
                         {/* Quantity Prices */}
                         {product.qty_prices &&
                             product.qty_prices.length > 0 && (
-                                <CollapsibleSection
-                                    title="Quantity Prices"
-                                    defaultOpen={false}
-                                >
-                                    <Card>
-                                        <CardContent padding="lg">
-                                            <div className="space-y-3">
-                                                {product.qty_prices.map(
-                                                    (qtyPrice, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                                                        >
-                                                            <span className="font-medium text-gray-900 dark:text-white">
-                                                                {qtyPrice.qty}{" "}
-                                                                units
-                                                            </span>
-                                                            <span className="font-bold text-green-600">
-                                                                {formatCurrency(
-                                                                    qtyPrice.price
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                    )
-                                                )}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </CollapsibleSection>
-                            )}
-
-                        {/* Variations */}
-                        {product.variations &&
-                            product.variations.length > 0 && (
-                                <CollapsibleSection
-                                    title="Product Variations"
-                                    defaultOpen={false}
-                                >
-                                    <Card>
-                                        <CardContent padding="lg">
-                                            <div className="space-y-4">
-                                                {product.variations.map(
-                                                    (variation, index) => (
-                                                        <div
-                                                            key={variation.id}
-                                                            className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
-                                                        >
-                                                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                                                <div>
-                                                                    <InputLabel
-                                                                        value="Attribute"
-                                                                        htmlFor="variation-attribute"
-                                                                    />
-                                                                    <p className="font-medium text-gray-900 dark:text-white">
-                                                                        {getAttributeName(
-                                                                            variation.attribute_id
-                                                                        )}
-                                                                    </p>
-                                                                </div>
-                                                                <div>
-                                                                    <InputLabel
-                                                                        value="Value"
-                                                                        htmlFor="variation-value"
-                                                                    />
-                                                                    <p className="font-medium text-gray-900 dark:text-white">
-                                                                        {
-                                                                            variation.value
-                                                                        }
-                                                                    </p>
-                                                                </div>
-                                                                <div>
-                                                                    <InputLabel
-                                                                        value="Stock"
-                                                                        htmlFor="stock"
-                                                                    />
-                                                                    <p className="font-medium text-gray-900 dark:text-white">
-                                                                        {variation.stock ||
-                                                                            "Inherited"}
-                                                                    </p>
-                                                                </div>
-                                                                <div>
-                                                                    <InputLabel
-                                                                        value="Price"
-                                                                        htmlFor="price"
-                                                                    />
-                                                                    <p className="font-medium text-gray-900 dark:text-white">
-                                                                        {variation.price
-                                                                            ? formatCurrency(
-                                                                                  variation.price
-                                                                              )
-                                                                            : "Inherited"}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                )}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </CollapsibleSection>
-                            )}
-                    </div>
-
-                    {/* Sidebar - Quick Stats */}
-                    <div className="space-y-6">
-                        {/* Product Status */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Product Status</CardTitle>
-                            </CardHeader>
-                            <CardContent padding="lg">
-                                <div className="space-y-3">
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600 dark:text-gray-400">
-                                            Status
-                                        </span>
-                                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                            Active
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600 dark:text-gray-400">
-                                            Created
-                                        </span>
-                                        <span className="text-gray-900 dark:text-white">
-                                            {new Date(
-                                                product.created_at
-                                            ).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600 dark:text-gray-400">
-                                            Last Updated
-                                        </span>
-                                        <span className="text-gray-900 dark:text-white">
-                                            {new Date(
-                                                product.updated_at
-                                            ).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Stock Alert */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Stock Information</CardTitle>
-                            </CardHeader>
-                            <CardContent padding="lg">
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-400">
-                                            Current Stock
-                                        </span>
-                                        <span
-                                            className={`text-lg font-bold ${
-                                                product.stock <= 10
-                                                    ? "text-red-600"
-                                                    : "text-green-600"
-                                            }`}
-                                        >
-                                            {product.stock}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600 dark:text-gray-400">
-                                            Low Stock Threshold
-                                        </span>
-                                        <span className="text-gray-900 dark:text-white">
-                                            10
-                                        </span>
-                                    </div>
-                                    {product.stock <= 10 && (
-                                        <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-red-700 dark:text-red-300 text-sm">
-                                            ⚠️ Low stock alert
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>
+                                            Wholesale Pricing{" "}
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent padding="none">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x dark:divide-gray-700 border-t dark:border-gray-700">
+                                            {product.qty_prices.map(
+                                                (qtyPrice, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                                    >
+                                                        <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                                            {" "}
+                                                            Buy {qtyPrice.qty} +
+                                                            units{" "}
+                                                        </span>
+                                                        <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                                                            {formatCurrency(
+                                                                qtyPrice.price
+                                                            )}
+                                                        </span>
+                                                        <span className="text-xs text-gray-400 mt-1">
+                                                            {" "}
+                                                            per unit{" "}
+                                                        </span>
+                                                    </div>
+                                                )
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Quick Actions */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Quick Actions</CardTitle>
-                            </CardHeader>
-                            <CardContent padding="lg">
-                                <div className="space-y-3">
-                                    <PrimaryButton
-                                        as="link"
-                                        href={route(
-                                            "admin.product.edit",
-                                            product.id
-                                        )}
-                                        className="w-full justify-center"
-                                    >
-                                        <EditIcon size={16} className="mr-2" />
-                                        Edit Product
-                                    </PrimaryButton>
-                                    <PrimaryButton
-                                        as="link"
-                                        href={route("admin.products.index")}
-                                        variant="outline"
-                                        className="w-full justify-center"
-                                    >
-                                        <ArrowLeftIcon
-                                            size={16}
-                                            className="mr-2"
-                                        />
-                                        Back to Products
-                                    </PrimaryButton>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                    </CardContent>
+                                </Card>
+                            )}
                     </div>
                 </div>
             </div>

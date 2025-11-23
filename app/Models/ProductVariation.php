@@ -12,4 +12,9 @@ class ProductVariation extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function product_attribute()
+    {
+        return $this->belongsTo(ProductAttribute::class);
+    }
 }

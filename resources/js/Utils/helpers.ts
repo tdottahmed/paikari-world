@@ -7,8 +7,8 @@
  */
 export const formatCurrency = (
     amount: number | string | null | undefined,
-    currency: string = "USD",
-    locale: string = "en-US"
+    currency: string = "BDT",
+    locale: string = "en-BD"
 ): string => {
     if (amount === null || amount === undefined || amount === "") {
         return "N/A";
@@ -29,8 +29,7 @@ export const formatCurrency = (
             maximumFractionDigits: 2,
         }).format(numericAmount);
     } catch (error) {
-        // Fallback formatting
-        return `$${numericAmount.toFixed(2)}`;
+        return `৳ ${numericAmount.toFixed(2)}`;
     }
 };
 

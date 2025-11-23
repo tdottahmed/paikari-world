@@ -1,3 +1,4 @@
+import React from "react";
 import Header from "@/Components/Layouts/Header";
 import Card, { CardContent, CardHeader, CardTitle } from "@/Components/Ui/Card";
 import CollapsibleSection from "@/Components/Ui/CollapsibleSection";
@@ -5,25 +6,24 @@ import InputLabel from "@/Components/Ui/InputLabel";
 import TextInput from "@/Components/Ui/TextInput";
 import PrimaryButton from "@/Components/Actions/PrimaryButton";
 import Master from "@/Layouts/Master";
-
 import SelectInput from "@/Components/Ui/SelectInput";
 import { useForm } from "@inertiajs/react";
 import { CreatePageProps } from "@/types";
 import InputError from "@/Components/Ui/InputError";
 import { PlusIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
 import ImageUploader from "@/Components/Ui/ImageUploader";
 import TextArea from "@/Components/Ui/TextArea";
 
+// Interfaces
 interface QtyPrice {
-    id: string;
+    id: string; // Used for UI keys and unique IDs
     qty: string;
     qty_price: string;
 }
 
 interface Variation {
-    id: string;
-    attribute: string;
+    id: string; // Used for UI keys and unique IDs
+    attribute_id: string;
     value: string;
     stock?: string;
     price?: string;
@@ -34,22 +34,19 @@ export default function Create({
     suppliers,
     attributes,
 }: CreatePageProps) {
-    const [qtyPrices, setQtyPrices] = useState<QtyPrice[]>([]);
-    const [variations, setVariations] = useState<Variation[]>([]);
-
     const { data, setData, post, processing, errors } = useForm({
         name: "",
-        category: "",
-        supplier: "",
+        category_id: "",
+        supplier_id: "",
         description: "",
-        buy_price: "",
+        purchase_price: "",
         sale_price: "",
         moq_price: "",
         stock: "",
         uan_price: "",
         qty_prices: [] as QtyPrice[],
         images: [] as File[],
-        variations: [] as Variation[], // Add variations to form data
+        variations: [] as Variation[],
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -59,20 +56,21 @@ export default function Create({
         });
     };
 
+    // --- Qty Price Handlers ---
     const addQtyPrice = () => {
         const newQtyPrice: QtyPrice = {
             id: Date.now().toString(),
             qty: "",
             qty_price: "",
         };
-        setQtyPrices([...qtyPrices, newQtyPrice]);
-        setData("qty_prices", [...qtyPrices, newQtyPrice]);
+        setData("qty_prices", [...data.qty_prices, newQtyPrice]);
     };
 
     const removeQtyPrice = (id: string) => {
-        const updatedQtyPrices = qtyPrices.filter((item) => item.id !== id);
-        setQtyPrices(updatedQtyPrices);
-        setData("qty_prices", updatedQtyPrices);
+        setData(
+            "qty_prices",
+            data.qty_prices.filter((item) => item.id !== id)
+        );
     };
 
     const updateQtyPrice = (
@@ -80,30 +78,29 @@ export default function Create({
         field: keyof QtyPrice,
         value: string
     ) => {
-        const updatedQtyPrices = qtyPrices.map((item) =>
+        const updated = data.qty_prices.map((item) =>
             item.id === id ? { ...item, [field]: value } : item
         );
-        setQtyPrices(updatedQtyPrices);
-        setData("qty_prices", updatedQtyPrices);
+        setData("qty_prices", updated);
     };
 
-    // Variation functions
+    // --- Variation Handlers ---
     const addVariation = () => {
         const newVariation: Variation = {
-            id: Date.now().toString(),
-            attribute: "",
+            id: Date.now().toString() + Math.random(),
+            attribute_id: "",
             value: "",
             stock: "",
             price: "",
         };
-        setVariations([...variations, newVariation]);
-        setData("variations", [...variations, newVariation]);
+        setData("variations", [...data.variations, newVariation]);
     };
 
     const removeVariation = (id: string) => {
-        const updatedVariations = variations.filter((item) => item.id !== id);
-        setVariations(updatedVariations);
-        setData("variations", updatedVariations);
+        setData(
+            "variations",
+            data.variations.filter((item) => item.id !== id)
+        );
     };
 
     const updateVariation = (
@@ -111,14 +108,13 @@ export default function Create({
         field: keyof Variation,
         value: string
     ) => {
-        const updatedVariations = variations.map((item) =>
+        const updated = data.variations.map((item) =>
             item.id === id ? { ...item, [field]: value } : item
         );
-        setVariations(updatedVariations);
-        setData("variations", updatedVariations);
+        setData("variations", updated);
     };
 
-    // Handle image changes
+    // --- Image Handler ---
     const handleImagesChange = (files: File[]) => {
         setData("images", files);
     };
@@ -148,11 +144,11 @@ export default function Create({
                                     <TextInput
                                         id="name"
                                         name="name"
-                                        placeholder="Enter product name"
                                         value={data.name}
                                         onChange={(e) =>
                                             setData("name", e.target.value)
                                         }
+                                        placeholder="Enter product name"
                                         required
                                     />
                                     <InputError message={errors.name} />
@@ -161,80 +157,74 @@ export default function Create({
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <InputLabel
-                                            htmlFor="category"
+                                            htmlFor="category_id"
                                             value="Category"
                                             required
                                         />
-
                                         <SelectInput
-                                            id="category"
-                                            name="category"
-                                            value={data.category}
+                                            id="category_id"
+                                            name="category_id"
+                                            value={data.category_id}
                                             onChange={(val) =>
-                                                setData("category", val)
+                                                setData("category_id", val)
                                             }
                                             options={categories.map((c) => ({
                                                 value: c.id,
                                                 label: c.title,
                                             }))}
                                             placeholder="Select Category"
-                                            error={errors.category}
+                                            error={errors.category_id}
                                         />
                                     </div>
 
                                     <div>
                                         <InputLabel
-                                            htmlFor="supplier"
+                                            htmlFor="supplier_id"
                                             value="Supplier"
                                             required
                                         />
-
                                         <SelectInput
-                                            id="supplier"
-                                            name="supplier"
-                                            value={data.supplier}
+                                            id="supplier_id"
+                                            name="supplier_id"
+                                            value={data.supplier_id}
                                             onChange={(val) =>
-                                                setData("supplier", val)
+                                                setData("supplier_id", val)
                                             }
                                             options={suppliers.map((s) => ({
                                                 value: s.id,
                                                 label: s.name,
                                             }))}
                                             placeholder="Select Supplier"
-                                            error={errors.supplier}
+                                            error={errors.supplier_id}
                                         />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1">
-                                    <div className="description">
-                                        <InputLabel
-                                            htmlFor="description"
-                                            value="Description"
-                                            required
-                                        />
-                                        <TextArea
-                                            id="description"
-                                            name="description"
-                                            value={data.description}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "description",
-                                                    e.target.value
-                                                )
-                                            }
-                                            required
-                                        />
-
-                                        <InputError
-                                            message={errors.description}
-                                        />
-                                    </div>
+                                    <InputLabel
+                                        htmlFor="description"
+                                        value="Description"
+                                        required
+                                    />
+                                    <TextArea
+                                        id="description"
+                                        name="description"
+                                        value={data.description}
+                                        onChange={(e) =>
+                                            setData(
+                                                "description",
+                                                e.target.value
+                                            )
+                                        }
+                                        required
+                                    />
+                                    <InputError message={errors.description} />
                                 </div>
                             </CardContent>
                         </Card>
                     </CollapsibleSection>
                 </div>
+
                 <div className="lg:p-6 sm:p-2">
                     <Card className="mt-4">
                         <CardHeader>
@@ -252,14 +242,19 @@ export default function Create({
                                         id="purchase_price"
                                         name="purchase_price"
                                         type="number"
-                                        placeholder="0.00"
-                                        value={data.buy_price}
+                                        value={data.purchase_price}
                                         onChange={(e) =>
-                                            setData("buy_price", e.target.value)
+                                            setData(
+                                                "purchase_price",
+                                                e.target.value
+                                            )
                                         }
+                                        placeholder="0.00"
                                         required
                                     />
-                                    <InputError message={errors.buy_price} />
+                                    <InputError
+                                        message={errors.purchase_price}
+                                    />
                                 </div>
                                 <div>
                                     <InputLabel
@@ -271,7 +266,6 @@ export default function Create({
                                         id="sale_price"
                                         name="sale_price"
                                         type="number"
-                                        placeholder="0.00"
                                         value={data.sale_price}
                                         onChange={(e) =>
                                             setData(
@@ -279,6 +273,7 @@ export default function Create({
                                                 e.target.value
                                             )
                                         }
+                                        placeholder="0.00"
                                         required
                                     />
                                     <InputError message={errors.sale_price} />
@@ -293,11 +288,11 @@ export default function Create({
                                         id="moq_price"
                                         name="moq_price"
                                         type="number"
-                                        placeholder="0.00"
                                         value={data.moq_price}
                                         onChange={(e) =>
                                             setData("moq_price", e.target.value)
                                         }
+                                        placeholder="0.00"
                                         required
                                     />
                                     <InputError message={errors.moq_price} />
@@ -314,11 +309,11 @@ export default function Create({
                                         id="stock"
                                         name="stock"
                                         type="number"
-                                        placeholder="0"
                                         value={data.stock}
                                         onChange={(e) =>
                                             setData("stock", e.target.value)
                                         }
+                                        placeholder="0"
                                         required
                                     />
                                     <InputError message={errors.stock} />
@@ -333,11 +328,11 @@ export default function Create({
                                         id="uan_price"
                                         name="uan_price"
                                         type="number"
-                                        placeholder="0.00"
                                         value={data.uan_price}
                                         onChange={(e) =>
                                             setData("uan_price", e.target.value)
                                         }
+                                        placeholder="0.00"
                                         required
                                     />
                                     <InputError message={errors.uan_price} />
@@ -347,24 +342,19 @@ export default function Create({
                             {/* Qty Price Section */}
                             <div className="mb-6">
                                 <div className="flex justify-between items-center mb-4">
-                                    <InputLabel
-                                        htmlFor="qty_price"
-                                        value="Qty Price"
-                                    />
+                                    <InputLabel value="Qty Price" />
                                     <PrimaryButton
-                                        as="button"
                                         type="button"
                                         variant="outline"
                                         size="sm"
                                         onClick={addQtyPrice}
                                     >
-                                        <PlusIcon size={16} className="mr-1" />
+                                        <PlusIcon size={16} className="mr-1" />{" "}
                                         Add Qty Price
                                     </PrimaryButton>
                                 </div>
 
-                                {/* Dynamic Qty Price Cards */}
-                                {qtyPrices.map((qtyPrice, index) => (
+                                {data.qty_prices.map((qtyPrice, index) => (
                                     <Card
                                         key={qtyPrice.id}
                                         className="mb-4 relative"
@@ -378,7 +368,7 @@ export default function Create({
                                                             qtyPrice.id
                                                         )
                                                     }
-                                                    className="text-red-500 hover:text-red-700 transition-colors"
+                                                    className="text-red-500 hover:text-red-700"
                                                 >
                                                     <Trash2Icon size={18} />
                                                 </button>
@@ -392,10 +382,9 @@ export default function Create({
                                                     />
                                                     <TextInput
                                                         id={`qty-${qtyPrice.id}`}
-                                                        name={`qty-${qtyPrice.id}`}
+                                                        name={`qty_prices[${index}][qty]`}
                                                         type="number"
                                                         value={qtyPrice.qty}
-                                                        placeholder="0"
                                                         onChange={(e) =>
                                                             updateQtyPrice(
                                                                 qtyPrice.id,
@@ -403,6 +392,7 @@ export default function Create({
                                                                 e.target.value
                                                             )
                                                         }
+                                                        placeholder="0"
                                                         required
                                                     />
                                                 </div>
@@ -414,12 +404,11 @@ export default function Create({
                                                     />
                                                     <TextInput
                                                         id={`qty_price-${qtyPrice.id}`}
-                                                        name={`qty_price-${qtyPrice.id}`}
+                                                        name={`qty_prices[${index}][qty_price]`}
                                                         type="number"
                                                         value={
                                                             qtyPrice.qty_price
                                                         }
-                                                        placeholder="0.00"
                                                         onChange={(e) =>
                                                             updateQtyPrice(
                                                                 qtyPrice.id,
@@ -427,6 +416,7 @@ export default function Create({
                                                                 e.target.value
                                                             )
                                                         }
+                                                        placeholder="0.00"
                                                         required
                                                     />
                                                 </div>
@@ -438,13 +428,13 @@ export default function Create({
                         </CardContent>
                     </Card>
                 </div>
+
                 <div className="lg:p-6 sm:p-2">
                     <Card className="mt-4">
                         <CardHeader>
                             <CardTitle>Product Images & Variations</CardTitle>
                         </CardHeader>
                         <CardContent padding="lg">
-                            {/* Image Uploader */}
                             <div className="mb-8">
                                 <ImageUploader
                                     label="Product Images"
@@ -454,34 +444,31 @@ export default function Create({
                                 />
                             </div>
 
-                            {/* Variations Section */}
                             <div className="border-t pt-6">
                                 <div className="flex justify-between items-center mb-4">
                                     <InputLabel
-                                        value="Product Variations"
                                         htmlFor="product_variation"
+                                        value="Product Variations"
                                         className="text-lg font-semibold"
                                     />
                                     <PrimaryButton
-                                        as="button"
                                         type="button"
                                         variant="outline"
                                         size="sm"
                                         onClick={addVariation}
                                     >
-                                        <PlusIcon size={16} className="mr-1" />
+                                        <PlusIcon size={16} className="mr-1" />{" "}
                                         Add Variation
                                     </PrimaryButton>
                                 </div>
 
                                 <div className="space-y-4">
-                                    {variations.map((variation, index) => (
+                                    {data.variations.map((variation, index) => (
                                         <Card
                                             key={variation.id}
                                             className="relative"
                                         >
                                             <CardContent className="pt-6">
-                                                {/* Remove Button */}
                                                 <div className="absolute top-3 right-3">
                                                     <button
                                                         type="button"
@@ -490,16 +477,13 @@ export default function Create({
                                                                 variation.id
                                                             )
                                                         }
-                                                        className="text-red-500 hover:text-red-700 transition-colors"
-                                                        title="Remove variation"
+                                                        className="text-red-500 hover:text-red-700"
                                                     >
                                                         <Trash2Icon size={18} />
                                                     </button>
                                                 </div>
 
-                                                {/* Variation Fields */}
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                                    {/* Attribute Selection */}
                                                     <div>
                                                         <InputLabel
                                                             htmlFor={`variation-attribute-${variation.id}`}
@@ -508,14 +492,14 @@ export default function Create({
                                                         />
                                                         <SelectInput
                                                             id={`variation-attribute-${variation.id}`}
-                                                            name={`variation-attribute-${variation.id}`}
+                                                            name={`variations[${index}][attribute_id]`}
                                                             value={
-                                                                variation.attribute
+                                                                variation.attribute_id
                                                             }
                                                             onChange={(val) =>
                                                                 updateVariation(
                                                                     variation.id,
-                                                                    "attribute",
+                                                                    "attribute_id",
                                                                     val
                                                                 )
                                                             }
@@ -528,8 +512,6 @@ export default function Create({
                                                             placeholder="Select Attribute"
                                                         />
                                                     </div>
-
-                                                    {/* Value */}
                                                     <div>
                                                         <InputLabel
                                                             htmlFor={`variation-value-${variation.id}`}
@@ -538,12 +520,10 @@ export default function Create({
                                                         />
                                                         <TextInput
                                                             id={`variation-value-${variation.id}`}
-                                                            name={`variation-value-${variation.id}`}
-                                                            type="text"
+                                                            name={`variations[${index}][value]`}
                                                             value={
                                                                 variation.value
                                                             }
-                                                            placeholder="Enter value (e.g., Red, Large)"
                                                             onChange={(e) =>
                                                                 updateVariation(
                                                                     variation.id,
@@ -552,11 +532,10 @@ export default function Create({
                                                                         .value
                                                                 )
                                                             }
+                                                            placeholder="e.g., Red, Large"
                                                             required
                                                         />
                                                     </div>
-
-                                                    {/* Stock (Optional) */}
                                                     <div>
                                                         <InputLabel
                                                             htmlFor={`variation-stock-${variation.id}`}
@@ -564,13 +543,12 @@ export default function Create({
                                                         />
                                                         <TextInput
                                                             id={`variation-stock-${variation.id}`}
-                                                            name={`variation-stock-${variation.id}`}
+                                                            name={`variations[${index}][stock]`}
                                                             type="number"
                                                             value={
                                                                 variation.stock ||
                                                                 ""
                                                             }
-                                                            placeholder="Optional"
                                                             onChange={(e) =>
                                                                 updateVariation(
                                                                     variation.id,
@@ -579,10 +557,9 @@ export default function Create({
                                                                         .value
                                                                 )
                                                             }
+                                                            placeholder="Optional"
                                                         />
                                                     </div>
-
-                                                    {/* Price (Optional) */}
                                                     <div>
                                                         <InputLabel
                                                             htmlFor={`variation-price-${variation.id}`}
@@ -590,13 +567,12 @@ export default function Create({
                                                         />
                                                         <TextInput
                                                             id={`variation-price-${variation.id}`}
-                                                            name={`variation-price-${variation.id}`}
+                                                            name={`variations[${index}][price]`}
                                                             type="number"
                                                             value={
                                                                 variation.price ||
                                                                 ""
                                                             }
-                                                            placeholder="Optional"
                                                             onChange={(e) =>
                                                                 updateVariation(
                                                                     variation.id,
@@ -605,11 +581,10 @@ export default function Create({
                                                                         .value
                                                                 )
                                                             }
+                                                            placeholder="Optional"
                                                         />
                                                     </div>
                                                 </div>
-
-                                                {/* Helper Text */}
                                                 <div className="mt-3 text-xs text-gray-500">
                                                     <p>
                                                         Variation stock and
@@ -625,7 +600,7 @@ export default function Create({
                                         </Card>
                                     ))}
 
-                                    {variations.length === 0 && (
+                                    {data.variations.length === 0 && (
                                         <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
                                             <p className="text-gray-500 mb-2">
                                                 No variations added yet
@@ -645,7 +620,6 @@ export default function Create({
                 <div className="lg:p-6 p-4 pt-6 pb-6">
                     <div className="flex flex-col sm:flex-row justify-end gap-3">
                         <PrimaryButton
-                            as="button"
                             type="submit"
                             disabled={processing}
                             className="w-full sm:w-auto justify-center"

@@ -65,8 +65,10 @@ export default function Edit({
             qty_price: qp.price.toString(),
         })) as QtyPrice[],
 
-        variations: (product.variations || []).map((v: any) => ({
-            attribute_id: v.attribute_id.toString(),
+        variations: (product.product_variations || []).map((v: any) => ({
+            attribute_id:
+                v.product_attribute_id?.toString() ||
+                v.attribute_id?.toString(),
             value: v.value,
             stock: v.stock?.toString(),
             price: v.price?.toString(),
@@ -179,7 +181,7 @@ export default function Edit({
                     >
                         <Card>
                             <CardHeader>
-                                <CardTitle>Product Details</CardTitle>
+                                <CardTitle>Product Details </CardTitle>
                             </CardHeader>
                             <CardContent padding="lg">
                                 <div className="mb-4">
@@ -270,7 +272,7 @@ export default function Edit({
                 <div className="lg:p-6 sm:p-2">
                     <Card className="mt-4">
                         <CardHeader>
-                            <CardTitle>Product Pricing & Stock</CardTitle>
+                            <CardTitle>Product Pricing & Stock </CardTitle>
                         </CardHeader>
                         <CardContent padding="lg">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -455,7 +457,7 @@ export default function Edit({
                 <div className="lg:p-6 sm:p-2">
                     <Card className="mt-4">
                         <CardHeader>
-                            <CardTitle>Product Images & Variations</CardTitle>
+                            <CardTitle>Product Images & Variations </CardTitle>
                         </CardHeader>
                         <CardContent padding="lg">
                             <div className="mb-8">

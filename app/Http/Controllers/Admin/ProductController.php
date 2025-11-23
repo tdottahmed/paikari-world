@@ -17,7 +17,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category', 'supplier', 'product_variations')->get();
+        $products = Product::with('category', 'supplier', 'product_variations.product_attribute')->get();
         return inertia('Products/Index', [
             'products' => $products,
         ]);
@@ -42,8 +42,12 @@ class ProductController extends Controller
         try {
             $uploadedImages = [];
             if ($request->hasFile('images')) {
+                $files = $request->file('images');
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
                 $uploadedImages = FileUpload::uploadImages(
-                    $request->file('images'),
+                    $files,
                     'products'
                 );
             }
@@ -51,13 +55,13 @@ class ProductController extends Controller
             $product = Product::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'purchase_price' => $request->buy_price,
+                'purchase_price' => $request->purchase_price,
                 'sale_price' => $request->sale_price,
                 'moq_price' => $request->moq_price,
                 'stock' => $request->stock,
                 'uan_price' => $request->uan_price,
-                'category_id' => $request->category,
-                'supplier_id' => $request->supplier,
+                'category_id' => $request->category_id,
+                'supplier_id' => $request->supplier_id,
                 'images' => $uploadedImages,
                 'qty_price' => $qtyPriceData,
             ]);
@@ -66,7 +70,7 @@ class ProductController extends Controller
                 foreach ($request->variations as $variationData) {
                     ProductVariation::create([
                         'product_id' => $product->id,
-                        'name' => $variationData['attribute'],
+                        'product_attribute_id' => $variationData['attribute_id'],
                         'value' => $variationData['value'],
                         'stock' => $variationData['stock'] ?? null,
                         'price' => $variationData['price'] ?? null,
@@ -88,7 +92,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $product->load('category', 'supplier', 'product_variations');
+        $product->load('category', 'supplier', 'product_variations.product_attribute');
         $categories = Category::select(['id', 'title'])->get();
         $supplier = Supplier::select(['id', 'name'])->get();
         $attributes = ProductAttribute::select(['id', 'name'])->get();
@@ -117,8 +121,12 @@ class ProductController extends Controller
             }
 
             if ($request->hasFile('images')) {
+                $files = $request->file('images');
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
                 $newImages = FileUpload::uploadImages(
-                    $request->file('images'),
+                    $files,
                     'products'
                 );
                 $currentImages = array_merge($currentImages, $newImages);
@@ -144,7 +152,7 @@ class ProductController extends Controller
                 foreach ($request->variations as $variationData) {
                     ProductVariation::create([
                         'product_id' => $product->id,
-                        'attribute_id' => $variationData['attribute_id'],
+                        'product_attribute_id' => $variationData['attribute_id'],
                         'value' => $variationData['value'],
                         'stock' => $variationData['stock'] ?? null,
                         'price' => $variationData['price'] ?? null,
@@ -167,7 +175,7 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $product->load('category', 'supplier', 'product_variations');
+        $product->load('category', 'supplier', 'product_variations.product_attribute');
         return inertia('Products/Show', [
             'product' => $product,
         ]);

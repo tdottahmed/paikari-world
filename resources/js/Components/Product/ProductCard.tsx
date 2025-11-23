@@ -4,6 +4,8 @@ import { Edit2, Trash2, Eye } from "lucide-react";
 import PrimaryButton from "@/Components/Actions/PrimaryButton";
 import SecondaryButton from "@/Components/Actions/SecondaryButton";
 import DangerButton from "@/Components/Actions/DangerButton";
+import Image from "../Ui/Image";
+import { storagePath } from "@/Utils/helpers";
 
 interface Product {
     id: number;
@@ -98,14 +100,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="bg-[#0E1614] border border-[#1E2826] rounded-lg shadow-sm hover:shadow-lg hover:border-[#2DE3A7]/30 transition-all duration-300 overflow-hidden group">
             {/* Product Image with Overlay Actions */}
             <div className="relative aspect-[4/3] bg-[#0F1A18] overflow-hidden">
-                <img
-                    src={
-                        product.images && product.images.length > 0
-                            ? `/storage/${product.images[0]}`
-                            : "/images/placeholder-product.jpg"
-                    }
+                <Image
+                    src={storagePath(product.images[0])}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
 
                 {/* Stock Indicator */}
@@ -137,7 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
                 {/* Profit Badge */}
                 <div className="absolute top-3 left-3 bg-[#2DE3A7] text-[#0C1311] px-2 py-1 rounded-full text-xs font-bold backdrop-blur-sm">
-                    +{profitPercentage}%
+                    +{profitPercentage} %
                 </div>
             </div>
 
@@ -152,15 +149,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <div className="space-y-2 mb-4">
                     {/* Purchase Price */}
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-400">Cost:</span>
+                        <span className="text-sm text-gray-400"> Cost: </span>
                         <span className="text-sm font-medium text-gray-300">
-                            ৳{product.purchase_price.toLocaleString()}
+                            ৳ {product.purchase_price.toLocaleString()}
                         </span>
                     </div>
 
                     {/* Sale Price */}
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-400">Price:</span>
+                        <span className="text-sm text-gray-400"> Price: </span>
                         <span className="text-sm font-semibold text-[#2DE3A7]">
                             ৳{product.sale_price.toLocaleString()}
                         </span>
@@ -168,7 +165,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
                     {/* Profit */}
                     <div className="flex items-center justify-between pt-2 border-t border-[#1E2826]">
-                        <span className="text-sm text-gray-400">Profit:</span>
+                        <span className="text-sm text-gray-400"> Profit: </span>
                         <div className="flex items-center gap-2">
                             <span className="text-sm font-bold text-[#2DE3A7]">
                                 ৳{profit.toLocaleString()}

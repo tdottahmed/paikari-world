@@ -52,10 +52,12 @@ export interface ProductVariation {
     id: number;
     product_id?: number;
     attribute_id: number;
+    product_attribute_id?: number;
     value: string;
     stock?: number;
     price?: number;
     attribute?: ProductAttribute;
+    product_attribute?: ProductAttribute;
     created_at?: string;
     updated_at?: string;
 }
@@ -85,7 +87,7 @@ export interface Product {
     supplier_id?: number;
     category?: Category;
     supplier?: Supplier;
-    variations?: ProductVariation[];
+    product_variations?: ProductVariation[];
     qty_prices?: QtyPrice[];
     status?: "active" | "inactive" | "draft" | "out_of_stock";
     sku?: string;
@@ -296,11 +298,11 @@ export interface SelectOption {
 // Bulk Action types
 export interface BulkAction {
     type:
-        | "delete"
-        | "activate"
-        | "deactivate"
-        | "update_category"
-        | "update_supplier";
+    | "delete"
+    | "activate"
+    | "deactivate"
+    | "update_category"
+    | "update_supplier";
     ids: number[];
     data?: any;
 }

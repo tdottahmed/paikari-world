@@ -28,11 +28,12 @@ class ProductRequest extends FormRequest
             'qty_prices' => 'sometimes|array',
             'qty_prices.*.qty' => 'required|integer|min:1',
             'qty_prices.*.qty_price' => 'required|numeric|min:0',
-            'variations.*.attribute' => 'nullable',
-            'variations.*.value' => 'nullable|string|max:255',
+            'deleted_images' => 'nullable|array',
+            'variations' => 'nullable|array',
+            'variations.*.attribute_id' => 'required_with:variations|exists:product_attributes,id',
+            'variations.*.value' => 'required_with:variations|string',
             'variations.*.stock' => 'nullable|integer|min:0',
             'variations.*.price' => 'nullable|numeric|min:0',
-            'deleted_images' => 'nullable|array',
         ];
     }
 

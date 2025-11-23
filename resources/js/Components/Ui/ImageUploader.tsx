@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Upload, X, Eye } from "lucide-react";
 import InputLabel from "./InputLabel";
 import InputError from "./InputError";
@@ -18,10 +18,10 @@ interface ImageUploaderProps {
     required?: boolean;
     multiple?: boolean;
     maxFiles?: number;
-    value: File[]; // These are NEW files only
-    existingImages?: string[]; // CHANGED: Now expects simple array of strings ["path/img.jpg"]
-    onChange: (files: File[]) => void; // Handle NEW file changes
-    onRemoveExisting?: (path: string) => void; // Handle OLD image deletion (by path)
+    value: File[];
+    existingImages?: string[];
+    onChange: (files: File[]) => void;
+    onRemoveExisting?: (path: string) => void;
     error?: string;
     accept?: string;
 }
@@ -32,7 +32,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     multiple = true,
     maxFiles = 10,
     value = [],
-    existingImages = [],
+    existingImages,
     onChange,
     onRemoveExisting,
     error,
@@ -41,13 +41,19 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [imagePreviews, setImagePreviews] = useState<ImageFile[]>([]);
 
-    // Sync props to internal state when component mounts or props change
+    // CRITICAL FIX: Memoize existingImages to prevent infinite loop
+    // This ensures 'stableExisting' only changes if the actual paths change, not just on re-renders.
+    const stableExisting = useMemo(
+        () => existingImages || [],
+        [JSON.stringify(existingImages)]
+    );
+
     useEffect(() => {
         // 1. Map Simple Strings (Existing Images)
-        const existingPreviews: ImageFile[] = existingImages.map((path) => ({
-            id: path, // The path itself acts as the ID
-            preview: path, // The relative path
-            name: path.split("/").pop(), // Extract filename (e.g., "img.jpg" from "products/img.jpg")
+        const existingPreviews: ImageFile[] = stableExisting.map((path) => ({
+            id: path,
+            preview: path,
+            name: path.split("/").pop(),
             isExisting: true,
         }));
 
@@ -55,7 +61,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         const newFilePreviews: ImageFile[] = value.map((file) => ({
             id: file.name + file.size,
             file,
-            preview: URL.createObjectURL(file), // Blob URL
+            preview: URL.createObjectURL(file),
             name: file.name,
             size: formatFileSize(file.size),
             isExisting: false,
@@ -63,11 +69,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
         setImagePreviews([...existingPreviews, ...newFilePreviews]);
 
-        // Cleanup function to revoke object URLs for new files
+        // Cleanup
         return () => {
             newFilePreviews.forEach((p) => URL.revokeObjectURL(p.preview));
         };
-    }, [value, existingImages]);
+    }, [value, stableExisting]); // Depend on the stable version
 
     const formatFileSize = (bytes: number): string => {
         if (bytes === 0) return "0 Bytes";
@@ -79,7 +85,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
-        const currentTotal = (existingImages?.length || 0) + value.length;
+        const currentTotal = (stableExisting.length || 0) + value.length;
 
         if (files.length + currentTotal > maxFiles) {
             alert(`You can only upload up to ${maxFiles} images`);
@@ -96,12 +102,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
     const removeImage = (id: string, isExisting: boolean) => {
         if (isExisting) {
-            // Pass the path (id) back to parent
-            if (onRemoveExisting) {
-                onRemoveExisting(id);
-            }
+            if (onRemoveExisting) onRemoveExisting(id);
         } else {
-            // Filter New Files
             const imageToRemove = imagePreviews.find((img) => img.id === id);
             if (imageToRemove && imageToRemove.file) {
                 const updatedFiles = value.filter(
@@ -112,6 +114,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         }
     };
 
+    // UI Helpers
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
         e.currentTarget.classList.add("border-blue-500", "bg-blue-50");
@@ -145,7 +148,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                     required={required}
                 />
             )}
-
             <div
                 className={`border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer transition-colors hover:border-gray-400 ${
                     error ? "border-red-300" : ""
@@ -174,20 +176,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                     </p>
                 </div>
             </div>
-
             {error && <InputError message={error} />}
-
             {imagePreviews.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
                     {imagePreviews.map((image) => (
                         <div
-                            key={image.id} // Use ID instead of key index for better React performance
+                            key={image.id}
                             className="relative group border rounded-lg overflow-hidden bg-gray-100 aspect-square"
                         >
-                            {/* CRITICAL FIX: 
-                                Only use storagePath() for existing images. 
-                                New images are Blob URLs and shouldn't be wrapped. 
-                            */}
                             <img
                                 src={
                                     image.isExisting
@@ -197,7 +193,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                                 alt={image.name || "Image"}
                                 className="w-full h-full object-cover"
                             />
-
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                                 <div className="text-white text-center p-2">
                                     {image.isExisting ? (
@@ -209,13 +204,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                                     )}
                                 </div>
                             </div>
-
                             <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                     type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        // Open logic: same as src logic
                                         window.open(
                                             image.isExisting
                                                 ? storagePath(image.preview)
