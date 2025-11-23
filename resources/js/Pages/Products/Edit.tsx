@@ -4,131 +4,195 @@ import CollapsibleSection from "@/Components/Ui/CollapsibleSection";
 import InputLabel from "@/Components/Ui/InputLabel";
 import TextInput from "@/Components/Ui/TextInput";
 import PrimaryButton from "@/Components/Actions/PrimaryButton";
+import DangerButton from "@/Components/Actions/DangerButton";
 import Master from "@/Layouts/Master";
-
 import SelectInput from "@/Components/Ui/SelectInput";
 import { useForm } from "@inertiajs/react";
-import { CreatePageProps } from "@/types";
 import InputError from "@/Components/Ui/InputError";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import { PlusIcon, Trash2Icon, ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
 import ImageUploader from "@/Components/Ui/ImageUploader";
 import TextArea from "@/Components/Ui/TextArea";
+import DeleteConfirmationDialog from "@/Components/Ui/DeleteConfirmationDialog";
+import { EditPageProps, ProductFormData } from "@/types";
 
 interface QtyPrice {
-    id: string;
     qty: string;
     qty_price: string;
 }
 
 interface Variation {
-    id: string;
-    attribute: string;
+    attribute_id: string;
     value: string;
     stock?: string;
     price?: string;
 }
 
-export default function Create({
+export default function Edit({
+    product,
     categories,
     suppliers,
     attributes,
-}: CreatePageProps) {
-    const [qtyPrices, setQtyPrices] = useState<QtyPrice[]>([]);
-    const [variations, setVariations] = useState<Variation[]>([]);
+}: EditPageProps) {
+    const [qtyPrices, setQtyPrices] = useState<QtyPrice[]>(
+        product.qty_prices?.map((qp) => ({
+            qty: qp.qty.toString(),
+            qty_price: qp.price.toString(),
+        })) || []
+    );
 
-    const { data, setData, post, processing, errors } = useForm({
-        name: "",
-        category: "",
-        supplier: "",
-        description: "",
-        buy_price: "",
-        sale_price: "",
-        moq_price: "",
-        stock: "",
-        uan_price: "",
+    const [variations, setVariations] = useState<Variation[]>(
+        product.variations?.map((v) => ({
+            attribute_id: v.attribute_id.toString(),
+            value: v.value,
+            stock: v.stock?.toString(),
+            price: v.price?.toString(),
+        })) || []
+    );
+
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [processingDelete, setProcessingDelete] = useState(false);
+
+    const {
+        data,
+        setData,
+        put,
+        processing,
+        errors,
+        delete: destroy,
+    } = useForm({
+        name: product.name || "",
+        category_id: product.category_id?.toString() || "",
+        supplier_id: product.supplier_id?.toString() || "",
+        description: product.description || "",
+        purchase_price: product.purchase_price?.toString() || "",
+        sale_price: product.sale_price?.toString() || "",
+        moq_price: product.moq_price?.toString() || "",
+        stock: product.stock?.toString() || "",
+        uan_price: product.uan_price?.toString() || "",
         qty_prices: [] as QtyPrice[],
         images: [] as File[],
-        variations: [] as Variation[], // Add variations to form data
+        variations: [] as Variation[],
+        _method: "put" as const,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route("admin.product.store"), {
+        put(route("admin.product.update", product.id), {
             forceFormData: true,
+        });
+    };
+
+    const handleDelete = () => {
+        setProcessingDelete(true);
+        destroy(route("admin.product.destroy", product.id), {
+            onFinish: () => {
+                setProcessingDelete(false);
+                setShowDeleteDialog(false);
+            },
         });
     };
 
     const addQtyPrice = () => {
         const newQtyPrice: QtyPrice = {
-            id: Date.now().toString(),
             qty: "",
             qty_price: "",
         };
-        setQtyPrices([...qtyPrices, newQtyPrice]);
-        setData("qty_prices", [...qtyPrices, newQtyPrice]);
+        const updatedQtyPrices = [...qtyPrices, newQtyPrice];
+        setQtyPrices(updatedQtyPrices);
+        setData("qty_prices", updatedQtyPrices);
     };
 
-    const removeQtyPrice = (id: string) => {
-        const updatedQtyPrices = qtyPrices.filter((item) => item.id !== id);
+    const removeQtyPrice = (index: number) => {
+        const updatedQtyPrices = qtyPrices.filter((_, i) => i !== index);
         setQtyPrices(updatedQtyPrices);
         setData("qty_prices", updatedQtyPrices);
     };
 
     const updateQtyPrice = (
-        id: string,
+        index: number,
         field: keyof QtyPrice,
         value: string
     ) => {
-        const updatedQtyPrices = qtyPrices.map((item) =>
-            item.id === id ? { ...item, [field]: value } : item
+        const updatedQtyPrices = qtyPrices.map((item, i) =>
+            i === index ? { ...item, [field]: value } : item
         );
         setQtyPrices(updatedQtyPrices);
         setData("qty_prices", updatedQtyPrices);
     };
 
-    // Variation functions
     const addVariation = () => {
         const newVariation: Variation = {
-            id: Date.now().toString(),
-            attribute: "",
+            attribute_id: "",
             value: "",
             stock: "",
             price: "",
         };
-        setVariations([...variations, newVariation]);
-        setData("variations", [...variations, newVariation]);
+        const updatedVariations = [...variations, newVariation];
+        setVariations(updatedVariations);
+        setData("variations", updatedVariations);
     };
 
-    const removeVariation = (id: string) => {
-        const updatedVariations = variations.filter((item) => item.id !== id);
+    const removeVariation = (index: number) => {
+        const updatedVariations = variations.filter((_, i) => i !== index);
         setVariations(updatedVariations);
         setData("variations", updatedVariations);
     };
 
     const updateVariation = (
-        id: string,
+        index: number,
         field: keyof Variation,
         value: string
     ) => {
-        const updatedVariations = variations.map((item) =>
-            item.id === id ? { ...item, [field]: value } : item
+        const updatedVariations = variations.map((item, i) =>
+            i === index ? { ...item, [field]: value } : item
         );
         setVariations(updatedVariations);
         setData("variations", updatedVariations);
     };
 
-    // Handle image changes
     const handleImagesChange = (files: File[]) => {
         setData("images", files);
     };
 
+    const getAttributeName = (attributeId: string) => {
+        return (
+            attributes.find((attr) => attr.id.toString() === attributeId)
+                ?.name || attributeId
+        );
+    };
+
     return (
         <Master
-            title="Create Product"
-            head={<Header title="Create Product" showUserMenu={true} />}
+            title={`Edit ${product.name}`}
+            head={<Header title={`Edit ${product.name}`} showUserMenu={true} />}
         >
             <form onSubmit={handleSubmit}>
+                <div className="lg:p-6 p-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                Edit Product
+                            </h1>
+                            <p className="text-gray-600 dark:text-gray-400 mt-1">
+                                Update product information and pricing
+                            </p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <DangerButton
+                                type="button"
+                                variant="outline"
+                                onClick={() => setShowDeleteDialog(true)}
+                                disabled={processing || processingDelete}
+                                className="w-full sm:w-auto order-2 sm:order-1"
+                            >
+                                <Trash2Icon size={16} className="mr-2" />
+                                Delete Product
+                            </DangerButton>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="lg:p-6 sm:p-2">
                     <CollapsibleSection
                         title="General Information"
@@ -161,47 +225,45 @@ export default function Create({
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <InputLabel
-                                            htmlFor="category"
+                                            htmlFor="category_id"
                                             value="Category"
                                             required
                                         />
-
                                         <SelectInput
-                                            id="category"
-                                            name="category"
-                                            value={data.category}
+                                            id="category_id"
+                                            name="category_id"
+                                            value={data.category_id}
                                             onChange={(val) =>
-                                                setData("category", val)
+                                                setData("category_id", val)
                                             }
                                             options={categories.map((c) => ({
-                                                value: c.id,
+                                                value: c.id.toString(),
                                                 label: c.title,
                                             }))}
                                             placeholder="Select Category"
-                                            error={errors.category}
+                                            error={errors.category_id}
                                         />
                                     </div>
 
                                     <div>
                                         <InputLabel
-                                            htmlFor="supplier"
+                                            htmlFor="supplier_id"
                                             value="Supplier"
                                             required
                                         />
-
                                         <SelectInput
-                                            id="supplier"
-                                            name="supplier"
-                                            value={data.supplier}
+                                            id="supplier_id"
+                                            name="supplier_id"
+                                            value={data.supplier_id}
                                             onChange={(val) =>
-                                                setData("supplier", val)
+                                                setData("supplier_id", val)
                                             }
                                             options={suppliers.map((s) => ({
-                                                value: s.id,
+                                                value: s.id.toString(),
                                                 label: s.name,
                                             }))}
                                             placeholder="Select Supplier"
-                                            error={errors.supplier}
+                                            error={errors.supplier_id}
                                         />
                                     </div>
                                 </div>
@@ -225,7 +287,6 @@ export default function Create({
                                             }
                                             required
                                         />
-
                                         <InputError
                                             message={errors.description}
                                         />
@@ -235,6 +296,8 @@ export default function Create({
                         </Card>
                     </CollapsibleSection>
                 </div>
+
+                {/* Pricing & Stock Section */}
                 <div className="lg:p-6 sm:p-2">
                     <Card className="mt-4">
                         <CardHeader>
@@ -245,7 +308,7 @@ export default function Create({
                                 <div>
                                     <InputLabel
                                         htmlFor="purchase_price"
-                                        value="Buy Price"
+                                        value="Purchase Price"
                                         required
                                     />
                                     <TextInput
@@ -253,13 +316,18 @@ export default function Create({
                                         name="purchase_price"
                                         type="number"
                                         placeholder="0.00"
-                                        value={data.buy_price}
+                                        value={data.purchase_price}
                                         onChange={(e) =>
-                                            setData("buy_price", e.target.value)
+                                            setData(
+                                                "purchase_price",
+                                                e.target.value
+                                            )
                                         }
                                         required
                                     />
-                                    <InputError message={errors.buy_price} />
+                                    <InputError
+                                        message={errors.purchase_price}
+                                    />
                                 </div>
                                 <div>
                                     <InputLabel
@@ -287,7 +355,6 @@ export default function Create({
                                     <InputLabel
                                         htmlFor="moq_price"
                                         value="MOQ Price"
-                                        required
                                     />
                                     <TextInput
                                         id="moq_price"
@@ -298,7 +365,6 @@ export default function Create({
                                         onChange={(e) =>
                                             setData("moq_price", e.target.value)
                                         }
-                                        required
                                     />
                                     <InputError message={errors.moq_price} />
                                 </div>
@@ -326,8 +392,7 @@ export default function Create({
                                 <div>
                                     <InputLabel
                                         htmlFor="uan_price"
-                                        value="UAN(¥)"
-                                        required
+                                        value="UAN Price"
                                     />
                                     <TextInput
                                         id="uan_price"
@@ -338,7 +403,6 @@ export default function Create({
                                         onChange={(e) =>
                                             setData("uan_price", e.target.value)
                                         }
-                                        required
                                     />
                                     <InputError message={errors.uan_price} />
                                 </div>
@@ -349,7 +413,7 @@ export default function Create({
                                 <div className="flex justify-between items-center mb-4">
                                     <InputLabel
                                         htmlFor="qty_price"
-                                        value="Qty Price"
+                                        value="Quantity Prices"
                                     />
                                     <PrimaryButton
                                         as="button"
@@ -363,20 +427,14 @@ export default function Create({
                                     </PrimaryButton>
                                 </div>
 
-                                {/* Dynamic Qty Price Cards */}
                                 {qtyPrices.map((qtyPrice, index) => (
-                                    <Card
-                                        key={qtyPrice.id}
-                                        className="mb-4 relative"
-                                    >
+                                    <Card key={index} className="mb-4 relative">
                                         <CardContent className="pt-6">
                                             <div className="absolute top-3 right-3">
                                                 <button
                                                     type="button"
                                                     onClick={() =>
-                                                        removeQtyPrice(
-                                                            qtyPrice.id
-                                                        )
+                                                        removeQtyPrice(index)
                                                     }
                                                     className="text-red-500 hover:text-red-700 transition-colors"
                                                 >
@@ -386,19 +444,19 @@ export default function Create({
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div>
                                                     <InputLabel
-                                                        htmlFor={`qty-${qtyPrice.id}`}
+                                                        htmlFor={`qty-${index}`}
                                                         value="Quantity"
                                                         required
                                                     />
                                                     <TextInput
-                                                        id={`qty-${qtyPrice.id}`}
-                                                        name={`qty-${qtyPrice.id}`}
+                                                        id={`qty-${index}`}
+                                                        name={`qty-${index}`}
                                                         type="number"
                                                         value={qtyPrice.qty}
                                                         placeholder="0"
                                                         onChange={(e) =>
                                                             updateQtyPrice(
-                                                                qtyPrice.id,
+                                                                index,
                                                                 "qty",
                                                                 e.target.value
                                                             )
@@ -408,13 +466,13 @@ export default function Create({
                                                 </div>
                                                 <div>
                                                     <InputLabel
-                                                        htmlFor={`qty_price-${qtyPrice.id}`}
-                                                        value="Qty Price"
+                                                        htmlFor={`qty_price-${index}`}
+                                                        value="Price"
                                                         required
                                                     />
                                                     <TextInput
-                                                        id={`qty_price-${qtyPrice.id}`}
-                                                        name={`qty_price-${qtyPrice.id}`}
+                                                        id={`qty_price-${index}`}
+                                                        name={`qty_price-${index}`}
                                                         type="number"
                                                         value={
                                                             qtyPrice.qty_price
@@ -422,7 +480,7 @@ export default function Create({
                                                         placeholder="0.00"
                                                         onChange={(e) =>
                                                             updateQtyPrice(
-                                                                qtyPrice.id,
+                                                                index,
                                                                 "qty_price",
                                                                 e.target.value
                                                             )
@@ -438,13 +496,14 @@ export default function Create({
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Images & Variations Section */}
                 <div className="lg:p-6 sm:p-2">
                     <Card className="mt-4">
                         <CardHeader>
                             <CardTitle>Product Images & Variations</CardTitle>
                         </CardHeader>
                         <CardContent padding="lg">
-                            {/* Image Uploader */}
                             <div className="mb-8">
                                 <ImageUploader
                                     label="Product Images"
@@ -454,7 +513,6 @@ export default function Create({
                                 />
                             </div>
 
-                            {/* Variations Section */}
                             <div className="border-t pt-6">
                                 <div className="flex justify-between items-center mb-4">
                                     <InputLabel
@@ -476,18 +534,14 @@ export default function Create({
 
                                 <div className="space-y-4">
                                     {variations.map((variation, index) => (
-                                        <Card
-                                            key={variation.id}
-                                            className="relative"
-                                        >
+                                        <Card key={index} className="relative">
                                             <CardContent className="pt-6">
-                                                {/* Remove Button */}
                                                 <div className="absolute top-3 right-3">
                                                     <button
                                                         type="button"
                                                         onClick={() =>
                                                             removeVariation(
-                                                                variation.id
+                                                                index
                                                             )
                                                         }
                                                         className="text-red-500 hover:text-red-700 transition-colors"
@@ -497,31 +551,29 @@ export default function Create({
                                                     </button>
                                                 </div>
 
-                                                {/* Variation Fields */}
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                                    {/* Attribute Selection */}
                                                     <div>
                                                         <InputLabel
-                                                            htmlFor={`variation-attribute-${variation.id}`}
+                                                            htmlFor={`variation-attribute-${index}`}
                                                             value="Attribute"
                                                             required
                                                         />
                                                         <SelectInput
-                                                            id={`variation-attribute-${variation.id}`}
-                                                            name={`variation-attribute-${variation.id}`}
+                                                            id={`variation-attribute-${index}`}
+                                                            name={`variation-attribute-${index}`}
                                                             value={
-                                                                variation.attribute
+                                                                variation.attribute_id
                                                             }
                                                             onChange={(val) =>
                                                                 updateVariation(
-                                                                    variation.id,
-                                                                    "attribute",
+                                                                    index,
+                                                                    "attribute_id",
                                                                     val
                                                                 )
                                                             }
                                                             options={attributes.map(
                                                                 (attr) => ({
-                                                                    value: attr.id,
+                                                                    value: attr.id.toString(),
                                                                     label: attr.name,
                                                                 })
                                                             )}
@@ -529,16 +581,15 @@ export default function Create({
                                                         />
                                                     </div>
 
-                                                    {/* Value */}
                                                     <div>
                                                         <InputLabel
-                                                            htmlFor={`variation-value-${variation.id}`}
+                                                            htmlFor={`variation-value-${index}`}
                                                             value="Value"
                                                             required
                                                         />
                                                         <TextInput
-                                                            id={`variation-value-${variation.id}`}
-                                                            name={`variation-value-${variation.id}`}
+                                                            id={`variation-value-${index}`}
+                                                            name={`variation-value-${index}`}
                                                             type="text"
                                                             value={
                                                                 variation.value
@@ -546,7 +597,7 @@ export default function Create({
                                                             placeholder="Enter value (e.g., Red, Large)"
                                                             onChange={(e) =>
                                                                 updateVariation(
-                                                                    variation.id,
+                                                                    index,
                                                                     "value",
                                                                     e.target
                                                                         .value
@@ -556,15 +607,14 @@ export default function Create({
                                                         />
                                                     </div>
 
-                                                    {/* Stock (Optional) */}
                                                     <div>
                                                         <InputLabel
-                                                            htmlFor={`variation-stock-${variation.id}`}
+                                                            htmlFor={`variation-stock-${index}`}
                                                             value="Variation Stock"
                                                         />
                                                         <TextInput
-                                                            id={`variation-stock-${variation.id}`}
-                                                            name={`variation-stock-${variation.id}`}
+                                                            id={`variation-stock-${index}`}
+                                                            name={`variation-stock-${index}`}
                                                             type="number"
                                                             value={
                                                                 variation.stock ||
@@ -573,7 +623,7 @@ export default function Create({
                                                             placeholder="Optional"
                                                             onChange={(e) =>
                                                                 updateVariation(
-                                                                    variation.id,
+                                                                    index,
                                                                     "stock",
                                                                     e.target
                                                                         .value
@@ -582,15 +632,14 @@ export default function Create({
                                                         />
                                                     </div>
 
-                                                    {/* Price (Optional) */}
                                                     <div>
                                                         <InputLabel
-                                                            htmlFor={`variation-price-${variation.id}`}
+                                                            htmlFor={`variation-price-${index}`}
                                                             value="Variation Price"
                                                         />
                                                         <TextInput
-                                                            id={`variation-price-${variation.id}`}
-                                                            name={`variation-price-${variation.id}`}
+                                                            id={`variation-price-${index}`}
+                                                            name={`variation-price-${index}`}
                                                             type="number"
                                                             value={
                                                                 variation.price ||
@@ -599,7 +648,7 @@ export default function Create({
                                                             placeholder="Optional"
                                                             onChange={(e) =>
                                                                 updateVariation(
-                                                                    variation.id,
+                                                                    index,
                                                                     "price",
                                                                     e.target
                                                                         .value
@@ -609,7 +658,6 @@ export default function Create({
                                                     </div>
                                                 </div>
 
-                                                {/* Helper Text */}
                                                 <div className="mt-3 text-xs text-gray-500">
                                                     <p>
                                                         Variation stock and
@@ -642,19 +690,45 @@ export default function Create({
                     </Card>
                 </div>
 
-                <div className="lg:p-6 p-4 pt-6 pb-6">
-                    <div className="flex flex-col sm:flex-row justify-end gap-3">
-                        <PrimaryButton
-                            as="button"
-                            type="submit"
-                            disabled={processing}
-                            className="w-full sm:w-auto justify-center"
-                        >
-                            {processing ? "Creating..." : "Create Product"}
-                        </PrimaryButton>
+                {/* Bottom Actions */}
+                <div className="p-4 pt-6 pb-6">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex flex-col gap-3 lg:flex-row lg:justify-end">
+                            <PrimaryButton
+                                as="button"
+                                type="submit"
+                                disabled={processing}
+                                className="w-full sm:w-auto lg:w-auto justify-center"
+                            >
+                                {processing ? "Updating..." : "Update Product"}
+                            </PrimaryButton>
+
+                            <PrimaryButton
+                                as="link"
+                                href={route("admin.products.index")}
+                                variant="outline"
+                                className="w-full sm:w-auto lg:w-auto justify-center"
+                            >
+                                <ArrowLeftIcon size={16} className="mr-2" />
+                                Back to Products
+                            </PrimaryButton>
+                        </div>
                     </div>
                 </div>
             </form>
+
+            {/* Delete Confirmation Dialog */}
+            <DeleteConfirmationDialog
+                isOpen={showDeleteDialog}
+                onClose={() => setShowDeleteDialog(false)}
+                onConfirm={handleDelete}
+                title="Delete Product"
+                message={`Are you sure you want to delete "${product.name}"? This action cannot be undone.`}
+                confirmText={
+                    processingDelete ? "Deleting..." : "Delete Product"
+                }
+                isProcessing={processingDelete}
+            />
         </Master>
     );
 }

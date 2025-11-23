@@ -94,16 +94,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         }
     };
 
-    const handleView = (e: React.MouseEvent) => {
-        e.preventDefault();
-        if (onView) {
-            onView(product);
-        } else {
-            // Default view behavior
-            window.location.href = `/admin/products/${product.id}`;
-        }
-    };
-
     return (
         <div className="bg-[#0E1614] border border-[#1E2826] rounded-lg shadow-sm hover:shadow-lg hover:border-[#2DE3A7]/30 transition-all duration-300 overflow-hidden group">
             {/* Product Image with Overlay Actions */}
@@ -128,20 +118,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {/* Quick Actions Overlay */}
                 <div className="absolute inset-0 bg-[#0C1311] bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <div className="flex gap-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                        <button
-                            onClick={handleView}
+                        <Link
+                            href={route("admin.product.show", product.id)}
                             className="p-3 bg-[#2DE3A7] text-[#0C1311] rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200"
                             title="View product"
                         >
                             <Eye size={18} />
-                        </button>
-                        <button
-                            onClick={handleEdit}
+                        </Link>
+                        <Link
+                            href={route("admin.product.edit", product.id)}
                             className="p-3 bg-[#2DE3A7] text-[#0C1311] rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200"
                             title="Edit product"
                         >
                             <Edit2 size={18} />
-                        </button>
+                        </Link>
                     </div>
                 </div>
 

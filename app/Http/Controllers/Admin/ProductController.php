@@ -38,51 +38,76 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         DB::beginTransaction();
-        // try {
-        $uploadedImages = [];
-        if ($request->hasFile('images')) {
-            $uploadedImages = FileUpload::uploadImages(
-                $request->file('images'),
-                'products'
-            );
-        }
-        $qtyPriceData = $this->processQtyPrices($request);
-        $product = Product::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'purchase_price' => $request->buy_price,
-            'sale_price' => $request->sale_price,
-            'moq_price' => $request->moq_price,
-            'stock' => $request->stock,
-            'uan_price' => $request->uan_price,
-            'category_id' => $request->category,
-            'supplier_id' => $request->supplier,
-            'images' => $uploadedImages,
-            'qty_price' => $qtyPriceData,
-        ]);
-
-        if ($request->has('variations') && !empty($request->variations)) {
-            foreach ($request->variations as $variationData) {
-                ProductVariation::create([
-                    'product_id' => $product->id,
-                    'name' => $variationData['attribute'],
-                    'value' => $variationData['value'],
-                    'stock' => $variationData['stock'] ?? null,
-                    'price' => $variationData['price'] ?? null,
-                ]);
+        try {
+            $uploadedImages = [];
+            if ($request->hasFile('images')) {
+                $uploadedImages = FileUpload::uploadImages(
+                    $request->file('images'),
+                    'products'
+                );
             }
+            $qtyPriceData = $this->processQtyPrices($request);
+            $product = Product::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'purchase_price' => $request->buy_price,
+                'sale_price' => $request->sale_price,
+                'moq_price' => $request->moq_price,
+                'stock' => $request->stock,
+                'uan_price' => $request->uan_price,
+                'category_id' => $request->category,
+                'supplier_id' => $request->supplier,
+                'images' => $uploadedImages,
+                'qty_price' => $qtyPriceData,
+            ]);
+
+            if ($request->has('variations') && !empty($request->variations)) {
+                foreach ($request->variations as $variationData) {
+                    ProductVariation::create([
+                        'product_id' => $product->id,
+                        'name' => $variationData['attribute'],
+                        'value' => $variationData['value'],
+                        'stock' => $variationData['stock'] ?? null,
+                        'price' => $variationData['price'] ?? null,
+                    ]);
+                }
+            }
+            DB::commit();
+
+            return redirect()->route('admin.products.index')->with('success', 'Product created successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            if (!empty($uploadedImages)) {
+                FileUpload::deleteImages($uploadedImages);
+            }
+
+            return back()->with('error', 'Failed to create product: ' . $e->getMessage());
         }
-        DB::commit();
+    }
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created successfully!');
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     if (!empty($uploadedImages)) {
-        //         FileUpload::deleteImages($uploadedImages);
-        //     }
+    public function edit(Product $product)
+    {
+        $categories = Category::select(['id', 'title'])->get();
+        $supplier = Supplier::select(['id', 'name'])->get();
+        $attributes = ProductAttribute::select(['id', 'name'])->get();
+        $variations = ProductVariation::where('product_id', $product->id)->get();
+        $qtyPrices = Product::where('id', $product->id)->first()->qty_prices;
+        return inertia('Products/Edit', [
+            'product' => $product,
+            'categories' => $categories,
+            'suppliers' => $supplier,
+            'attributes' => $attributes,
+            'variations' => $variations,
+            'qty_prices' => $qtyPrices,
+        ]);
+    }
 
-        //     return back()->with('error', 'Failed to create product: ' . $e->getMessage());
-        // }
+    public function show(Product $product)
+    {
+        $product->load('category', 'supplier', 'product_variations');
+        return inertia('Products/Show', [
+            'product' => $product,
+        ]);
     }
 
     protected function processQtyPrices(ProductRequest $request)

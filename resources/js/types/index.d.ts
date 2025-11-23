@@ -1,3 +1,5 @@
+// types/index.ts
+
 export interface User {
     id: number;
     name: string;
@@ -13,23 +15,62 @@ export type PageProps<
     };
 };
 
-export type Category = {
+// Category type
+export interface Category {
     id: number;
     title: string;
     slug: string;
     image: string;
-};
+    description?: string;
+    created_at?: string;
+    updated_at?: string;
+}
 
-export type Supplier = {
+// Supplier type
+export interface Supplier {
     id: number;
     name: string;
-};
+    contact_info?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    created_at?: string;
+    updated_at?: string;
+}
 
-export type ProductAttribute = {
+// Product Attribute type
+export interface ProductAttribute {
     id: number;
     name: string;
-};
+    values?: string[];
+    created_at?: string;
+    updated_at?: string;
+}
 
+// Product Variation type
+export interface ProductVariation {
+    id: number;
+    product_id?: number;
+    attribute_id: number;
+    value: string;
+    stock?: number;
+    price?: number;
+    attribute?: ProductAttribute;
+    created_at?: string;
+    updated_at?: string;
+}
+
+// Quantity Price type
+export interface QtyPrice {
+    id?: number;
+    product_id?: number;
+    qty: number;
+    price: number;
+    created_at?: string;
+    updated_at?: string;
+}
+
+// Main Product interface
 export interface Product {
     id: number;
     name: string;
@@ -46,50 +87,33 @@ export interface Product {
     supplier?: Supplier;
     variations?: ProductVariation[];
     qty_prices?: QtyPrice[];
+    status?: "active" | "inactive" | "draft" | "out_of_stock";
+    sku?: string;
+    barcode?: string;
+    weight?: number;
+    dimensions?: string;
+    featured?: boolean;
     created_at: string;
     updated_at: string;
 }
 
-export interface Category {
-    id: number;
-    title: string;
-    description?: string;
-}
-
-export interface Supplier {
-    id: number;
-    name: string;
-    contact_info?: string;
-}
-
-export interface ProductVariation {
-    id: number;
-    attribute_id: number;
-    value: string;
-    stock?: number;
-    price?: number;
-    attribute?: ProductAttribute;
-}
-
-export interface ProductAttribute {
-    id: number;
-    name: string;
-    values?: string[];
-}
-
-export interface QtyPrice {
-    qty: number;
-    price: number;
-}
-
+// Props for different pages
 export interface ProductsIndexProps {
     products: Product[];
-    categories?: Category[];
-    suppliers?: Supplier[];
+    categories: Category[];
+    suppliers: Supplier[];
     filters?: {
         category?: string;
-        stock_status?: string;
+        supplier?: string;
+        stock_status?: "in_stock" | "out_of_stock" | "low_stock";
+        status?: string;
         search?: string;
+    };
+    pagination?: {
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
     };
 }
 
@@ -97,6 +121,231 @@ export interface CreatePageProps extends PageProps {
     categories: Category[];
     suppliers: Supplier[];
     attributes: ProductAttribute[];
-    products: Product[];
-    productVariations: ProductVariation[];
 }
+
+export interface EditPageProps extends PageProps {
+    product: Product;
+    categories: Category[];
+    suppliers: Supplier[];
+    attributes: ProductAttribute[];
+}
+
+export interface ShowPageProps extends PageProps {
+    product: Product;
+}
+
+// Form data types for create/edit operations
+export interface ProductFormData {
+    name: string;
+    description: string;
+    category_id: string;
+    supplier_id: string;
+    purchase_price: string;
+    sale_price: string;
+    moq_price: string;
+    uan_price: string;
+    stock: string;
+    status: string;
+    sku?: string;
+    barcode?: string;
+    weight?: string;
+    dimensions?: string;
+    featured?: boolean;
+    images: File[];
+    variations: VariationFormData[];
+    qty_prices: QtyPriceFormData[];
+}
+
+export interface VariationFormData {
+    id?: string; // For existing variations
+    attribute_id: string;
+    value: string;
+    stock?: string;
+    price?: string;
+}
+
+export interface QtyPriceFormData {
+    id?: string; // For existing qty prices
+    qty: string;
+    price: string;
+}
+
+// API Response types
+export interface ApiResponse<T = any> {
+    data: T;
+    message?: string;
+    success: boolean;
+    status: number;
+}
+
+export interface PaginatedResponse<T = any> extends ApiResponse<T> {
+    data: T;
+    meta: {
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+        from?: number;
+        to?: number;
+    };
+    links: {
+        first: string | null;
+        last: string | null;
+        prev: string | null;
+        next: string | null;
+    };
+}
+
+// Filter and Search types
+export interface ProductFilters {
+    category?: number | string;
+    supplier?: number | string;
+    stock_status?: "in_stock" | "out_of_stock" | "low_stock";
+    status?: "active" | "inactive" | "draft";
+    search?: string;
+    min_price?: number;
+    max_price?: number;
+    featured?: boolean;
+}
+
+export interface PaginationParams {
+    page?: number;
+    per_page?: number;
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
+}
+
+// Dashboard and Analytics types
+export interface DashboardStats {
+    total_products: number;
+    total_categories: number;
+    total_suppliers: number;
+    low_stock_products: number;
+    out_of_stock_products: number;
+    total_revenue?: number;
+    monthly_sales?: number;
+}
+
+export interface StockAlert {
+    product_id: number;
+    product_name: string;
+    current_stock: number;
+    threshold: number;
+    status: "low" | "out";
+}
+
+// Image type for better handling
+export interface ProductImage {
+    id?: number;
+    url: string;
+    alt?: string;
+    is_primary?: boolean;
+    order?: number;
+}
+
+// Export types for form handling
+export type FormField<T = any> = {
+    value: T;
+    error?: string;
+    required?: boolean;
+};
+
+export interface ProductFormState {
+    name: FormField<string>;
+    description: FormField<string>;
+    category_id: FormField<string>;
+    supplier_id: FormField<string>;
+    purchase_price: FormField<string>;
+    sale_price: FormField<string>;
+    stock: FormField<string>;
+    [key: string]: FormField;
+}
+
+// Validation Error type
+export interface ValidationErrors {
+    [key: string]: string[];
+}
+
+// Inertia.js specific types
+export interface InertiaPageProps<T = any> extends PageProps {
+    errors: ValidationErrors;
+    flash: {
+        success?: string;
+        error?: string;
+        warning?: string;
+        info?: string;
+    };
+    props: T;
+}
+
+// Route parameters type
+export interface RouteParams {
+    id?: string | number;
+    product?: string | number;
+    category?: string | number;
+    [key: string]: string | number | undefined;
+}
+
+// Select Option type for dropdowns
+export interface SelectOption {
+    value: string | number;
+    label: string;
+    disabled?: boolean;
+}
+
+// Bulk Action types
+export interface BulkAction {
+    type:
+        | "delete"
+        | "activate"
+        | "deactivate"
+        | "update_category"
+        | "update_supplier";
+    ids: number[];
+    data?: any;
+}
+
+// Export all types
+export type {
+    User,
+    PageProps,
+    Category,
+    Supplier,
+    ProductAttribute,
+    ProductVariation,
+    QtyPrice,
+    Product,
+    ProductsIndexProps,
+    CreatePageProps,
+    EditPageProps,
+    ShowPageProps,
+    ProductFormData,
+    VariationFormData,
+    QtyPriceFormData,
+    ApiResponse,
+    PaginatedResponse,
+    ProductFilters,
+    PaginationParams,
+    DashboardStats,
+    StockAlert,
+    ProductImage,
+    FormField,
+    ProductFormState,
+    ValidationErrors,
+    InertiaPageProps,
+    RouteParams,
+    SelectOption,
+    BulkAction,
+};
+
+// Default exports for common types
+export default {
+    User,
+    PageProps,
+    Category,
+    Supplier,
+    Product,
+    ProductAttribute,
+    ProductVariation,
+    QtyPrice,
+};
