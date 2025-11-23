@@ -88,7 +88,7 @@ export interface Product {
     category?: Category;
     supplier?: Supplier;
     product_variations?: ProductVariation[];
-    qty_prices?: QtyPrice[];
+    qty_price?: QtyPrice[];
     status?: "active" | "inactive" | "draft" | "out_of_stock";
     sku?: string;
     barcode?: string;
@@ -99,23 +99,46 @@ export interface Product {
     updated_at: string;
 }
 
+// Laravel Pagination Link
+export interface PaginationLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+// Laravel Paginated Data
+export interface PaginatedData<T> {
+    data: T[];
+    current_page: number;
+    first_page_url: string;
+    from: number | null;
+    last_page: number;
+    last_page_url: string;
+    links: PaginationLink[];
+    next_page_url: string | null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    to: number | null;
+    total: number;
+}
+
 // Props for different pages
 export interface ProductsIndexProps {
-    products: Product[];
+    products: PaginatedData<Product>;
     categories: Category[];
     suppliers: Supplier[];
-    filters?: {
+    stats: {
+        total: number;
+        in_stock: number;
+        low_stock: number;
+        out_of_stock: number;
+    };
+    filters: {
+        search?: string;
         category?: string;
         supplier?: string;
-        stock_status?: "in_stock" | "out_of_stock" | "low_stock";
-        status?: string;
-        search?: string;
-    };
-    pagination?: {
-        current_page: number;
-        last_page: number;
-        per_page: number;
-        total: number;
+        sort?: string;
     };
 }
 

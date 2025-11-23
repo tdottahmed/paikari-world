@@ -15,11 +15,73 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category', 'supplier', 'product_variations.product_attribute')->get();
+        $query = Product::with('category', 'supplier', 'product_variations.product_attribute');
+
+        // Search by name or SKU
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('sku', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        // Filter by category
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category_id', $request->category);
+        }
+
+        // Filter by supplier
+        if ($request->filled('supplier') && $request->supplier !== 'all') {
+            $query->where('supplier_id', $request->supplier);
+        }
+
+        // Sorting
+        $sortOrder = $request->get('sort', 'newest');
+        switch ($sortOrder) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'price_low':
+                $query->orderBy('sale_price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('sale_price', 'desc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        // Paginate results
+        $products = $query->paginate(15)->withQueryString();
+
+        // Get all products for stats (without pagination)
+        $allProducts = Product::select(['id', 'stock'])->get();
+        $stats = [
+            'total' => $allProducts->count(),
+            'in_stock' => $allProducts->where('stock', '>', 0)->count(),
+            'low_stock' => $allProducts->where('stock', '>', 0)->where('stock', '<=', 10)->count(),
+            'out_of_stock' => $allProducts->where('stock', '=', 0)->count(),
+        ];
+
+        $categories = Category::select(['id', 'title'])->get();
+        $suppliers = Supplier::select(['id', 'name'])->get();
+
         return inertia('Products/Index', [
             'products' => $products,
+            'categories' => $categories,
+            'suppliers' => $suppliers,
+            'stats' => $stats,
+            'filters' => [
+                'search' => $request->search,
+                'category' => $request->get('category', 'all'),
+                'supplier' => $request->get('supplier', 'all'),
+                'sort' => $sortOrder,
+            ],
         ]);
     }
 
@@ -97,14 +159,12 @@ class ProductController extends Controller
         $supplier = Supplier::select(['id', 'name'])->get();
         $attributes = ProductAttribute::select(['id', 'name'])->get();
         $variations = ProductVariation::where('product_id', $product->id)->get();
-        $qtyPrices = Product::where('id', $product->id)->first()->qty_prices;
         return inertia('Products/Edit', [
             'product' => $product,
             'categories' => $categories,
             'suppliers' => $supplier,
             'attributes' => $attributes,
             'variations' => $variations,
-            'qty_prices' => $qtyPrices,
         ]);
     }
 

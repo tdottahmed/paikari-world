@@ -1,20 +1,9 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
-import { Edit2, Trash2, Eye } from "lucide-react";
-import PrimaryButton from "@/Components/Actions/PrimaryButton";
-import SecondaryButton from "@/Components/Actions/SecondaryButton";
-import DangerButton from "@/Components/Actions/DangerButton";
+import { Edit2, Eye } from "lucide-react";
+import { storagePath, formatPrice } from "@/Utils/helpers";
+import { Product } from "@/types";
 import Image from "../Ui/Image";
-import { storagePath } from "@/Utils/helpers";
-
-interface Product {
-    id: number;
-    name: string;
-    images: string[];
-    purchase_price: number;
-    sale_price: number;
-    stock: number;
-}
 
 interface ProductCardProps {
     product: Product;
@@ -23,34 +12,11 @@ interface ProductCardProps {
     onView?: (product: Product) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
-    product,
-    onEdit,
-    onDelete,
-    onView,
-}) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
     const profit = product.sale_price - product.purchase_price;
     const profitPercentage = ((profit / product.purchase_price) * 100).toFixed(
         1
     );
-
-    // Brand Colors
-    const BRAND_COLORS = {
-        primary: "#2DE3A7",
-        background: "#0C1311",
-        cardBackground: "#0E1614",
-        inputBackground: "#0F1A18",
-        border: "#1E2826",
-        text: {
-            primary: "#FFFFFF",
-            secondary: "#E5E7EB",
-            tertiary: "#9CA3AF",
-            inverse: "#0C1311",
-        },
-        success: "#10B981",
-        warning: "#F59E0B",
-        error: "#EF4444",
-    };
 
     const getStockVariant = (stock: number) => {
         if (stock > 15)
@@ -79,29 +45,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
         if (onEdit) {
             onEdit(product);
         } else {
-            // Default edit behavior
             window.location.href = `/admin/products/${product.id}/edit`;
         }
     };
 
-    const handleDelete = (e: React.MouseEvent) => {
-        e.preventDefault();
-        if (onDelete) {
-            onDelete(product);
-        } else {
-            if (confirm("Are you sure you want to delete this product?")) {
-                // Default delete behavior
-                // You can implement your delete logic here
-            }
-        }
-    };
-
     return (
-        <div className="bg-[#0E1614] border border-[#1E2826] rounded-lg shadow-sm hover:shadow-lg hover:border-[#2DE3A7]/30 transition-all duration-300 overflow-hidden group">
-            {/* Product Image with Overlay Actions */}
-            <div className="relative aspect-[4/3] bg-[#0F1A18] overflow-hidden">
+        <div className="bg-[#0E1614] border border-[#1E2826] rounded-lg shadow-sm hover:shadow-lg hover:border-[#2DE3A7]/30 transition-all duration-300 overflow-hidden group flex flex-col h-full">
+            <div className="relative aspect-[4/3] bg-[#0F1A18] overflow-hidden shrink-0">
                 <Image
-                    src={storagePath(product.images[0])}
+                    src={
+                        product.images && product.images.length > 0
+                            ? storagePath(product.images[0])
+                            : undefined
+                    }
                     alt={product.name}
                 />
 
@@ -139,7 +95,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </div>
 
             {/* Product Info */}
-            <div className="p-4">
+            <div className="p-4 flex flex-col flex-grow">
                 {/* Product Name */}
                 <h3 className="font-semibold text-white text-base mb-3 line-clamp-2 leading-tight min-h-[2.5rem]">
                     {product.name}
@@ -151,7 +107,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-400"> Cost: </span>
                         <span className="text-sm font-medium text-gray-300">
-                            ৳ {product.purchase_price.toLocaleString()}
+                            {formatPrice(product.purchase_price)}
                         </span>
                     </div>
 
@@ -159,7 +115,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-400"> Price: </span>
                         <span className="text-sm font-semibold text-[#2DE3A7]">
-                            ৳{product.sale_price.toLocaleString()}
+                            {formatPrice(product.sale_price)}
                         </span>
                     </div>
 
@@ -168,31 +124,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         <span className="text-sm text-gray-400"> Profit: </span>
                         <div className="flex items-center gap-2">
                             <span className="text-sm font-bold text-[#2DE3A7]">
-                                ৳{profit.toLocaleString()}
+                                {formatPrice(profit)}
                             </span>
                         </div>
                     </div>
                 </div>
-
-                {/* Action Buttons */}
-                {/* <div className="flex gap-2 pt-3 border-t border-[#1E2826]">
-                    <SecondaryButton
-                        size="sm"
-                        className="flex-1 flex items-center justify-center gap-2 text-xs"
-                    >
-                        <Edit2 size={14} />
-                        <span className="hidden md:inline">Edit</span>
-                    </SecondaryButton>
-
-                    <DangerButton
-                        size="sm"
-                        variant="outline"
-                        className="flex-1 flex items-center justify-center gap-2 text-xs"
-                    >
-                        <Trash2 size={14} />
-                        <span className="hidden md:inline">Delete</span>
-                    </DangerButton>
-                </div> */}
             </div>
         </div>
     );

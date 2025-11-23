@@ -34,10 +34,10 @@ export const formatCurrency = (
 };
 
 /**
- * Format a number as price without currency symbol
+ * Format a number as price with BDT currency symbol
  * @param amount - The amount to format
  * @param locale - Locale string (default: en-US)
- * @returns Formatted price string
+ * @returns Formatted price string with BDT symbol
  */
 export const formatPrice = (
     amount: number | string | null | undefined,
@@ -55,12 +55,54 @@ export const formatPrice = (
     }
 
     try {
-        return new Intl.NumberFormat(locale, {
+        const formattedNumber = new Intl.NumberFormat(locale, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         }).format(numericAmount);
+
+        return `৳ ${formattedNumber}`;
     } catch (error) {
-        return numericAmount.toFixed(2);
+        return `৳ ${numericAmount.toFixed(2)}`;
+    }
+};
+
+// Alternative version with configurable fraction digits
+export const formatPriceWithOptions = (
+    amount: number | string | null | undefined,
+    options: {
+        locale?: string;
+        minimumFractionDigits?: number;
+        maximumFractionDigits?: number;
+        fallbackText?: string;
+    } = {}
+): string => {
+    const {
+        locale = "en-US",
+        minimumFractionDigits = 2,
+        maximumFractionDigits = 2,
+        fallbackText = "N/A",
+    } = options;
+
+    if (amount === null || amount === undefined || amount === "") {
+        return fallbackText;
+    }
+
+    const numericAmount =
+        typeof amount === "string" ? parseFloat(amount) : amount;
+
+    if (isNaN(numericAmount)) {
+        return "Invalid amount";
+    }
+
+    try {
+        const formattedNumber = new Intl.NumberFormat(locale, {
+            minimumFractionDigits,
+            maximumFractionDigits,
+        }).format(numericAmount);
+
+        return `৳ ${formattedNumber}`;
+    } catch (error) {
+        return `৳ ${numericAmount.toFixed(maximumFractionDigits)}`;
     }
 };
 

@@ -16,9 +16,14 @@ import {
     AlertTriangleIcon,
 } from "lucide-react";
 import ImageGallery from "@/Components/Ui/ImageGallery";
-import { formatCurrency } from "@/Utils/helpers";
+import { formatPrice } from "@/Utils/helpers";
 
 export default function Show({ product }: ShowPageProps) {
+    const profit = product.sale_price - product.purchase_price;
+    const profitPercentage = ((profit / product.purchase_price) * 100).toFixed(
+        1
+    );
+
     const getCategoryName = () => {
         return product.category?.title || "N/A";
     };
@@ -190,8 +195,8 @@ export default function Show({ product }: ShowPageProps) {
                                             {" "}
                                             Sale Price{" "}
                                         </p>
-                                        <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                                            {formatCurrency(product.sale_price)}
+                                        <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                                            {formatPrice(product.sale_price)}
                                         </p>
                                     </div>
                                     <div>
@@ -200,10 +205,23 @@ export default function Show({ product }: ShowPageProps) {
                                             Purchase Price{" "}
                                         </p>
                                         <p className="text-xl font-semibold text-gray-900 dark:text-white">
-                                            {formatCurrency(
+                                            {formatPrice(
                                                 product.purchase_price
                                             )}
                                         </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                            Profit
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-l font-bold text-emerald-600 dark:text-emerald-400">
+                                                {formatPrice(profit)}
+                                            </p>
+                                            <span className="text-xs font-medium px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                                {profitPercentage} %
+                                            </span>
+                                        </div>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
@@ -212,9 +230,7 @@ export default function Show({ product }: ShowPageProps) {
                                         </p>
                                         <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
                                             {product.moq_price
-                                                ? formatCurrency(
-                                                      product.moq_price
-                                                  )
+                                                ? formatPrice(product.moq_price)
                                                 : "N/A"}
                                         </p>
                                     </div>
@@ -225,9 +241,7 @@ export default function Show({ product }: ShowPageProps) {
                                         </p>
                                         <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
                                             {product.uan_price
-                                                ? formatCurrency(
-                                                      product.uan_price
-                                                  )
+                                                ? formatPrice(product.uan_price)
                                                 : "N/A"}
                                         </p>
                                     </div>
@@ -325,7 +339,7 @@ export default function Show({ product }: ShowPageProps) {
                                                                 <td className="px-6 py-4">
                                                                     {variation.price ? (
                                                                         <span className="font-medium text-emerald-600">
-                                                                            {formatCurrency(
+                                                                            {formatPrice(
                                                                                 variation.price
                                                                             )}
                                                                         </span>
@@ -347,43 +361,40 @@ export default function Show({ product }: ShowPageProps) {
                             )}
 
                         {/* Quantity Prices */}
-                        {product.qty_prices &&
-                            product.qty_prices.length > 0 && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>
-                                            Wholesale Pricing{" "}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent padding="none">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x dark:divide-gray-700 border-t dark:border-gray-700">
-                                            {product.qty_prices.map(
-                                                (qtyPrice, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                                                    >
-                                                        <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                                            {" "}
-                                                            Buy {qtyPrice.qty} +
-                                                            units{" "}
-                                                        </span>
-                                                        <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                                                            {formatCurrency(
-                                                                qtyPrice.price
-                                                            )}
-                                                        </span>
-                                                        <span className="text-xs text-gray-400 mt-1">
-                                                            {" "}
-                                                            per unit{" "}
-                                                        </span>
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            )}
+                        {product.qty_price && product.qty_price.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Wholesale Pricing </CardTitle>
+                                </CardHeader>
+                                <CardContent padding="none">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x dark:divide-gray-700 border-t dark:border-gray-700">
+                                        {product.qty_price.map(
+                                            (qtyPrice, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                                >
+                                                    <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                                        {" "}
+                                                        Buy {qtyPrice.qty} +
+                                                        units{" "}
+                                                    </span>
+                                                    <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                                                        {formatPrice(
+                                                            qtyPrice.price
+                                                        )}
+                                                    </span>
+                                                    <span className="text-xs text-gray-400 mt-1">
+                                                        {" "}
+                                                        per unit{" "}
+                                                    </span>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
                 </div>
             </div>
