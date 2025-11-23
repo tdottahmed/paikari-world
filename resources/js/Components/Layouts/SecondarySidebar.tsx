@@ -9,8 +9,9 @@ import {
     LogOutIcon,
     X,
     ArrowLeft,
+    Layers,
 } from "lucide-react";
-import { useForm, Link } from "@inertiajs/react";
+import { useForm, Link, usePage } from "@inertiajs/react";
 
 interface SecondarySidebarProps {
     isOpen: boolean;
@@ -23,83 +24,105 @@ interface MenuItem {
     label: string;
     icon: React.ReactNode;
     route?: string;
+    urlPattern?: string;
 }
 
 const secondaryMenuItems: MenuItem[] = [
     {
         key: "categories",
         label: "Categories",
-        icon: <BadgePercent size={18} />,
-        route: "#",
+        icon: <Layers size={18} />,
+        route: "admin.categories.index",
+        urlPattern: "/admin/categories",
     },
     {
         key: "discounts",
         label: "Discounts",
         icon: <BadgePercent size={18} />,
         route: "#",
+        urlPattern: "/admin/discounts",
     },
     {
         key: "website",
         label: "Website",
         icon: <Globe size={18} />,
         route: "#",
+        urlPattern: "/admin/website",
     },
     {
         key: "users",
         label: "Users",
         icon: <Users size={18} />,
         route: "#",
+        urlPattern: "/admin/users",
     },
     {
         key: "gateway",
         label: "Payment Gateways",
         icon: <Truck size={18} />,
         route: "#",
+        urlPattern: "/admin/payment-gateways",
     },
     {
         key: "courier",
         label: "Courier",
         icon: <Truck size={18} />,
         route: "#",
+        urlPattern: "/admin/courier",
     },
     {
         key: "price",
         label: "Price Calculator",
         icon: <Calculator size={18} />,
         route: "#",
+        urlPattern: "/admin/price-calculator",
     },
     {
         key: "marketing",
         label: "Marketing",
         icon: <Target size={18} />,
         route: "#",
+        urlPattern: "/admin/marketing",
     },
 ];
 
 const MenuLink = ({
     item,
     onClick,
+    isActive,
 }: {
     item: MenuItem;
     onClick?: () => void;
+    isActive: boolean;
 }) =>
-    item.route ? (
+    item.route && item.route !== "#" ? (
         <Link
-            href="#"
+            href={route(item.route)}
             onClick={onClick}
-            className="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-300 hover:bg-[#151F1D] hover:text-white transition-all"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
+                isActive
+                    ? "bg-[#0F1A18] text-[#2DE3A7]"
+                    : "text-gray-300 hover:bg-[#151F1D] hover:text-white"
+            }`}
         >
             {item.icon}
-            <span>{item.label}</span>
+            <span> {item.label} </span>
         </Link>
     ) : (
         <a
             href="#"
-            onClick={onClick}
-            className="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-300 hover:bg-[#151F1D] hover:text-white transition-all"
+            onClick={(e) => {
+                e.preventDefault();
+                onClick?.();
+            }}
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
+                isActive
+                    ? "bg-[#0F1A18] text-[#2DE3A7]"
+                    : "text-gray-300 hover:bg-[#151F1D] hover:text-white"
+            }`}
         >
             {item.icon}
-            <span>{item.label}</span>
+            <span> {item.label} </span>
         </a>
     );
 
@@ -109,9 +132,15 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
     mobile = false,
 }) => {
     const { post } = useForm();
+    const { url } = usePage();
 
     const handleLogout = () => {
         post(route("logout"));
+    };
+
+    const isMenuItemActive = (item: MenuItem): boolean => {
+        if (!item.urlPattern) return false;
+        return url.startsWith(item.urlPattern);
     };
 
     /* MOBILE SIDEBAR */
@@ -119,7 +148,7 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
         return (
             <div className="bg-[#0E1614] p-6 max-h-96 overflow-y-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold">Menu</h3>
+                    <h3 className="text-lg font-semibold"> Menu </h3>
                     <button
                         onClick={onClose}
                         className="p-2 rounded-lg hover:bg-[#151F1D]"
@@ -134,6 +163,7 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
                             key={item.key}
                             item={item}
                             onClick={onClose}
+                            isActive={isMenuItemActive(item)}
                         />
                     ))}
 
@@ -142,7 +172,7 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
                         className="flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:bg-red-600/10 transition-all w-full text-left"
                     >
                         <LogOutIcon size={18} />
-                        <span>Logout</span>
+                        <span> Logout </span>
                     </button>
                 </nav>
             </div>
@@ -154,8 +184,11 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
             <div className="p-5">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-xl font-semibold">Paikari World</h2>
-                        <p className="text-sm text-gray-400">pw@gmail.com</p>
+                        <h2 className="text-xl font-semibold">
+                            {" "}
+                            Paikari World{" "}
+                        </h2>
+                        <p className="text-sm text-gray-400"> pw@gmail.com</p>
                     </div>
                     <button
                         onClick={onClose}
@@ -169,7 +202,11 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
 
             <nav className="flex-1 p-4 space-y-1">
                 {secondaryMenuItems.map((item) => (
-                    <MenuLink key={item.key} item={item} />
+                    <MenuLink
+                        key={item.key}
+                        item={item}
+                        isActive={isMenuItemActive(item)}
+                    />
                 ))}
             </nav>
 
@@ -179,7 +216,7 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
                     className="flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:bg-red-600/10 transition-all w-full text-left"
                 >
                     <LogOutIcon size={18} />
-                    <span>Logout</span>
+                    <span> Logout </span>
                 </button>
             </div>
         </aside>

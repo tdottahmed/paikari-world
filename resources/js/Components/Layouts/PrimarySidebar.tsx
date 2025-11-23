@@ -1,9 +1,9 @@
 import React from "react";
 import { Home, ShoppingBag, Package, Grid } from "lucide-react";
 import { Link } from "@inertiajs/react";
+import { useActiveRoute } from "@/Utils/routeHelpers";
 
 interface PrimarySidebarProps {
-    active?: string;
     onMoreClick?: () => void;
 }
 
@@ -13,35 +13,46 @@ const primaryMenuItems = [
         label: "Dashboard",
         icon: <Home size={20} />,
         route: "admin.dashboard",
+        urlPattern: "/admin",
     },
     {
         key: "products",
         label: "Products",
         icon: <ShoppingBag size={20} />,
         route: "admin.products.index",
+        urlPattern: "/admin/products",
     },
     {
         key: "orders",
         label: "Orders",
         icon: <Package size={20} />,
         route: null,
+        urlPattern: "/admin/orders",
     },
     {
         key: "more",
         label: "More",
         icon: <Grid size={20} />,
-        route: null, // No route for More, it's a toggle
+        route: null,
+        urlPattern: null,
     },
 ];
 
-const PrimarySidebar: React.FC<PrimarySidebarProps> = ({
-    active,
-    onMoreClick,
-}) => {
+const PrimarySidebar: React.FC<PrimarySidebarProps> = ({ onMoreClick }) => {
+    const activeRoute = useActiveRoute();
+
     const handleItemClick = (item: (typeof primaryMenuItems)[0]) => {
         if (item.key === "more" && onMoreClick) {
             onMoreClick();
         }
+    };
+
+    const isActive = (item: (typeof primaryMenuItems)[0]) => {
+        if (item.key === "dashboard") {
+            return activeRoute === "dashboard" || activeRoute === "";
+        }
+
+        return activeRoute === item.key;
     };
 
     return (
@@ -59,7 +70,7 @@ const PrimarySidebar: React.FC<PrimarySidebarProps> = ({
                             <Link
                                 href={route(item.route)}
                                 className={`flex flex-col items-center p-3 rounded-lg transition-all ${
-                                    active === item.key
+                                    isActive(item)
                                         ? "bg-[#0F1A18] text-[#2DE3A7]"
                                         : "text-gray-300 hover:bg-[#151F1D] hover:text-white"
                                 }`}
@@ -73,7 +84,7 @@ const PrimarySidebar: React.FC<PrimarySidebarProps> = ({
                             <button
                                 onClick={() => handleItemClick(item)}
                                 className={`flex flex-col items-center p-3 rounded-lg transition-all w-full ${
-                                    active === item.key
+                                    isActive(item)
                                         ? "bg-[#0F1A18] text-[#2DE3A7]"
                                         : "text-gray-300 hover:bg-[#151F1D] hover:text-white"
                                 }`}

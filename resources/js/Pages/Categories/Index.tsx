@@ -1,0 +1,146 @@
+import React, { useState } from "react";
+import Master from "@/Layouts/Master";
+import Header from "@/Components/Layouts/Header";
+import PrimaryButton from "@/Components/Actions/PrimaryButton";
+import { Link, router } from "@inertiajs/react";
+import { Plus, Edit, Trash2, Package } from "lucide-react";
+import { Category } from "@/types";
+
+interface CategoriesIndexProps {
+    categories: (Category & { products_count: number })[];
+}
+
+const Index: React.FC<CategoriesIndexProps> = ({ categories }) => {
+    const [deletingId, setDeletingId] = useState<number | null>(null);
+
+    const handleDelete = (id: number) => {
+        if (confirm("Are you sure you want to delete this category?")) {
+            setDeletingId(id);
+            router.delete(route("admin.categories.destroy", id), {
+                onFinish: () => setDeletingId(null),
+            });
+        }
+    };
+
+    return (
+        <Master
+            title="Categories"
+            head={<Header title="Categories" showUserMenu={true} />}
+        >
+            <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                            Categories
+                        </h1>
+                        <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
+                            Manage product categories
+                        </p>
+                    </div>
+
+                    <Link
+                        href={route("admin.categories.create")}
+                        className="w-full md:w-auto"
+                    >
+                        <PrimaryButton className="w-full md:w-auto flex items-center justify-center gap-2">
+                            <Plus size={18} />
+                            <span> Add Category </span>
+                        </PrimaryButton>
+                    </Link>
+                </div>
+
+                {/* Categories Grid */}
+                {categories.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {categories.map((category) => (
+                            <div
+                                key={category.id}
+                                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
+                            >
+                                {/* Category Image */}
+                                <div className="aspect-video bg-gray-100 dark:bg-gray-700 relative">
+                                    {category.image ? (
+                                        <img
+                                            src={`/storage/${category.image}`}
+                                            alt={category.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <Package
+                                                size={48}
+                                                className="text-gray-400"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Category Info */}
+                                <div className="p-4">
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                                        {category.title}
+                                    </h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                        {category.slug}
+                                    </p>
+                                    <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
+                                        <Package size={16} />
+                                        <span>
+                                            {category.products_count} product
+                                            {category.products_count !== 1
+                                                ? "s"
+                                                : ""}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="px-4 pb-4 flex gap-2">
+                                    <Link
+                                        href={route(
+                                            "admin.categories.edit",
+                                            category.id
+                                        )}
+                                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+                                    >
+                                        <Edit size={16} />
+                                        <span> Edit </span>
+                                    </Link>
+                                    <button
+                                        onClick={() =>
+                                            handleDelete(category.id)
+                                        }
+                                        disabled={deletingId === category.id}
+                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+                        <Package
+                            size={48}
+                            className="mx-auto text-gray-400 mb-4"
+                        />
+                        <p className="text-gray-500 dark:text-gray-400 mb-4">
+                            No categories found.Create your first category to
+                            get started.
+                        </p>
+                        <Link href={route("admin.categories.create")}>
+                            <PrimaryButton className="inline-flex items-center gap-2">
+                                <Plus size={18} />
+                                <span> Add Category </span>
+                            </PrimaryButton>
+                        </Link>
+                    </div>
+                )}
+            </div>
+        </Master>
+    );
+};
+
+export default Index;

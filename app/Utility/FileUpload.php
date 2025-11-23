@@ -227,4 +227,22 @@ class FileUpload
     }
     return $urls;
   }
+  /**
+   * Delete single image from storage
+   *
+   * @param string $imagePath
+   * @param string $disk
+   * @return bool
+   */
+  public static function deleteImage(string $imagePath, string $disk = 'public'): bool
+  {
+    try {
+      if (Storage::disk($disk)->exists($imagePath)) {
+        Storage::disk($disk)->delete($imagePath);
+      }
+      return true;
+    } catch (\Exception $e) {
+      return false;
+    }
+  }
 }
