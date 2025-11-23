@@ -16,21 +16,23 @@ class ProductRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'buy_price' => 'required|numeric|min:0',
+            'purchase_price' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
             'moq_price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'uan_price' => 'required|numeric|min:0',
-            'images' => 'required|array|min:1',
-            'category' => 'required|exists:categories,id',
-            'supplier' => 'required|exists:suppliers,id',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'category_id' => 'required|exists:categories,id',
+            'supplier_id' => 'required|exists:suppliers,id',
             'qty_prices' => 'sometimes|array',
             'qty_prices.*.qty' => 'required|integer|min:1',
             'qty_prices.*.qty_price' => 'required|numeric|min:0',
-            'variations.*.attribute' => 'nullable|exists:product_attributes,id',
+            'variations.*.attribute' => 'nullable',
             'variations.*.value' => 'nullable|string|max:255',
             'variations.*.stock' => 'nullable|integer|min:0',
             'variations.*.price' => 'nullable|numeric|min:0',
+            'deleted_images' => 'nullable|array',
         ];
     }
 

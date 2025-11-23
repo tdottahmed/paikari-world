@@ -12,17 +12,10 @@ import {
     DollarSignIcon,
 } from "lucide-react";
 import ImageGallery from "@/Components/Ui/ImageGallery";
+import { formatCurrency } from "@/Utils/helpers";
 
 export default function Show({ product }: ShowPageProps) {
-    const formatCurrency = (amount: number) => {
-        return (
-            `$${amount?.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            })}` || "N/A"
-        );
-    };
-
+   
     const getCategoryName = () => {
         return product.category?.title || "N/A";
     };

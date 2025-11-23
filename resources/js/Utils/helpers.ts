@@ -1,5 +1,3 @@
-// utils/helpers.ts
-
 /**
  * Format a number as currency
  * @param amount - The amount to format

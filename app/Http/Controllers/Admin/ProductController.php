@@ -10,6 +10,7 @@ use App\Models\ProductAttribute;
 use App\Models\ProductVariation;
 use App\Models\Supplier;
 use App\Utility\FileUpload;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
@@ -87,6 +88,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        $product->load('category', 'supplier', 'product_variations');
         $categories = Category::select(['id', 'title'])->get();
         $supplier = Supplier::select(['id', 'name'])->get();
         $attributes = ProductAttribute::select(['id', 'name'])->get();
@@ -100,6 +102,67 @@ class ProductController extends Controller
             'variations' => $variations,
             'qty_prices' => $qtyPrices,
         ]);
+    }
+
+    public function update(ProductRequest $request, Product $product)
+    {
+        $product->load('product_variations');
+        DB::beginTransaction();
+        try {
+            $currentImages = $product->images ?? [];
+
+            if ($request->has('deleted_images')) {
+                FileUpload::deleteImages($request->deleted_images);
+                $currentImages = array_diff($currentImages, $request->deleted_images);
+            }
+
+            if ($request->hasFile('images')) {
+                $newImages = FileUpload::uploadImages(
+                    $request->file('images'),
+                    'products'
+                );
+                $currentImages = array_merge($currentImages, $newImages);
+            }
+
+            $qtyPriceData = $this->processQtyPrices($request);
+
+            $product->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'purchase_price' => $request->purchase_price,
+                'sale_price' => $request->sale_price,
+                'moq_price' => $request->moq_price,
+                'stock' => $request->stock,
+                'uan_price' => $request->uan_price,
+                'category_id' => $request->category_id,
+                'supplier_id' => $request->supplier_id,
+                'images' => $currentImages,
+                'qty_price' => $qtyPriceData,
+            ]);
+            if ($request->has('variations') && !empty($request->variations)) {
+                $product->product_variations()->delete();
+                foreach ($request->variations as $variationData) {
+                    ProductVariation::create([
+                        'product_id' => $product->id,
+                        'attribute_id' => $variationData['attribute_id'],
+                        'value' => $variationData['value'],
+                        'stock' => $variationData['stock'] ?? null,
+                        'price' => $variationData['price'] ?? null,
+                    ]);
+                }
+            } else {
+                $product->product_variations()->delete();
+            }
+
+            DB::commit();
+            return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            if (isset($newImages)) {
+                FileUpload::deleteImages($newImages);
+            }
+            return back()->with('error', 'Failed to update product: ' . $e->getMessage());
+        }
     }
 
     public function show(Product $product)

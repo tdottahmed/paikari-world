@@ -1,14 +1,14 @@
 import React from "react";
 
 interface InputLabelProps {
-    htmlFor: string;
+    htmlFor?: string;
     value: string;
     className?: string;
     required?: boolean;
 }
 
 const InputLabel: React.FC<InputLabelProps> = ({
-    htmlFor,
+    htmlFor = "",
     value,
     required = false,
     className = "",

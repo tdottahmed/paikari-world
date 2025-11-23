@@ -1,20 +1,20 @@
+import React, { useState } from "react";
+import { useForm } from "@inertiajs/react";
+import { PlusIcon, Trash2Icon, ArrowLeftIcon } from "lucide-react";
+import Master from "@/Layouts/Master";
 import Header from "@/Components/Layouts/Header";
 import Card, { CardContent, CardHeader, CardTitle } from "@/Components/Ui/Card";
 import CollapsibleSection from "@/Components/Ui/CollapsibleSection";
 import InputLabel from "@/Components/Ui/InputLabel";
 import TextInput from "@/Components/Ui/TextInput";
+import SelectInput from "@/Components/Ui/SelectInput";
+import TextArea from "@/Components/Ui/TextArea";
+import InputError from "@/Components/Ui/InputError";
 import PrimaryButton from "@/Components/Actions/PrimaryButton";
 import DangerButton from "@/Components/Actions/DangerButton";
-import Master from "@/Layouts/Master";
-import SelectInput from "@/Components/Ui/SelectInput";
-import { useForm } from "@inertiajs/react";
-import InputError from "@/Components/Ui/InputError";
-import { PlusIcon, Trash2Icon, ArrowLeftIcon } from "lucide-react";
-import { useState } from "react";
-import ImageUploader from "@/Components/Ui/ImageUploader";
-import TextArea from "@/Components/Ui/TextArea";
 import DeleteConfirmationDialog from "@/Components/Ui/DeleteConfirmationDialog";
-import { EditPageProps, ProductFormData } from "@/types";
+import ImageUploader from "@/Components/Ui/ImageUploader";
+import { EditPageProps } from "@/types";
 
 interface QtyPrice {
     qty: string;
@@ -34,29 +34,17 @@ export default function Edit({
     suppliers,
     attributes,
 }: EditPageProps) {
-    const [qtyPrices, setQtyPrices] = useState<QtyPrice[]>(
-        product.qty_prices?.map((qp) => ({
-            qty: qp.qty.toString(),
-            qty_price: qp.price.toString(),
-        })) || []
-    );
-
-    const [variations, setVariations] = useState<Variation[]>(
-        product.variations?.map((v) => ({
-            attribute_id: v.attribute_id.toString(),
-            value: v.value,
-            stock: v.stock?.toString(),
-            price: v.price?.toString(),
-        })) || []
-    );
-
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [processingDelete, setProcessingDelete] = useState(false);
+
+    const [existingImages, setExistingImages] = useState<string[]>(
+        product.images || []
+    );
 
     const {
         data,
         setData,
-        put,
+        post,
         processing,
         errors,
         delete: destroy,
@@ -65,20 +53,32 @@ export default function Edit({
         category_id: product.category_id?.toString() || "",
         supplier_id: product.supplier_id?.toString() || "",
         description: product.description || "",
+
         purchase_price: product.purchase_price?.toString() || "",
         sale_price: product.sale_price?.toString() || "",
         moq_price: product.moq_price?.toString() || "",
         stock: product.stock?.toString() || "",
         uan_price: product.uan_price?.toString() || "",
-        qty_prices: [] as QtyPrice[],
+
+        qty_prices: (product.qty_prices || []).map((qp: any) => ({
+            qty: qp.qty.toString(),
+            qty_price: qp.price.toString(),
+        })) as QtyPrice[],
+
+        variations: (product.variations || []).map((v: any) => ({
+            attribute_id: v.attribute_id.toString(),
+            value: v.value,
+            stock: v.stock?.toString(),
+            price: v.price?.toString(),
+        })) as Variation[],
+
         images: [] as File[],
-        variations: [] as Variation[],
-        _method: "put" as const,
+        deleted_images: [] as string[],
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route("admin.product.update", product.id), {
+        post(route("admin.product.update", product.id), {
             forceFormData: true,
         });
     };
@@ -93,73 +93,52 @@ export default function Edit({
         });
     };
 
-    const addQtyPrice = () => {
-        const newQtyPrice: QtyPrice = {
-            qty: "",
-            qty_price: "",
-        };
-        const updatedQtyPrices = [...qtyPrices, newQtyPrice];
-        setQtyPrices(updatedQtyPrices);
-        setData("qty_prices", updatedQtyPrices);
-    };
-
-    const removeQtyPrice = (index: number) => {
-        const updatedQtyPrices = qtyPrices.filter((_, i) => i !== index);
-        setQtyPrices(updatedQtyPrices);
-        setData("qty_prices", updatedQtyPrices);
-    };
-
+    const addQtyPrice = () =>
+        setData("qty_prices", [...data.qty_prices, { qty: "", qty_price: "" }]);
+    const removeQtyPrice = (index: number) =>
+        setData(
+            "qty_prices",
+            data.qty_prices.filter((_, i) => i !== index)
+        );
     const updateQtyPrice = (
         index: number,
         field: keyof QtyPrice,
         value: string
     ) => {
-        const updatedQtyPrices = qtyPrices.map((item, i) =>
+        const updated = data.qty_prices.map((item, i) =>
             i === index ? { ...item, [field]: value } : item
         );
-        setQtyPrices(updatedQtyPrices);
-        setData("qty_prices", updatedQtyPrices);
+        setData("qty_prices", updated);
     };
 
-    const addVariation = () => {
-        const newVariation: Variation = {
-            attribute_id: "",
-            value: "",
-            stock: "",
-            price: "",
-        };
-        const updatedVariations = [...variations, newVariation];
-        setVariations(updatedVariations);
-        setData("variations", updatedVariations);
-    };
-
-    const removeVariation = (index: number) => {
-        const updatedVariations = variations.filter((_, i) => i !== index);
-        setVariations(updatedVariations);
-        setData("variations", updatedVariations);
-    };
-
+    const addVariation = () =>
+        setData("variations", [
+            ...data.variations,
+            { attribute_id: "", value: "", stock: "", price: "" },
+        ]);
+    const removeVariation = (index: number) =>
+        setData(
+            "variations",
+            data.variations.filter((_, i) => i !== index)
+        );
     const updateVariation = (
         index: number,
         field: keyof Variation,
         value: string
     ) => {
-        const updatedVariations = variations.map((item, i) =>
+        const updated = data.variations.map((item, i) =>
             i === index ? { ...item, [field]: value } : item
         );
-        setVariations(updatedVariations);
-        setData("variations", updatedVariations);
+        setData("variations", updated);
     };
 
-    const handleImagesChange = (files: File[]) => {
+    const handleNewImagesChange = (files: File[]) => {
         setData("images", files);
     };
 
-    const getAttributeName = (attributeId: string) => {
-        return (
-            attributes.find((attr) => attr.id.toString() === attributeId)
-                ?.name || attributeId
-        );
+    const handleRemoveExistingImage = (path: string) => {
+        setData("deleted_images", [...data.deleted_images, path]);
+        setExistingImages((prev) => prev.filter((img) => img !== path));
     };
 
     return (
@@ -212,7 +191,6 @@ export default function Edit({
                                     <TextInput
                                         id="name"
                                         name="name"
-                                        placeholder="Enter product name"
                                         value={data.name}
                                         onChange={(e) =>
                                             setData("name", e.target.value)
@@ -231,7 +209,6 @@ export default function Edit({
                                         />
                                         <SelectInput
                                             id="category_id"
-                                            name="category_id"
                                             value={data.category_id}
                                             onChange={(val) =>
                                                 setData("category_id", val)
@@ -240,11 +217,9 @@ export default function Edit({
                                                 value: c.id.toString(),
                                                 label: c.title,
                                             }))}
-                                            placeholder="Select Category"
                                             error={errors.category_id}
                                         />
                                     </div>
-
                                     <div>
                                         <InputLabel
                                             htmlFor="supplier_id"
@@ -253,7 +228,6 @@ export default function Edit({
                                         />
                                         <SelectInput
                                             id="supplier_id"
-                                            name="supplier_id"
                                             value={data.supplier_id}
                                             onChange={(val) =>
                                                 setData("supplier_id", val)
@@ -262,35 +236,30 @@ export default function Edit({
                                                 value: s.id.toString(),
                                                 label: s.name,
                                             }))}
-                                            placeholder="Select Supplier"
                                             error={errors.supplier_id}
                                         />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1">
-                                    <div className="description">
-                                        <InputLabel
-                                            htmlFor="description"
-                                            value="Description"
-                                            required
-                                        />
-                                        <TextArea
-                                            id="description"
-                                            name="description"
-                                            value={data.description}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "description",
-                                                    e.target.value
-                                                )
-                                            }
-                                            required
-                                        />
-                                        <InputError
-                                            message={errors.description}
-                                        />
-                                    </div>
+                                    <InputLabel
+                                        htmlFor="description"
+                                        value="Description"
+                                        required
+                                    />
+                                    <TextArea
+                                        id="description"
+                                        name="description"
+                                        value={data.description}
+                                        onChange={(e) =>
+                                            setData(
+                                                "description",
+                                                e.target.value
+                                            )
+                                        }
+                                        required
+                                    />
+                                    <InputError message={errors.description} />
                                 </div>
                             </CardContent>
                         </Card>
@@ -315,7 +284,6 @@ export default function Edit({
                                         id="purchase_price"
                                         name="purchase_price"
                                         type="number"
-                                        placeholder="0.00"
                                         value={data.purchase_price}
                                         onChange={(e) =>
                                             setData(
@@ -339,7 +307,6 @@ export default function Edit({
                                         id="sale_price"
                                         name="sale_price"
                                         type="number"
-                                        placeholder="0.00"
                                         value={data.sale_price}
                                         onChange={(e) =>
                                             setData(
@@ -360,7 +327,6 @@ export default function Edit({
                                         id="moq_price"
                                         name="moq_price"
                                         type="number"
-                                        placeholder="0.00"
                                         value={data.moq_price}
                                         onChange={(e) =>
                                             setData("moq_price", e.target.value)
@@ -380,7 +346,6 @@ export default function Edit({
                                         id="stock"
                                         name="stock"
                                         type="number"
-                                        placeholder="0"
                                         value={data.stock}
                                         onChange={(e) =>
                                             setData("stock", e.target.value)
@@ -398,7 +363,6 @@ export default function Edit({
                                         id="uan_price"
                                         name="uan_price"
                                         type="number"
-                                        placeholder="0.00"
                                         value={data.uan_price}
                                         onChange={(e) =>
                                             setData("uan_price", e.target.value)
@@ -411,10 +375,7 @@ export default function Edit({
                             {/* Qty Price Section */}
                             <div className="mb-6">
                                 <div className="flex justify-between items-center mb-4">
-                                    <InputLabel
-                                        htmlFor="qty_price"
-                                        value="Quantity Prices"
-                                    />
+                                    <InputLabel value="Quantity Prices" />
                                     <PrimaryButton
                                         as="button"
                                         type="button"
@@ -422,38 +383,33 @@ export default function Edit({
                                         size="sm"
                                         onClick={addQtyPrice}
                                     >
-                                        <PlusIcon size={16} className="mr-1" />
+                                        <PlusIcon size={16} className="mr-1" />{" "}
                                         Add Qty Price
                                     </PrimaryButton>
                                 </div>
-
-                                {qtyPrices.map((qtyPrice, index) => (
+                                {data.qty_prices.map((qtyPrice, index) => (
                                     <Card key={index} className="mb-4 relative">
                                         <CardContent className="pt-6">
-                                            <div className="absolute top-3 right-3">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        removeQtyPrice(index)
-                                                    }
-                                                    className="text-red-500 hover:text-red-700 transition-colors"
-                                                >
-                                                    <Trash2Icon size={18} />
-                                                </button>
-                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    removeQtyPrice(index)
+                                                }
+                                                className="absolute top-3 right-3 text-red-500 hover:text-red-700"
+                                            >
+                                                <Trash2Icon size={18} />
+                                            </button>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div>
                                                     <InputLabel
-                                                        htmlFor={`qty-${index}`}
                                                         value="Quantity"
                                                         required
                                                     />
                                                     <TextInput
-                                                        id={`qty-${index}`}
-                                                        name={`qty-${index}`}
+                                                        id="qty"
+                                                        name="qty"
                                                         type="number"
                                                         value={qtyPrice.qty}
-                                                        placeholder="0"
                                                         onChange={(e) =>
                                                             updateQtyPrice(
                                                                 index,
@@ -466,18 +422,16 @@ export default function Edit({
                                                 </div>
                                                 <div>
                                                     <InputLabel
-                                                        htmlFor={`qty_price-${index}`}
                                                         value="Price"
                                                         required
                                                     />
                                                     <TextInput
-                                                        id={`qty_price-${index}`}
-                                                        name={`qty_price-${index}`}
+                                                        id="qty_price"
+                                                        name="qty_price"
                                                         type="number"
                                                         value={
                                                             qtyPrice.qty_price
                                                         }
-                                                        placeholder="0.00"
                                                         onChange={(e) =>
                                                             updateQtyPrice(
                                                                 index,
@@ -508,7 +462,9 @@ export default function Edit({
                                 <ImageUploader
                                     label="Product Images"
                                     value={data.images}
-                                    onChange={handleImagesChange}
+                                    onChange={handleNewImagesChange}
+                                    existingImages={existingImages}
+                                    onRemoveExisting={handleRemoveExistingImage}
                                     error={errors.images}
                                 />
                             </div>
@@ -517,7 +473,6 @@ export default function Edit({
                                 <div className="flex justify-between items-center mb-4">
                                     <InputLabel
                                         value="Product Variations"
-                                        htmlFor="product_variation"
                                         className="text-lg font-semibold"
                                     />
                                     <PrimaryButton
@@ -527,40 +482,34 @@ export default function Edit({
                                         size="sm"
                                         onClick={addVariation}
                                     >
-                                        <PlusIcon size={16} className="mr-1" />
+                                        <PlusIcon size={16} className="mr-1" />{" "}
                                         Add Variation
                                     </PrimaryButton>
                                 </div>
 
                                 <div className="space-y-4">
-                                    {variations.map((variation, index) => (
+                                    {data.variations.map((variation, index) => (
                                         <Card key={index} className="relative">
                                             <CardContent className="pt-6">
-                                                <div className="absolute top-3 right-3">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            removeVariation(
-                                                                index
-                                                            )
-                                                        }
-                                                        className="text-red-500 hover:text-red-700 transition-colors"
-                                                        title="Remove variation"
-                                                    >
-                                                        <Trash2Icon size={18} />
-                                                    </button>
-                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        removeVariation(index)
+                                                    }
+                                                    className="absolute top-3 right-3 text-red-500 hover:text-red-700"
+                                                >
+                                                    <Trash2Icon size={18} />
+                                                </button>
 
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                                     <div>
                                                         <InputLabel
-                                                            htmlFor={`variation-attribute-${index}`}
                                                             value="Attribute"
                                                             required
                                                         />
                                                         <SelectInput
-                                                            id={`variation-attribute-${index}`}
-                                                            name={`variation-attribute-${index}`}
+                                                            id="variation_attribute"
+                                                            name="variation_attribute"
                                                             value={
                                                                 variation.attribute_id
                                                             }
@@ -577,24 +526,24 @@ export default function Edit({
                                                                     label: attr.name,
                                                                 })
                                                             )}
-                                                            placeholder="Select Attribute"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.variations
+                                                            }
                                                         />
                                                     </div>
-
                                                     <div>
                                                         <InputLabel
-                                                            htmlFor={`variation-value-${index}`}
                                                             value="Value"
                                                             required
                                                         />
                                                         <TextInput
-                                                            id={`variation-value-${index}`}
-                                                            name={`variation-value-${index}`}
-                                                            type="text"
+                                                            name="variation_value"
+                                                            id="variation_value"
                                                             value={
                                                                 variation.value
                                                             }
-                                                            placeholder="Enter value (e.g., Red, Large)"
                                                             onChange={(e) =>
                                                                 updateVariation(
                                                                     index,
@@ -603,24 +552,18 @@ export default function Edit({
                                                                         .value
                                                                 )
                                                             }
-                                                            required
                                                         />
                                                     </div>
-
                                                     <div>
-                                                        <InputLabel
-                                                            htmlFor={`variation-stock-${index}`}
-                                                            value="Variation Stock"
-                                                        />
+                                                        <InputLabel value="Stock (Optional)" />
                                                         <TextInput
-                                                            id={`variation-stock-${index}`}
-                                                            name={`variation-stock-${index}`}
+                                                            name="variation_stock"
+                                                            id="variation_stock"
                                                             type="number"
                                                             value={
                                                                 variation.stock ||
                                                                 ""
                                                             }
-                                                            placeholder="Optional"
                                                             onChange={(e) =>
                                                                 updateVariation(
                                                                     index,
@@ -631,21 +574,16 @@ export default function Edit({
                                                             }
                                                         />
                                                     </div>
-
                                                     <div>
-                                                        <InputLabel
-                                                            htmlFor={`variation-price-${index}`}
-                                                            value="Variation Price"
-                                                        />
+                                                        <InputLabel value="Price (Optional)" />
                                                         <TextInput
-                                                            id={`variation-price-${index}`}
-                                                            name={`variation-price-${index}`}
+                                                            id="variation_price"
+                                                            name="variation_price"
                                                             type="number"
                                                             value={
                                                                 variation.price ||
                                                                 ""
                                                             }
-                                                            placeholder="Optional"
                                                             onChange={(e) =>
                                                                 updateVariation(
                                                                     index,
@@ -657,23 +595,10 @@ export default function Edit({
                                                         />
                                                     </div>
                                                 </div>
-
-                                                <div className="mt-3 text-xs text-gray-500">
-                                                    <p>
-                                                        Variation stock and
-                                                        price will override the
-                                                        main product stock and
-                                                        price for this specific
-                                                        variation. Leave empty
-                                                        to use main product
-                                                        values.
-                                                    </p>
-                                                </div>
                                             </CardContent>
                                         </Card>
                                     ))}
-
-                                    {variations.length === 0 && (
+                                    {data.variations.length === 0 && (
                                         <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
                                             <p className="text-gray-500 mb-2">
                                                 No variations added yet
@@ -690,26 +615,23 @@ export default function Edit({
                     </Card>
                 </div>
 
-                {/* Bottom Actions */}
                 <div className="p-4 pt-6 pb-6">
                     <div className="max-w-7xl mx-auto">
                         <div className="flex flex-col gap-3 lg:flex-row lg:justify-end">
                             <PrimaryButton
-                                as="button"
                                 type="submit"
                                 disabled={processing}
                                 className="w-full sm:w-auto lg:w-auto justify-center"
                             >
                                 {processing ? "Updating..." : "Update Product"}
                             </PrimaryButton>
-
                             <PrimaryButton
                                 as="link"
                                 href={route("admin.products.index")}
                                 variant="outline"
                                 className="w-full sm:w-auto lg:w-auto justify-center"
                             >
-                                <ArrowLeftIcon size={16} className="mr-2" />
+                                <ArrowLeftIcon size={16} className="mr-2" />{" "}
                                 Back to Products
                             </PrimaryButton>
                         </div>
@@ -717,7 +639,6 @@ export default function Edit({
                 </div>
             </form>
 
-            {/* Delete Confirmation Dialog */}
             <DeleteConfirmationDialog
                 isOpen={showDeleteDialog}
                 onClose={() => setShowDeleteDialog(false)}
