@@ -19,8 +19,12 @@ const Create: React.FC = () => {
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-    const handleImagesChange = (file) => {
-        setData("image", file);
+    const handleImagesChange = (files: File | File[] | null) => {
+        if (Array.isArray(files)) {
+            setData("image", files.length > 0 ? files[0] : null);
+        } else {
+            setData("image", files);
+        }
     };
 
     const removeImage = () => {
@@ -130,9 +134,10 @@ const Create: React.FC = () => {
                                 label="Category Image"
                                 multiple={false}
                                 accept="image/*"
-                                onChange={handleImageChange}
+                                onChange={handleImagesChange}
                                 maxFiles={1}
-
+                                value={data.image}
+                                error={errors.image}
                             />
                             <InputError
                                 message={errors.image}

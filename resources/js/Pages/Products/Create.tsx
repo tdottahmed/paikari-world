@@ -36,6 +36,7 @@ export default function Create({
 }: CreatePageProps) {
     const { data, setData, post, processing, errors } = useForm({
         name: "",
+        slug: "",
         category_id: "",
         supplier_id: "",
         description: "",
@@ -56,7 +57,6 @@ export default function Create({
         });
     };
 
-    // --- Qty Price Handlers ---
     const addQtyPrice = () => {
         const newQtyPrice: QtyPrice = {
             id: Date.now().toString(),
@@ -84,7 +84,6 @@ export default function Create({
         setData("qty_prices", updated);
     };
 
-    // --- Variation Handlers ---
     const addVariation = () => {
         const newVariation: Variation = {
             id: Date.now().toString() + Math.random(),
@@ -115,8 +114,14 @@ export default function Create({
     };
 
     // --- Image Handler ---
-    const handleImagesChange = (files: File[]) => {
-        setData("images", files);
+    const handleImagesChange = (files: File | File[] | null) => {
+        if (Array.isArray(files)) {
+            setData("images", files);
+        } else if (files) {
+            setData("images", [files]);
+        } else {
+            setData("images", []);
+        }
     };
 
     return (
@@ -132,7 +137,7 @@ export default function Create({
                     >
                         <Card>
                             <CardHeader>
-                                <CardTitle>Product Details</CardTitle>
+                                <CardTitle>Product Details </CardTitle>
                             </CardHeader>
                             <CardContent padding="lg">
                                 <div className="mb-4">
@@ -145,13 +150,41 @@ export default function Create({
                                         id="name"
                                         name="name"
                                         value={data.name}
-                                        onChange={(e) =>
-                                            setData("name", e.target.value)
-                                        }
+                                        onChange={(e) => {
+                                            setData("name", e.target.value);
+                                            const slug = e.target.value
+                                                .toLowerCase()
+                                                .replace(/[^a-z0-9]+/g, "-")
+                                                .replace(/(^-|-$)/g, "");
+                                            setData((data) => ({
+                                                ...data,
+                                                name: e.target.value,
+                                                slug: slug,
+                                            }));
+                                        }}
                                         placeholder="Enter product name"
                                         required
                                     />
                                     <InputError message={errors.name} />
+                                </div>
+
+                                <div className="mb-4">
+                                    <InputLabel
+                                        htmlFor="slug"
+                                        value="Slug"
+                                        required
+                                    />
+                                    <TextInput
+                                        id="slug"
+                                        name="slug"
+                                        value={data.slug}
+                                        onChange={(e) =>
+                                            setData("slug", e.target.value)
+                                        }
+                                        placeholder="product-slug"
+                                        required
+                                    />
+                                    <InputError message={errors.slug} />
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -228,7 +261,7 @@ export default function Create({
                 <div className="lg:p-6 sm:p-2">
                     <Card className="mt-4">
                         <CardHeader>
-                            <CardTitle>Product Pricing & Stock</CardTitle>
+                            <CardTitle>Product Pricing & Stock </CardTitle>
                         </CardHeader>
                         <CardContent padding="lg">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -432,7 +465,7 @@ export default function Create({
                 <div className="lg:p-6 sm:p-2">
                     <Card className="mt-4">
                         <CardHeader>
-                            <CardTitle>Product Images & Variations</CardTitle>
+                            <CardTitle>Product Images & Variations </CardTitle>
                         </CardHeader>
                         <CardContent padding="lg">
                             <div className="mb-8">
@@ -591,9 +624,8 @@ export default function Create({
                                                         price will override the
                                                         main product stock and
                                                         price for this specific
-                                                        variation. Leave empty
-                                                        to use main product
-                                                        values.
+                                                        variation.Leave empty to
+                                                        use main product values.
                                                     </p>
                                                 </div>
                                             </CardContent>

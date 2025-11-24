@@ -15,6 +15,7 @@ class ProductRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'slug' => 'required|string|unique:products,slug,' . $this->route('product')?->id,
             'description' => 'required|string',
             'purchase_price' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
@@ -40,6 +41,8 @@ class ProductRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'slug.required' => 'The product slug is required.',
+            'slug.unique' => 'The product slug has already been taken.',
             'images.required' => 'At least one product image is required.',
             'images.min' => 'Please upload at least one product image.',
             'qty_prices.*.qty.required' => 'Quantity is required for quantity pricing.',

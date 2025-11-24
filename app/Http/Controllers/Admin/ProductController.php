@@ -116,6 +116,7 @@ class ProductController extends Controller
             $qtyPriceData = $this->processQtyPrices($request);
             $product = Product::create([
                 'name' => $request->name,
+                'slug' => $request->slug,
                 'description' => $request->description,
                 'purchase_price' => $request->purchase_price,
                 'sale_price' => $request->sale_price,
@@ -196,6 +197,7 @@ class ProductController extends Controller
 
             $product->update([
                 'name' => $request->name,
+                'slug' => $request->slug,
                 'description' => $request->description,
                 'purchase_price' => $request->purchase_price,
                 'sale_price' => $request->sale_price,

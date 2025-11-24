@@ -5,14 +5,11 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+use App\Http\Controllers\CustomerController;
+
+Route::get('/', [CustomerController::class, 'index'])->name('home');
+Route::get('products/{category}', [CustomerController::class, 'category'])->name('products.category');
+Route::get('products', [CustomerController::class, 'products'])->name('products.index');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
