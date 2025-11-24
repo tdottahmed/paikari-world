@@ -24,17 +24,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
   Route::resource('categories', CategoryController::class);
 
-
-  Route::resource('categories', CategoryController::class);
-
   // New Modules
   Route::get('discounts', [DiscountController::class, 'index'])->name('discounts.index');
   Route::get('website', [WebsiteController::class, 'index'])->name('website.index');
+  Route::post('website/update', [WebsiteController::class, 'update'])->name('website.update');
   Route::get('users', [UserController::class, 'index'])->name('users.index');
   Route::get('payment-gateways', [PaymentGatewayController::class, 'index'])->name('payment-gateways.index');
   Route::get('courier', [CourierController::class, 'index'])->name('courier.index');
   Route::get('price-calculator', [PriceCalculatorController::class, 'index'])->name('price-calculator.index');
   Route::get('marketing', [MarketingController::class, 'index'])->name('marketing.index');
-  // Settings Routes
-  Route::get('settings', [DashboardController::class, 'settings'])->name('settings');
 });

@@ -57,7 +57,7 @@ const Create: React.FC = () => {
             title="Create Category"
             head={<Header title="Create Category" showUserMenu={true} />}
         >
-            <div className="p-4 md:p-6 max-w-3xl mx-auto">
+            <div className="p-4 md:p-6 max-w-8xl mx-auto">
                 {/* Header */}
                 <div className="mb-6">
                     <Link
@@ -125,11 +125,7 @@ const Create: React.FC = () => {
                         </div>
 
                         {/* Image Upload */}
-                        <div>
-                            <InputLabel
-                                htmlFor="image"
-                                value="Category Image"
-                            />
+                        <div className="mt-3">
                             <ImageUploader
                                 label="Category Image"
                                 multiple={false}

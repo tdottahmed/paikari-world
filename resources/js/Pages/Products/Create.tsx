@@ -113,7 +113,6 @@ export default function Create({
         setData("variations", updated);
     };
 
-    // --- Image Handler ---
     const handleImagesChange = (files: File | File[] | null) => {
         if (Array.isArray(files)) {
             setData("images", files);

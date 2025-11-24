@@ -27,7 +27,7 @@ const Index: React.FC<CategoriesIndexProps> = ({ categories }) => {
             title="Categories"
             head={<Header title="Categories" showUserMenu={true} />}
         >
-            <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
+            <div className="p-4 md:p-6 space-y-6 max-w-8xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>

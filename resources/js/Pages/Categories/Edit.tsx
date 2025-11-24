@@ -9,6 +9,7 @@ import InputLabel from "@/Components/Ui/InputLabel";
 import InputError from "@/Components/Ui/InputError";
 import { Category } from "@/types";
 import ImageUploader from "@/Components/Ui/ImageUploader";
+import Card, { CardContent } from "@/Components/Ui/Card";
 
 interface EditProps {
     category: Category;
@@ -84,7 +85,7 @@ const Edit: React.FC<EditProps> = ({ category }) => {
             title="Edit Category"
             head={<Header title="Edit Category" showUserMenu={true} />}
         >
-            <div className="p-4 md:p-6 max-w-3xl mx-auto">
+            <div className="p-4 md:p-6 max-w-8xl mx-auto">
                 {/* Header */}
                 <div className="mb-6">
                     <Link
@@ -110,82 +111,97 @@ const Edit: React.FC<EditProps> = ({ category }) => {
                 </div>
 
                 {/* Form */}
-                <form
-                    onSubmit={handleSubmit}
-                    className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6"
-                >
-                    {/* Title */}
-                    <div>
-                        <InputLabel htmlFor="title" value="Category Title" />
-                        <TextInput
-                            id="title"
-                            name="title"
-                            type="text"
-                            value={data.title}
-                            onChange={(e) => handleTitleChange(e.target.value)}
-                            className="mt-1 block w-full"
-                            placeholder="Enter category title"
-                            required
-                        />
-                        <InputError message={errors.title} className="mt-2" />
-                    </div>
+                <Card>
+                    <CardContent padding="lg">
+                        <form onSubmit={handleSubmit}>
+                            {/* Title */}
+                            <div>
+                                <InputLabel
+                                    htmlFor="title"
+                                    value="Category Title"
+                                />
+                                <TextInput
+                                    id="title"
+                                    name="title"
+                                    type="text"
+                                    value={data.title}
+                                    onChange={(e) =>
+                                        handleTitleChange(e.target.value)
+                                    }
+                                    className="mt-1 block w-full"
+                                    placeholder="Enter category title"
+                                    required
+                                />
+                                <InputError
+                                    message={errors.title}
+                                    className="mt-2"
+                                />
+                            </div>
 
-                    {/* Slug */}
-                    <div>
-                        <InputLabel htmlFor="slug" value="Slug" />
-                        <TextInput
-                            id="slug"
-                            name="slug"
-                            type="text"
-                            value={data.slug}
-                            onChange={(e) => setData("slug", e.target.value)}
-                            className="mt-1 block w-full"
-                            placeholder="category-slug"
-                            required
-                        />
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            URL - friendly version of the title.
-                        </p>
-                        <InputError message={errors.slug} className="mt-2" />
-                    </div>
+                            {/* Slug */}
+                            <div>
+                                <InputLabel htmlFor="slug" value="Slug" />
+                                <TextInput
+                                    id="slug"
+                                    name="slug"
+                                    type="text"
+                                    value={data.slug}
+                                    onChange={(e) =>
+                                        setData("slug", e.target.value)
+                                    }
+                                    className="mt-1 block w-full"
+                                    placeholder="category-slug"
+                                    required
+                                />
+                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    URL - friendly version of the title.
+                                </p>
+                                <InputError
+                                    message={errors.slug}
+                                    className="mt-2"
+                                />
+                            </div>
 
-                    {/* Image Upload */}
-                    <div>
-                        <InputLabel
-                            htmlFor="image"
-                            value="Category Image (Optional)"
-                        />
-                        <ImageUploader
-                            label="Category Image"
-                            multiple={false}
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            maxFiles={1}
-                            value={data.image}
-                            existingImages={existingImages}
-                            onRemoveExisting={handleRemoveExisting}
-                            error={errors.image}
-                        />
-                        <InputError message={errors.image} className="mt-2" />
-                    </div>
+                            {/* Image Upload */}
+                            <div>
+                                <ImageUploader
+                                    label="Category Image"
+                                    multiple={false}
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    maxFiles={1}
+                                    value={data.image}
+                                    existingImages={existingImages}
+                                    onRemoveExisting={handleRemoveExisting}
+                                    error={errors.image}
+                                />
+                                <InputError
+                                    message={errors.image}
+                                    className="mt-2"
+                                />
+                            </div>
 
-                    {/* Actions */}
-                    <div className="flex gap-3 pt-4">
-                        <Link
-                            href={route("admin.categories.index")}
-                            className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-center"
-                        >
-                            Cancel
-                        </Link>
-                        <PrimaryButton
-                            type="submit"
-                            disabled={processing}
-                            className="flex-1"
-                        >
-                            {processing ? "Updating..." : "Update Category"}
-                        </PrimaryButton>
-                    </div>
-                </form>
+                            {/* Actions */}
+                            <div className="flex gap-3 pt-4">
+                                <Link
+                                    href={route("admin.categories.index")}
+                                    className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-center"
+                                >
+                                    Cancel
+                                </Link>
+                                <PrimaryButton
+                                    type="submit"
+                                    disabled={processing}
+                                    className="flex-1"
+                                >
+                                    {processing
+                                        ? "Updating..."
+                                        : "Update Category"}
+                                </PrimaryButton>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
             </div>
         </Master>
     );
