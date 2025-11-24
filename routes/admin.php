@@ -3,6 +3,13 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\WebsiteController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PaymentGatewayController;
+use App\Http\Controllers\Admin\CourierController;
+use App\Http\Controllers\Admin\PriceCalculatorController;
+use App\Http\Controllers\Admin\MarketingController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
@@ -18,6 +25,16 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
   Route::resource('categories', CategoryController::class);
 
 
+  Route::resource('categories', CategoryController::class);
+
+  // New Modules
+  Route::get('discounts', [DiscountController::class, 'index'])->name('discounts.index');
+  Route::get('website', [WebsiteController::class, 'index'])->name('website.index');
+  Route::get('users', [UserController::class, 'index'])->name('users.index');
+  Route::get('payment-gateways', [PaymentGatewayController::class, 'index'])->name('payment-gateways.index');
+  Route::get('courier', [CourierController::class, 'index'])->name('courier.index');
+  Route::get('price-calculator', [PriceCalculatorController::class, 'index'])->name('price-calculator.index');
+  Route::get('marketing', [MarketingController::class, 'index'])->name('marketing.index');
   // Settings Routes
   Route::get('settings', [DashboardController::class, 'settings'])->name('settings');
 });

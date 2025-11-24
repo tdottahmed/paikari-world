@@ -1,7 +1,14 @@
 import React from "react";
-import { X, ChevronRight } from "lucide-react";
+import {
+    X,
+    ChevronRight,
+    GalleryThumbnails,
+    TreeDeciduous,
+} from "lucide-react";
 import { Link, usePage } from "@inertiajs/react";
 import { PageProps } from "@/types";
+import Image from "../Ui/Image";
+import { storagePath } from "@/Utils/helpers";
 
 interface CategorySidebarProps {
     isOpen: boolean;
@@ -65,7 +72,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs font-bold">
-                                                ALL
+                                                <TreeDeciduous size={16} />
                                             </div>
                                             <span className="font-medium">
                                                 All Products
@@ -88,19 +95,13 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                                             onClick={onClose}
                                         >
                                             <div className="flex items-center gap-3">
-                                                {category.image ? (
-                                                    <img
-                                                        src={`/storage/${category.image}`}
-                                                        alt={category.title}
-                                                        className="w-8 h-8 rounded-full object-cover border border-gray-100"
-                                                    />
-                                                ) : (
-                                                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs font-bold">
-                                                        {category.title
-                                                            .substring(0, 2)
-                                                            .toUpperCase()}
-                                                    </div>
-                                                )}
+                                                <Image
+                                                    src={storagePath(
+                                                        category.image
+                                                    )}
+                                                    alt={category.title}
+                                                    className="w-8 h-8 rounded-full object-cover border border-gray-100"
+                                                />
                                                 <span className="font-medium">
                                                     {" "}
                                                     {category.title}{" "}

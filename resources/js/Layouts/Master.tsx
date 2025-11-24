@@ -1,7 +1,9 @@
 import Header from "@/Components/Layouts/Header";
 import MobileBottomNav from "@/Components/Layouts/MobileBottomNav";
 import PrimarySidebar from "@/Components/Layouts/PrimarySidebar";
-import SecondarySidebar from "@/Components/Layouts/SecondarySidebar";
+import SecondarySidebar, {
+    secondaryMenuItems,
+} from "@/Components/Layouts/SecondarySidebar";
 import { Head, usePage } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
@@ -13,9 +15,19 @@ interface LayoutProps {
 }
 
 const Master: React.FC<LayoutProps> = ({ children, head, title }) => {
-    const [isSecondarySidebarOpen, setIsSecondarySidebarOpen] = useState(false);
-    const { props } = usePage();
+    const { props, url } = usePage();
     const { flash, errors } = props as any;
+
+    const shouldOpenSidebar = secondaryMenuItems.some(
+        (item) => item.urlPattern && url.startsWith(item.urlPattern)
+    );
+
+    const [isSecondarySidebarOpen, setIsSecondarySidebarOpen] =
+        useState(shouldOpenSidebar);
+
+    useEffect(() => {
+        setIsSecondarySidebarOpen(shouldOpenSidebar);
+    }, [url]);
 
     useEffect(() => {
         if (flash?.success) {

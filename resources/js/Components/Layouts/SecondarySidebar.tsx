@@ -27,7 +27,7 @@ interface MenuItem {
     urlPattern?: string;
 }
 
-const secondaryMenuItems: MenuItem[] = [
+export const secondaryMenuItems: MenuItem[] = [
     {
         key: "categories",
         label: "Categories",
@@ -39,49 +39,49 @@ const secondaryMenuItems: MenuItem[] = [
         key: "discounts",
         label: "Discounts",
         icon: <BadgePercent size={18} />,
-        route: "#",
+        route: "admin.discounts.index",
         urlPattern: "/admin/discounts",
     },
     {
         key: "website",
         label: "Website",
         icon: <Globe size={18} />,
-        route: "#",
+        route: "admin.website.index",
         urlPattern: "/admin/website",
     },
     {
         key: "users",
         label: "Users",
         icon: <Users size={18} />,
-        route: "#",
+        route: "admin.users.index",
         urlPattern: "/admin/users",
     },
     {
         key: "gateway",
         label: "Payment Gateways",
         icon: <Truck size={18} />,
-        route: "#",
+        route: "admin.payment-gateways.index",
         urlPattern: "/admin/payment-gateways",
     },
     {
         key: "courier",
         label: "Courier",
         icon: <Truck size={18} />,
-        route: "#",
+        route: "admin.courier.index",
         urlPattern: "/admin/courier",
     },
     {
         key: "price",
         label: "Price Calculator",
         icon: <Calculator size={18} />,
-        route: "#",
+        route: "admin.price-calculator.index",
         urlPattern: "/admin/price-calculator",
     },
     {
         key: "marketing",
         label: "Marketing",
         icon: <Target size={18} />,
-        route: "#",
+        route: "admin.marketing.index",
         urlPattern: "/admin/marketing",
     },
 ];
