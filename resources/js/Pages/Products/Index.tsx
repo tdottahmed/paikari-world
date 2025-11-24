@@ -110,10 +110,10 @@ const Index: React.FC<ProductsIndexProps> = ({
                 <div className="flex flex-col gap-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                            <h1 className="text-2xl md:text-3xl font-bold text-white">
                                 Products
                             </h1>
-                            <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
+                            <p className="text-sm md:text-base text-gray-400 mt-1">
                                 Manage your product inventory
                             </p>
                         </div>
@@ -172,19 +172,19 @@ const Index: React.FC<ProductsIndexProps> = ({
                             onClick={() => setShowFilters(!showFilters)}
                             className={`p-2 rounded-lg border transition-colors flex-shrink-0 ${
                                 showFilters
-                                    ? "bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400"
-                                    : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400"
+                                    ? "bg-emerald-50 bg-emerald-900/20 text-emerald-400"
+                                    : "bg-gray-800 border-gray-700 text-gray-400"
                             }`}
                         >
                             <Filter size={20} />
                         </button>
-                        <div className="hidden md:flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 flex-shrink-0">
+                        <div className="hidden md:flex bg-gray-800 rounded-lg p-1 flex-shrink-0">
                             <button
                                 onClick={() => setViewMode("grid")}
                                 className={`p-2 rounded-md transition-colors ${
                                     viewMode === "grid"
-                                        ? "bg-white dark:bg-gray-700 shadow-sm text-emerald-600 dark:text-emerald-400"
-                                        : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                        ? "bg-gray-700 shadow-sm text-emerald-400"
+                                        : "text-gray-400 hover:text-gray-300"
                                 }`}
                             >
                                 <Grid3X3 size={20} />
@@ -193,8 +193,8 @@ const Index: React.FC<ProductsIndexProps> = ({
                                 onClick={() => setViewMode("list")}
                                 className={`p-2 rounded-md transition-colors ${
                                     viewMode === "list"
-                                        ? "bg-white dark:bg-gray-700 shadow-sm text-emerald-600 dark:text-emerald-400"
-                                        : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                        ? "bg-gray-700 shadow-sm text-emerald-400"
+                                        : "text-gray-400 hover:text-gray-300"
                                 }`}
                             >
                                 <List size={20} />
@@ -281,16 +281,15 @@ const Index: React.FC<ProductsIndexProps> = ({
                         viewMode === "grid" ? (
                             <ProductsGrid products={products.data} />
                         ) : (
-                            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                                {/* List view implementation would go here */}
-                                <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                            <div className="bg-gray-800 rounded-lg border border-gray-700">
+                                <div className="p-8 text-center text-gray-400">
                                     List view coming soon...
                                 </div>
                             </div>
                         )
                     ) : (
-                        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
-                            <p className="text-gray-500 dark:text-gray-400">
+                        <div className="text-center py-12 bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-700">
+                            <p className="text-gray-400">
                                 {" "}
                                 No products found matching your filters.
                             </p>
@@ -308,7 +307,7 @@ const Index: React.FC<ProductsIndexProps> = ({
                 <Pagination data={products} />
 
                 {/* Bottom Info */}
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-800">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-400 pt-4 border-t border-gray-800">
                     <div>
                         Showing {products.from || 0} to {products.to || 0} of{" "}
                         {products.total} products

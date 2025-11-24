@@ -49,22 +49,19 @@ export default function Show({ product }: ShowPageProps) {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                            <h1 className="text-3xl font-bold text-white">
                                 {product.name}
                             </h1>
-                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-900/30 text-green-400 border border-green-800">
                                 Active
                             </span>
                         </div>
-                        <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                        <p className="text-gray-400 flex items-center gap-2">
                             <TagIcon size={14} />
                             {getCategoryName()}
                             <span className="mx-1">•</span>
                             <span className="text-sm">
-                                {" "}
-                                SKU: {product.id
-                                    .toString()
-                                    .padStart(6, "0")}{" "}
+                                SKU: {product.id.toString().padStart(6, "0")}
                             </span>
                         </p>
                     </div>
@@ -110,7 +107,7 @@ export default function Show({ product }: ShowPageProps) {
                                         )}
                                     />
                                 ) : (
-                                    <div className="aspect-square flex items-center justify-center bg-gray-800 dark:bg-gray-700 rounded-lg text-gray-400">
+                                    <div className="aspect-square flex items-center justify-center bg-gray-700 rounded-lg text-gray-400">
                                         <div className="text-center">
                                             <PackageIcon className="w-16 h-16 mx-auto mb-2 opacity-50" />
                                             <p>No images available </p>
@@ -124,28 +121,26 @@ export default function Show({ product }: ShowPageProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-base">
-                                    {" "}
-                                    Quick Stats{" "}
+                                    Quick Stats
                                 </CardTitle>
                             </CardHeader>
                             <CardContent padding="md">
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                                    <div className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-600 dark:text-blue-400">
+                                            <div className="p-2 bg-blue-900/30 rounded-full text-blue-400">
                                                 <LayersIcon size={18} />
                                             </div>
-                                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                                {" "}
-                                                Stock{" "}
+                                            <span className="text-sm font-medium text-gray-300">
+                                                Stock
                                             </span>
                                         </div>
                                         <div className="text-right">
                                             <span
                                                 className={`text-lg font-bold ${
                                                     product.stock <= 10
-                                                        ? "text-red-600"
-                                                        : "text-gray-900 dark:text-white"
+                                                        ? "text-red-500"
+                                                        : "text-white"
                                                 }`}
                                             >
                                                 {product.stock}
@@ -161,19 +156,17 @@ export default function Show({ product }: ShowPageProps) {
                                         </div>
                                     </div>
 
-                                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                                    <div className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-full text-purple-600 dark:text-purple-400">
+                                            <div className="p-2 bg-purple-900/30 rounded-full text-purple-400">
                                                 <TruckIcon size={18} />
                                             </div>
-                                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                                {" "}
-                                                Supplier{" "}
+                                            <span className="text-sm font-medium text-gray-300">
+                                                Supplier
                                             </span>
                                         </div>
-                                        <span className="font-medium text-gray-900 dark:text-white">
-                                            {" "}
-                                            {getSupplierName()}{" "}
+                                        <span className="font-medium text-white">
+                                            {getSupplierName()}
                                         </span>
                                     </div>
                                 </div>
@@ -188,55 +181,51 @@ export default function Show({ product }: ShowPageProps) {
                             <CardContent padding="lg">
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                            {" "}
-                                            Sale Price{" "}
+                                        <p className="text-sm text-gray-400 mb-1">
+                                            Sale Price
                                         </p>
-                                        <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                                        <p className="text-xl font-bold text-emerald-400">
                                             {formatPrice(product.sale_price)}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                            {" "}
-                                            Purchase Price{" "}
+                                        <p className="text-sm text-gray-400 mb-1">
+                                            Purchase Price
                                         </p>
-                                        <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                                        <p className="text-xl font-semibold text-white">
                                             {formatPrice(
                                                 product.purchase_price
                                             )}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                        <p className="text-sm text-gray-400 mb-1">
                                             Profit
                                         </p>
                                         <div className="flex items-center gap-2">
-                                            <p className="text-l font-bold text-emerald-600 dark:text-emerald-400">
+                                            <p className="text-lg font-bold text-emerald-400">
                                                 {formatPrice(profit)}
                                             </p>
-                                            <span className="text-xs font-medium px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                            <span className="text-xs font-medium px-2 py-0.5 rounded bg-emerald-900/30 text-emerald-400">
                                                 {profitPercentage} %
                                             </span>
                                         </div>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                            {" "}
-                                            MOQ Price{" "}
+                                        <p className="text-sm text-gray-400 mb-1">
+                                            MOQ Price
                                         </p>
-                                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                        <p className="text-lg font-medium text-gray-300">
                                             {product.moq_price
                                                 ? formatPrice(product.moq_price)
                                                 : "N/A"}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                            {" "}
-                                            UAN Price{" "}
+                                        <p className="text-sm text-gray-400 mb-1">
+                                            UAN Price
                                         </p>
-                                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                        <p className="text-lg font-medium text-gray-300">
                                             {product.uan_price
                                                 ? formatPrice(product.uan_price)
                                                 : "N/A"}
@@ -252,7 +241,7 @@ export default function Show({ product }: ShowPageProps) {
                                 <CardTitle>Description </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300">
+                                <div className="prose prose-invert max-w-none text-gray-300">
                                     <p className="whitespace-pre-wrap leading-relaxed">
                                         {product.description ||
                                             "No description provided."}
@@ -271,42 +260,38 @@ export default function Show({ product }: ShowPageProps) {
                                     <CardContent padding="none">
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-sm text-left">
-                                                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-400">
+                                                <thead className="text-xs text-gray-400 uppercase bg-gray-800">
                                                     <tr>
                                                         <th className="px-6 py-3">
-                                                            {" "}
-                                                            Attribute{" "}
+                                                            Attribute
                                                         </th>
                                                         <th className="px-6 py-3">
-                                                            {" "}
-                                                            Value{" "}
+                                                            Value
                                                         </th>
                                                         <th className="px-6 py-3">
-                                                            {" "}
-                                                            Stock{" "}
+                                                            Stock
                                                         </th>
                                                         <th className="px-6 py-3">
-                                                            {" "}
-                                                            Price Override{" "}
+                                                            Price Override
                                                         </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {product.product_variations.map(
-                                                        (variation, index) => (
+                                                        (variation) => (
                                                             <tr
                                                                 key={
                                                                     variation.id
                                                                 }
-                                                                className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                                                                className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/50"
                                                             >
-                                                                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                                                <td className="px-6 py-4 font-medium text-white">
                                                                     {getAttributeName(
                                                                         variation.attribute_id
                                                                     )}
                                                                 </td>
                                                                 <td className="px-6 py-4">
-                                                                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-gray-700 dark:text-gray-300">
+                                                                    <span className="px-2 py-1 bg-gray-800 rounded text-gray-300">
                                                                         {
                                                                             variation.value
                                                                         }
@@ -319,7 +304,7 @@ export default function Show({ product }: ShowPageProps) {
                                                                                 variation.stock <=
                                                                                 5
                                                                                     ? "text-red-500 font-medium"
-                                                                                    : ""
+                                                                                    : "text-white"
                                                                             }
                                                                         >
                                                                             {
@@ -328,22 +313,20 @@ export default function Show({ product }: ShowPageProps) {
                                                                         </span>
                                                                     ) : (
                                                                         <span className="text-gray-400 italic">
-                                                                            {" "}
-                                                                            Inherited{" "}
+                                                                            Inherited
                                                                         </span>
                                                                     )}
                                                                 </td>
                                                                 <td className="px-6 py-4">
                                                                     {variation.price ? (
-                                                                        <span className="font-medium text-emerald-600">
+                                                                        <span className="font-medium text-emerald-400">
                                                                             {formatPrice(
                                                                                 variation.price
                                                                             )}
                                                                         </span>
                                                                     ) : (
                                                                         <span className="text-gray-400 italic">
-                                                                            {" "}
-                                                                            Inherited{" "}
+                                                                            Inherited
                                                                         </span>
                                                                     )}
                                                                 </td>
@@ -364,26 +347,24 @@ export default function Show({ product }: ShowPageProps) {
                                     <CardTitle>Wholesale Pricing </CardTitle>
                                 </CardHeader>
                                 <CardContent padding="none">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x dark:divide-gray-700 border-t dark:border-gray-700">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-700 border-t border-gray-700">
                                         {product.qty_price.map(
                                             (qtyPrice, index) => (
                                                 <div
                                                     key={index}
-                                                    className="p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                                    className="p-4 flex flex-col items-center justify-center text-center hover:bg-gray-800/50 transition-colors"
                                                 >
-                                                    <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                                        {" "}
+                                                    <span className="text-sm text-gray-400 mb-1">
                                                         Buy {qtyPrice.qty} +
-                                                        units{" "}
+                                                        units
                                                     </span>
-                                                    <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                                                    <span className="text-lg font-bold text-emerald-400">
                                                         {formatPrice(
                                                             qtyPrice.price
                                                         )}
                                                     </span>
                                                     <span className="text-xs text-gray-400 mt-1">
-                                                        {" "}
-                                                        per unit{" "}
+                                                        per unit
                                                     </span>
                                                 </div>
                                             )
