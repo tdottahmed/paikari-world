@@ -10,6 +10,9 @@ use App\Http\Controllers\CustomerController;
 Route::get('/', [CustomerController::class, 'index'])->name('home');
 Route::get('products/{category}', [CustomerController::class, 'category'])->name('products.category');
 Route::get('products', [CustomerController::class, 'products'])->name('products.index');
+Route::get('product/{product:slug}', [CustomerController::class, 'show'])->name('products.show');
+
+Route::get('api/search', [CustomerController::class, 'search'])->name('api.search');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

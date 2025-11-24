@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             CategoryTableSeeder::class,
             ProductAttributeTableSeeder::class,
             SupplierTableSeeder::class,
+            ProductTableSeeder::class,
             UserTableSeeder::class,
         ]);
     }

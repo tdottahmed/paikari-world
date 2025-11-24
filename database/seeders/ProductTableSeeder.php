@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class CategoryTableSeeder extends Seeder
+class ProductTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        // Create specific categories first if needed, or just random ones
-        \App\Models\Category::factory()->count(15)->create();
+        Product::factory()->count(100)->create();
     }
 }

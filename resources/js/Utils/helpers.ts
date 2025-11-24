@@ -117,7 +117,7 @@ export const filePath = (
     baseUrl: string = ""
 ): string => {
     if (!path) {
-        return "/images/placeholder.jpg"; // Fallback placeholder image
+        return "/placeholder.png";
     }
 
     // If it's already a full URL, return as is
@@ -145,7 +145,7 @@ export const filePath = (
  */
 export const storagePath = (path: string | null | undefined): string => {
     if (!path || path === "" || path === "null") {
-        return placeholderImage(400, 300, "Image Not Found");
+        return "./placeholder.png";
     }
 
     const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
@@ -161,13 +161,8 @@ export const storagePath = (path: string | null | undefined): string => {
  * @param text - Optional text to display
  * @returns Placeholder image URL
  */
-export const placeholderImage = (
-    width: number = 400,
-    height: number = 300,
-    text: string = "No Image"
-): string => {
-    const encodedText = encodeURIComponent(text);
-    return `https://via.placeholder.com/${width}x${height}?text=${encodedText}`;
+export const placeholderImage = (): string => {
+    return "/placeholder.png";
 };
 
 /**
@@ -180,7 +175,7 @@ export const handleImageError = (
     placeholder?: string
 ) => {
     const target = event.target as HTMLImageElement;
-    target.src = placeholder || placeholderImage(400, 300, "Image Not Found");
+    target.src = placeholder || placeholderImage();
     target.alt = "Image not available";
 };
 
