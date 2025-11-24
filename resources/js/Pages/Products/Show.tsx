@@ -1,7 +1,5 @@
 import Header from "@/Components/Layouts/Header";
 import Card, { CardContent, CardHeader, CardTitle } from "@/Components/Ui/Card";
-import CollapsibleSection from "@/Components/Ui/CollapsibleSection";
-import InputLabel from "@/Components/Ui/InputLabel";
 import Master from "@/Layouts/Master";
 import PrimaryButton from "@/Components/Actions/PrimaryButton";
 import { ShowPageProps } from "@/types";
@@ -9,7 +7,6 @@ import {
     EditIcon,
     ArrowLeftIcon,
     PackageIcon,
-    DollarSignIcon,
     TagIcon,
     TruckIcon,
     LayersIcon,
@@ -47,7 +44,7 @@ export default function Show({ product }: ShowPageProps) {
             title={product.name}
             head={<Header title={product.name} showUserMenu={true} />}
         >
-            <div className="lg:p-8 p-4 max-w-7xl mx-auto">
+            <div className="lg:p-8 p-4 max-w-8xl mx-auto">
                 {/* Header Actions */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                     <div>
@@ -98,7 +95,7 @@ export default function Show({ product }: ShowPageProps) {
                         <Card className="overflow-hidden border-0 shadow-sm">
                             <CardContent
                                 padding="none"
-                                className="p-4 bg-white dark:bg-gray-800"
+                                className="p-4 bg-gray-800"
                             >
                                 {product.images && product.images.length > 0 ? (
                                     <ImageGallery
@@ -113,7 +110,7 @@ export default function Show({ product }: ShowPageProps) {
                                         )}
                                     />
                                 ) : (
-                                    <div className="aspect-square flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-400">
+                                    <div className="aspect-square flex items-center justify-center bg-gray-800 dark:bg-gray-700 rounded-lg text-gray-400">
                                         <div className="text-center">
                                             <PackageIcon className="w-16 h-16 mx-auto mb-2 opacity-50" />
                                             <p>No images available </p>

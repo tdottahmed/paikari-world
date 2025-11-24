@@ -129,13 +129,12 @@ const Index: React.FC<ProductsIndexProps> = ({
                         </Link>
                     </div>
 
-                    {/* Quick Stats - Scrollable on mobile */}
                     <div className="flex overflow-x-auto pb-2 gap-3 text-sm no-scrollbar">
-                        <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 rounded-lg whitespace-nowrap">
+                        <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-green-100 rounded-lg whitespace-nowrap">
                             <div className="w-2 h-2 bg-green-500 rounded-full">
                                 {" "}
                             </div>
-                            <span className="font-medium text-green-700 dark:text-green-300">
+                            <span className="font-medium text-green-700">
                                 {stats.in_stock} In Stock
                             </span>
                         </div>
@@ -143,24 +142,22 @@ const Index: React.FC<ProductsIndexProps> = ({
                             <div className="w-2 h-2 bg-yellow-500 rounded-full">
                                 {" "}
                             </div>
-                            <span className="font-medium text-yellow-700 dark:text-yellow-300">
+                            <span className="font-medium text-yellow-700">
                                 {stats.low_stock} Low Stock
                             </span>
                         </div>
-                        <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-900/20 rounded-lg whitespace-nowrap">
+                        <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-red-500  rounded-lg whitespace-nowrap">
                             <div className="w-2 h-2 bg-red-500 rounded-full">
                                 {" "}
                             </div>
-                            <span className="font-medium text-red-700 dark:text-red-300">
+                            <span className="font-medium text-white">
                                 {stats.out_of_stock} Out of Stock
                             </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Controls Section */}
                 <div className="space-y-4">
-                    {/* Search and Toggle Filters */}
                     <div className="flex gap-3">
                         <div className="flex-grow">
                             <Search
@@ -205,7 +202,6 @@ const Index: React.FC<ProductsIndexProps> = ({
                         </div>
                     </div>
 
-                    {/* Filters - Collapsible with smooth height transition */}
                     <div
                         className={`grid transition-all duration-300 ease-in-out ${
                             showFilters
@@ -214,7 +210,7 @@ const Index: React.FC<ProductsIndexProps> = ({
                         }`}
                     >
                         <div className="overflow-hidden">
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg mb-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-gray-800/50 rounded-lg mb-1">
                                 <SelectInput
                                     value={sortOrder}
                                     onChange={(value) =>

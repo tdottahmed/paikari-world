@@ -30,30 +30,14 @@ class WebsiteController extends Controller
                 'banner_images.*' => 'image|max:2048',
                 'existing_banner_images' => 'nullable|array',
                 'existing_banner_images.*' => 'string',
+                'deleted_images' => 'nullable|array',
             ]);
-
+            $bannerImages =  $this->handleImages($setting->banner_images ?? [], $request, 'banner_images', 'banners');
             $setting = WebsiteSetting::firstOrNew();
             $setting->banner_active = $request->banner_active;
 
-            // Handle Images
-            $currentImages = $setting->banner_images ?? [];
-            $keptImages = $request->input('existing_banner_images', []);
-
-            // Delete removed images
-            $imagesToDelete = array_diff($currentImages, $keptImages);
-            if (!empty($imagesToDelete)) {
-                FileUpload::deleteImages($imagesToDelete);
-            }
-
-            // Upload new images using FileUpload utility
-            $newImages = [];
-            if ($request->hasFile('banner_images')) {
-                $newImages = FileUpload::uploadImages($request->file('banner_images'), 'banners');
-            }
-
-            $setting->banner_images = array_merge($keptImages, $newImages);
+            $setting->banner_images = $bannerImages;
             $setting->save();
-
             return back()->with('success', 'Banner settings updated successfully.');
         }
 
@@ -66,11 +50,9 @@ class WebsiteController extends Controller
                 'delivery_charges.*.duration' => 'required|string|max:255',
             ]);
 
-            // Sync Delivery Charges
             $inputCharges = collect($request->delivery_charges);
             $existingChargeIds = $inputCharges->pluck('id')->filter();
 
-            // Delete removed charges
             DeliveryCharge::whereNotIn('id', $existingChargeIds)->delete();
 
             // Update or Create charges
@@ -93,5 +75,24 @@ class WebsiteController extends Controller
         }
 
         return back()->with('error', 'Invalid update type.');
+    }
+
+    private function handleImages($currentImages, $request, $fieldName, $folder)
+    {
+        if ($request->has('deleted_images')) {
+            FileUpload::deleteImages($request->deleted_images);
+            $currentImages = array_diff($currentImages, $request->deleted_images);
+        }
+
+        if ($request->hasFile($fieldName)) {
+            $files = $request->file($fieldName);
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+            $newImages = FileUpload::uploadImages($files, $folder);
+            $currentImages = array_merge($currentImages, $newImages);
+        }
+
+        return array_values($currentImages);
     }
 }

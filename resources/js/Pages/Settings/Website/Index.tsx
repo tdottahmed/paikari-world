@@ -4,7 +4,7 @@ import ImageUploader from "@/Components/Ui/ImageUploader";
 import Card, { CardContent, CardHeader, CardTitle } from "@/Components/Ui/Card";
 import { Head, useForm } from "@inertiajs/react";
 import { Plus, Trash2 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 interface DeliveryCharge {
@@ -26,11 +26,15 @@ interface Props {
 }
 
 const BannerForm = ({ setting }: { setting: WebsiteSetting }) => {
+    const [existingImages, setExistingImages] = useState<string[]>(
+        setting.banner_images || []
+    );
     const { data, setData, post, processing, errors } = useForm({
         type: "banner",
         banner_active: setting.banner_active,
         banner_images: [] as File[],
         existing_banner_images: setting.banner_images || [],
+        deleted_images: [] as string[],
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -39,19 +43,9 @@ const BannerForm = ({ setting }: { setting: WebsiteSetting }) => {
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success("Banner settings updated successfully");
                 setData("banner_images", []);
             },
         });
-    };
-
-    const handleRemoveExisting = (path: string) => {
-        const relativePath = path.replace(/^\/storage\//, "");
-
-        setData(
-            "existing_banner_images",
-            data.existing_banner_images.filter((img) => img !== relativePath)
-        );
     };
     const handleImagesChange = (files: File | File[] | null) => {
         if (Array.isArray(files)) {
@@ -61,6 +55,12 @@ const BannerForm = ({ setting }: { setting: WebsiteSetting }) => {
         } else {
             setData("banner_images", []);
         }
+    };
+
+    const handleRemoveExistingImage = (path: string) => {
+        const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+        setData("deleted_images", [...data.deleted_images, cleanPath]);
+        setExistingImages((prev) => prev.filter((img) => img !== cleanPath));
     };
 
     return (
@@ -93,11 +93,9 @@ const BannerForm = ({ setting }: { setting: WebsiteSetting }) => {
                         label="Banner Images"
                         multiple={true}
                         value={data.banner_images}
-                        existingImages={data.existing_banner_images.map(
-                            (img) => `/storage/${img}`
-                        )}
+                        existingImages={existingImages.map((img) => `/${img}`)}
                         onChange={handleImagesChange}
-                        onRemoveExisting={handleRemoveExisting}
+                        onRemoveExisting={handleRemoveExistingImage}
                         error={errors.banner_images as string}
                     />
                     <div className="mt-4 flex justify-end">
