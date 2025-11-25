@@ -72,6 +72,46 @@ export interface QtyPrice {
     updated_at?: string;
 }
 
+// Cart Item type
+export interface CartItem {
+    product_id: number;
+    name: string;
+    price: number;
+    quantity: number;
+    image: string | null;
+}
+
+export interface DeliveryCharge {
+    id: number;
+    name: string;
+    cost: number;
+    duration: string;
+}
+
+export interface OrderItem {
+    id: number;
+    order_id: number;
+    product_id: number;
+    product?: Product;
+    quantity: number;
+    price: number;
+}
+
+export interface Order {
+    id: number;
+    customer_name: string | null;
+    customer_phone: string;
+    customer_address: string;
+    delivery_charge_id: number;
+    delivery_cost: number;
+    subtotal: number;
+    total: number;
+    status: string;
+    created_at: string;
+    items?: OrderItem[];
+    delivery_charge?: DeliveryCharge;
+}
+
 // Main Product interface
 export interface Product {
     id: number;
@@ -323,11 +363,11 @@ export interface SelectOption {
 // Bulk Action types
 export interface BulkAction {
     type:
-        | "delete"
-        | "activate"
-        | "deactivate"
-        | "update_category"
-        | "update_supplier";
+    | "delete"
+    | "activate"
+    | "deactivate"
+    | "update_category"
+    | "update_supplier";
     ids: number[];
     data?: any;
 }
@@ -341,6 +381,9 @@ export type {
     ProductAttribute,
     ProductVariation,
     QtyPrice,
+    CartItem,
+    DeliveryCharge,
+    Order,
     Product,
     ProductsIndexProps,
     CreatePageProps,

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PaymentGatewayController;
 use App\Http\Controllers\Admin\CourierController;
 use App\Http\Controllers\Admin\PriceCalculatorController;
 use App\Http\Controllers\Admin\MarketingController;
+use App\Http\Controllers\Admin\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
@@ -33,4 +34,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
   Route::get('courier', [CourierController::class, 'index'])->name('courier.index');
   Route::get('price-calculator', [PriceCalculatorController::class, 'index'])->name('price-calculator.index');
   Route::get('marketing', [MarketingController::class, 'index'])->name('marketing.index');
+
+  // Order Management
+  Route::get('orders/bulk-details', [OrderController::class, 'bulkDetails'])->name('orders.bulk-details');
+  Route::get('orders/bulk-invoice', [OrderController::class, 'bulkInvoice'])->name('orders.bulk-invoice');
+  Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+  Route::post('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+  Route::get('orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
 });

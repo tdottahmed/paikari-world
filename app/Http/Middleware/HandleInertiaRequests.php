@@ -40,6 +40,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
             ],
             'categories' => fn () => Category::select('id', 'title', 'slug', 'image')->get(),
+            'cart' => fn () => $request->session()->get('cart', []),
         ];
     }
 }

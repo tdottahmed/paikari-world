@@ -10,6 +10,6 @@ class DiscountController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Settings/Discounts/Index');
+        return Inertia::render('Admin/Settings/Discounts/Index');
     }
 }

@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', [CustomerController::class, 'index'])->name('home');
 Route::get('products/{category}', [CustomerController::class, 'category'])->name('products.category');
@@ -23,6 +25,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('cart', [CartController::class, 'store'])->name('cart.store');
+Route::patch('cart/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+Route::get('checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('order-success/{order}', [CheckoutController::class, 'success'])->name('order.success');
 
 require __DIR__ . '/admin.php';
 

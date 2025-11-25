@@ -13,7 +13,7 @@ class WebsiteController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Settings/Website/Index', [
+        return Inertia::render('Admin/Settings/Website/Index', [
             'setting' => WebsiteSetting::first() ?? ['banner_active' => true, 'banner_images' => []],
             'deliveryCharges' => DeliveryCharge::all()
         ]);

@@ -14,6 +14,6 @@ class DashboardController extends Controller
 
     public function settings()
     {
-        return inertia('Settings/Index');
+        return inertia('Admin/Settings/Index');
     }
 }

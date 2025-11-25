@@ -10,6 +10,6 @@ class PaymentGatewayController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Settings/PaymentGateways/Index');
+        return Inertia::render('Admin/Settings/PaymentGateways/Index');
     }
 }

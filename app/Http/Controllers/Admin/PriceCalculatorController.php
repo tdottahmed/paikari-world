@@ -10,6 +10,6 @@ class PriceCalculatorController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Settings/PriceCalculator/Index');
+        return Inertia::render('Admin/Settings/PriceCalculator/Index');
     }
 }

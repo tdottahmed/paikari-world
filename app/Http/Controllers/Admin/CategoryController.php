@@ -15,15 +15,15 @@ class CategoryController extends Controller
         $categories = Category::withCount('products')
             ->latest()
             ->get();
-            
-        return inertia('Categories/Index', [
+
+        return inertia('Admin/Categories/Index', [
             'categories' => $categories,
         ]);
     }
 
     public function create()
     {
-        return inertia('Categories/Create');
+        return inertia('Admin/Categories/Create');
     }
 
     public function store(CategoryRequest $request)
@@ -48,7 +48,7 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
-        return inertia('Categories/Edit', [
+        return inertia('Admin/Categories/Edit', [
             'category' => $category,
         ]);
     }

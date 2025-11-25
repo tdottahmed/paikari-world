@@ -1,4 +1,3 @@
-// Components/Ui/Search.tsx
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Search as SearchIcon, X } from "lucide-react";
 
@@ -54,9 +53,7 @@ const Search: React.FC<SearchProps> = ({
     const handleSubmit = useCallback(
         (e: React.FormEvent) => {
             e.preventDefault();
-            if (localValue.trim()) {
-                onSubmit?.(localValue.trim());
-            }
+            onSubmit?.(localValue.trim());
         },
         [localValue, onSubmit]
     );

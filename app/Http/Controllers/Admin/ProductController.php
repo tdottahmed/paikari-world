@@ -23,8 +23,7 @@ class ProductController extends Controller
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('sku', 'LIKE', "%{$searchTerm}%");
+                $q->where('name', 'LIKE', "%{$searchTerm}%");
             });
         }
 
@@ -71,7 +70,7 @@ class ProductController extends Controller
         $categories = Category::select(['id', 'title'])->get();
         $suppliers = Supplier::select(['id', 'name'])->get();
 
-        return inertia('Products/Index', [
+        return inertia('Admin/Products/Index', [
             'products' => $products,
             'categories' => $categories,
             'suppliers' => $suppliers,
@@ -90,7 +89,7 @@ class ProductController extends Controller
         $categories = Category::select(['id', 'title'])->get();
         $supplier = Supplier::select(['id', 'name'])->get();
         $attributes = ProductAttribute::select(['id', 'name'])->get();
-        return inertia('Products/Create', [
+        return inertia('Admin/Products/Create', [
             'categories' => $categories,
             'suppliers' => $supplier,
             'attributes' => $attributes,
@@ -160,7 +159,7 @@ class ProductController extends Controller
         $supplier = Supplier::select(['id', 'name'])->get();
         $attributes = ProductAttribute::select(['id', 'name'])->get();
         $variations = ProductVariation::where('product_id', $product->id)->get();
-        return inertia('Products/Edit', [
+        return inertia('Admin/Products/Edit', [
             'product' => $product,
             'categories' => $categories,
             'suppliers' => $supplier,
@@ -238,7 +237,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product->load('category', 'supplier', 'product_variations.product_attribute');
-        return inertia('Products/Show', [
+        return inertia('Admin/Products/Show', [
             'product' => $product,
         ]);
     }

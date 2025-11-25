@@ -26,7 +26,7 @@ const primaryMenuItems = [
         key: "orders",
         label: "Orders",
         icon: <Package size={20} />,
-        route: null,
+        route: "admin.orders.index",
         urlPattern: "/admin/orders",
     },
     {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import CustomerLayout from "@/Layouts/CustomerLayout";
 import { Product } from "@/types";
 import {
@@ -29,6 +29,19 @@ const ProductShow: React.FC<ProductShowProps> = ({ product }) => {
         } else if (type === "decrement" && quantity > 1) {
             setQuantity((prev) => prev - 1);
         }
+    };
+
+    const addToCart = () => {
+        router.post(
+            route("cart.store"),
+            {
+                product_id: product.id,
+                quantity: quantity,
+            },
+            {
+                preserveScroll: true,
+            }
+        );
     };
 
     return (
@@ -181,6 +194,7 @@ const ProductShow: React.FC<ProductShowProps> = ({ product }) => {
                                         <button
                                             className="flex-1 bg-gray-900 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                             disabled={product.stock <= 0}
+                                            onClick={addToCart}
                                         >
                                             <ShoppingCart size={20} />
                                             Add to Cart

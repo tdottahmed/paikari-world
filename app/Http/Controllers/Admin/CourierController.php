@@ -10,6 +10,6 @@ class CourierController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Settings/Courier/Index');
+        return Inertia::render('Admin/Settings/Courier/Index');
     }
 }

@@ -10,6 +10,6 @@ class MarketingController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Settings/Marketing/Index');
+        return Inertia::render('Admin/Settings/Marketing/Index');
     }
 }
