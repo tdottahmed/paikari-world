@@ -10,6 +10,7 @@ import ViewToggle from "@/Components/Order/ViewToggle";
 import OrderGridItem from "@/Components/Order/OrderGridItem";
 import OrderListItem from "@/Components/Order/OrderListItem";
 import { useDebounce } from "@/Hooks/useDebounce";
+import Pagination from "@/Components/Ui/Pagination";
 
 interface Props extends PageProps {
     orders: PaginatedData<Order>;
@@ -165,7 +166,7 @@ export default function Index({ orders, filters }: Props) {
         <Master>
             <Head title="Orders" />
 
-            <div className="p-4 md:p-6 space-y-6 pb-24 min-h-screen bg-[#0C1311]">
+            <div className="md:p-6 space-y-6 pb-4 min-h-screen bg-[#0C1311]">
                 {/* Header & Search */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
@@ -295,31 +296,7 @@ export default function Index({ orders, filters }: Props) {
                         </p>
                     </div>
                 )}
-
-                {/* Pagination */}
-                {orders.links.length > 3 && (
-                    <div className="flex justify-center mt-8">
-                        <div className="flex gap-1 bg-[#0E1614] p-2 rounded-lg border border-[#1E2826]">
-                            {orders.links.map((link, i) => (
-                                <Link
-                                    key={i}
-                                    href={link.url || "#"}
-                                    className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-                                        link.active
-                                            ? "bg-[#2DE3A7] text-[#0C1311] font-bold"
-                                            : "text-gray-400 hover:bg-[#1E2826] hover:text-white"
-                                    } ${
-                                        !link.url &&
-                                        "opacity-50 cursor-not-allowed"
-                                    }`}
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <Pagination data={orders} />
             </div>
         </Master>
     );
