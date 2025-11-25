@@ -56,10 +56,10 @@ const Index: React.FC<CategoriesIndexProps> = ({ categories }) => {
                         {categories.map((category) => (
                             <div
                                 key={category.id}
-                                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
+                                className="bg-[#0E1614] rounded-lg border border-[#1E2826] overflow-hidden hover:shadow-lg transition-shadow"
                             >
                                 {/* Category Image */}
-                                <div className="aspect-video bg-gray-100 dark:bg-gray-700 relative">
+                                <div className="aspect-video bg-[#0E1614] relative">
                                     {category.image ? (
                                         <img
                                             src={`/storage/${category.image}`}
@@ -121,7 +121,7 @@ const Index: React.FC<CategoriesIndexProps> = ({ categories }) => {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+                    <div className="text-center py-12 bg-gray-50 dark:bg-[#0E1614]/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-[#1E2826]">
                         <Package
                             size={48}
                             className="mx-auto text-gray-400 mb-4"

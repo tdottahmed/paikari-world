@@ -4,6 +4,7 @@ import Header from "@/Components/Layouts/Header";
 import PrimaryButton from "@/Components/Actions/PrimaryButton";
 import { Link, router } from "@inertiajs/react";
 import ProductsGrid from "@/Components/Product/ProductsGrid";
+import ProductsList from "@/Components/Product/ProductsList";
 import { Grid3X3, List, Plus, Filter } from "lucide-react";
 import Search from "@/Components/Ui/Search";
 import { ProductsIndexProps } from "@/types";
@@ -281,11 +282,7 @@ const Index: React.FC<ProductsIndexProps> = ({
                         viewMode === "grid" ? (
                             <ProductsGrid products={products.data} />
                         ) : (
-                            <div className="bg-gray-800 rounded-lg border border-gray-700">
-                                <div className="p-8 text-center text-gray-400">
-                                    List view coming soon...
-                                </div>
-                            </div>
+                            <ProductsList products={products.data} />
                         )
                     ) : (
                         <div className="text-center py-12 bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-700">

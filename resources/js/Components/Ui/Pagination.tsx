@@ -45,18 +45,18 @@ const Pagination = <T,>({
     };
 
     return (
-        <div className="flex items-center justify-between border-t  bg-gray-800 px-4 py-3 sm:px-6 rounded-b-lg">
+        <div className="flex items-center justify-between bg-[#0E1614] px-4 py-3 sm:px-6 rounded-b-lg">
             <div className="flex flex-1 justify-between sm:hidden">
                 {data.prev_page_url ? (
                     <Link
                         href={data.prev_page_url}
                         preserveScroll={preserveScroll}
-                        className="relative inline-flex items-center rounded-md border  bg-gray-800 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-600"
+                        className="relative inline-flex items-center rounded-md border  bg-[#0E1614] px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-600"
                     >
                         Previous
                     </Link>
                 ) : (
-                    <span className="relative inline-flex items-center rounded-md border  bg-gray-800 px-4 py-2 text-sm font-medium text-gray-500 cursor-not-allowed">
+                    <span className="relative inline-flex items-center rounded-md border  bg-[#0E1614] px-4 py-2 text-sm font-medium text-gray-500 cursor-not-allowed">
                         Previous
                     </span>
                 )}
@@ -64,12 +64,12 @@ const Pagination = <T,>({
                     <Link
                         href={data.next_page_url}
                         preserveScroll={preserveScroll}
-                        className="relative ml-3 inline-flex items-center rounded-md border  bg-gray-700 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-600"
+                        className="relative ml-3 inline-flex items-center rounded-md border  bg-[#0E1614] px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-600"
                     >
                         Next
                     </Link>
                 ) : (
-                    <span className="relative ml-3 inline-flex items-center rounded-md border  bg-gray-800 px-4 py-2 text-sm font-medium text-gray-500 cursor-not-allowed">
+                    <span className="relative ml-3 inline-flex items-center rounded-md border  bg-[#0E1614] px-4 py-2 text-sm font-medium text-gray-500 cursor-not-allowed">
                         Next
                     </span>
                 )}
@@ -93,7 +93,7 @@ const Pagination = <T,>({
                             <Link
                                 href={data.prev_page_url}
                                 preserveScroll={preserveScroll}
-                                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-600 hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
+                                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-600 hover:bg-[#0E1614] focus:z-20 focus:outline-offset-0"
                             >
                                 <span className="sr-only"> Previous </span>
                                 <ChevronLeft
@@ -140,7 +140,7 @@ const Pagination = <T,>({
                                     key={pageNumber}
                                     href={pageUrl}
                                     preserveScroll={preserveScroll}
-                                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-200 ring-1 ring-inset ring-gray-600 hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
+                                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-200 ring-1 ring-inset ring-gray-600 hover:bg-[#0E1614] focus:z-20 focus:outline-offset-0"
                                 >
                                     {pageNumber}
                                 </Link>
@@ -151,7 +151,7 @@ const Pagination = <T,>({
                             <Link
                                 href={data.next_page_url}
                                 preserveScroll={preserveScroll}
-                                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-600 hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
+                                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-600 hover:bg-[#0E1614] focus:z-20 focus:outline-offset-0"
                             >
                                 <span className="sr-only"> Next </span>
                                 <ChevronRight
