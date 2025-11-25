@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
     return (
         <header
-            className={`bg-[#0E1614] border-b border-[#1E2826] px-6 py-4 ${className}`}
+            className={`bg-[#0E1614] border-b border-[#1E2826] px-4 md:px-6 py-4 ${className}`}
         >
             <div className="flex items-center justify-between">
                 {/* Left Section - Logo & Title */}

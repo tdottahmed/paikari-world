@@ -14,36 +14,42 @@ const CustomerLayout: React.FC<CustomerLayoutProps> = ({ children }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    React.useEffect(() => {
+        const handleOpenCart = () => setIsCartOpen(true);
+        window.addEventListener('open-cart', handleOpenCart);
+        return () => window.removeEventListener('open-cart', handleOpenCart);
+    }, []);
+
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* {isLoading && <Preloader onFinish={() => setIsLoading(false)} />} */}
+        <div className= "min-h-screen bg-gray-50" >
+        {/* {isLoading && <Preloader onFinish={() => setIsLoading(false)} />} */ }
 
-            <Header
-                onCartClick={() => setIsCartOpen(true)}
-                onMenuClick={() => setIsMenuOpen(true)}
+        < Header
+    onCartClick = {() => setIsCartOpen(true)}
+onMenuClick = {() => setIsMenuOpen(true)}
             />
 
-            <CartSidebar
-                isOpen={isCartOpen}
-                onClose={() => setIsCartOpen(false)}
+    < CartSidebar
+isOpen = { isCartOpen }
+onClose = {() => setIsCartOpen(false)}
             />
 
-            <CategorySidebar
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
+    < CategorySidebar
+isOpen = { isMenuOpen }
+onClose = {() => setIsMenuOpen(false)}
             />
 
-            <main> {children} </main>
+    < main > { children } </main>
 
-            <footer className="bg-white border-t border-gray-200 mt-12">
-                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                    <p className="text-center text-gray-500 text-sm">
-                        & copy; {new Date().getFullYear()} Paikari World.All
+    < footer className = "bg-white border-t border-gray-200 mt-12" >
+        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8" >
+            <p className="text-center text-gray-500 text-sm" >
+                        & copy; { new Date().getFullYear() } Paikari World.All
                         rights reserved.
                     </p>
-                </div>
-            </footer>
-        </div>
+    </div>
+    </footer>
+    </div>
     );
 };
 
