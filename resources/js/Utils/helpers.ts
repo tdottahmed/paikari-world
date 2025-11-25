@@ -25,11 +25,11 @@ export const formatCurrency = (
         return new Intl.NumberFormat(locale, {
             style: "currency",
             currency: currency,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
         }).format(numericAmount);
     } catch (error) {
-        return `৳ ${numericAmount.toFixed(2)}`;
+        return `৳ ${numericAmount.toFixed(0)}`;
     }
 };
 
@@ -56,13 +56,13 @@ export const formatPrice = (
 
     try {
         const formattedNumber = new Intl.NumberFormat(locale, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
         }).format(numericAmount);
 
-        return `৳ ${formattedNumber}`;
+        return `${formattedNumber}`;
     } catch (error) {
-        return `৳ ${numericAmount.toFixed(2)}`;
+        return `${numericAmount.toFixed(0)}`;
     }
 };
 
@@ -78,8 +78,8 @@ export const formatPriceWithOptions = (
 ): string => {
     const {
         locale = "en-US",
-        minimumFractionDigits = 2,
-        maximumFractionDigits = 2,
+        minimumFractionDigits = 0,
+        maximumFractionDigits = 0,
         fallbackText = "N/A",
     } = options;
 

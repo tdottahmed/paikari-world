@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
-import { Edit2, Eye } from "lucide-react";
+import { Edit2, Eye, Box, Package, SwatchBookIcon } from "lucide-react";
 import { storagePath, formatPrice } from "@/Utils/helpers";
 import { Product } from "@/types";
 import Image from "../Ui/Image";
@@ -13,32 +13,12 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
-    const profit = product.sale_price - product.purchase_price;
-    const profitPercentage = ((profit / product.purchase_price) * 100).toFixed(
-        1
+    const profit = formatPrice(
+        (product.sale_price || 0) - (product.purchase_price || 0)
     );
-
-    const getStockVariant = (stock: number) => {
-        if (stock > 15)
-            return {
-                color: "text-emerald-400",
-                bg: "bg-emerald-400/10",
-                border: "border-emerald-400/20",
-            };
-        if (stock > 5)
-            return {
-                color: "text-amber-400",
-                bg: "bg-amber-400/10",
-                border: "border-amber-400/20",
-            };
-        return {
-            color: "text-red-400",
-            bg: "bg-red-400/10",
-            border: "border-red-400/20",
-        };
-    };
-
-    const stockVariant = getStockVariant(product.stock);
+    const isNew =
+        new Date(product.created_at) >
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     const handleEdit = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -50,8 +30,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
     };
 
     return (
-        <div className="bg-[#0E1614] border border-[#1E2826] rounded-lg shadow-sm hover:shadow-lg hover:border-[#2DE3A7]/30 transition-all duration-300 overflow-hidden group flex flex-col h-full">
-            <div className="relative aspect-[4/3] bg-[#0F1A18] overflow-hidden shrink-0">
+        <div className="bg-[#0E1614] border border-[#1E2826] rounded-lg shadow-sm hover:shadow-lg hover:border-[#2DE3A7]/30 transition-all duration-300 overflow-hidden group flex flex-col h-full relative">
+            {/* Image Container */}
+            <div className="relative aspect-[4/4] bg-[#F5F5F0] overflow-hidden shrink-0">
                 <Image
                     src={
                         product.images && product.images.length > 0
@@ -59,74 +40,90 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
                             : undefined
                     }
                     alt={product.name}
+                    className="w-full h-full object-cover"
                 />
 
-                {/* Stock Indicator */}
-                <div
-                    className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold ${stockVariant.bg} ${stockVariant.color} ${stockVariant.border} border backdrop-blur-sm`}
-                >
-                    {product.stock} in stock
+                {/* Top Left: NEW Badge */}
+                {isNew && (
+                    <div className="absolute top-2 left-2 bg-[#0C1311] text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                        NEW
+                    </div>
+                )}
+
+                {/* Top Right: Stock Badge */}
+                <div className="absolute top-2 right-2 bg-[#00E3A5] text-[#0C1311] text-[10px] font-bold px-2 py-0.5 rounded-md">
+                    <SwatchBookIcon size={14} strokeWidth={2.5} />
+                    <span>{product.stock}</span>
                 </div>
 
-                {/* Quick Actions Overlay */}
-                <div className="absolute inset-0 bg-[#0C1311] bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                {/* Bottom Left: MOQ/Box Badge */}
+                <div className="absolute bottom-2 left-2 bg-[#2DD4BF] text-[#0C1311] text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                    <Box size={14} strokeWidth={2.5} />
+                    <span>{formatPrice(product.moq_price || 0)}</span>
+                </div>
+
+                {/* Bottom Right: UAN/Yen Badge */}
+                <div className="absolute bottom-2 right-2 bg-[#F472B6] text-[#0C1311] text-xs font-bold px-2 py-1 rounded-md flex items-center gap-0.5">
+                    <span className="text-[10px]">¥</span>
+                    <span> {formatPrice(product.uan_price || 0)}</span>
+                </div>
+
+                {/* Quick Actions Overlay (Hidden by default, shown on hover) */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
                     <div className="flex gap-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                         <Link
                             href={route("admin.product.show", product.id)}
-                            className="p-3 bg-[#2DE3A7] text-[#0C1311] rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200"
+                            className="p-2 bg-white text-black rounded-full hover:bg-[#2DE3A7] transition-colors"
                             title="View product"
                         >
                             <Eye size={18} />
                         </Link>
-                        <Link
-                            href={route("admin.product.edit", product.id)}
-                            className="p-3 bg-[#2DE3A7] text-[#0C1311] rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200"
+                        <button
+                            onClick={handleEdit}
+                            className="p-2 bg-white text-black rounded-full hover:bg-[#2DE3A7] transition-colors"
                             title="Edit product"
                         >
                             <Edit2 size={18} />
-                        </Link>
+                        </button>
                     </div>
-                </div>
-
-                {/* Profit Badge */}
-                <div className="absolute top-3 left-3 bg-[#2DE3A7] text-[#0C1311] px-2 py-1 rounded-full text-xs font-bold backdrop-blur-sm">
-                    +{profitPercentage} %
                 </div>
             </div>
 
-            {/* Product Info */}
-            <div className="p-4 flex flex-col flex-grow">
-                {/* Product Name */}
-                <h3 className="font-semibold text-white text-base mb-3 line-clamp-2 leading-tight min-h-[2.5rem]">
-                    {product.name}
-                </h3>
-
-                {/* Price & Stock Info */}
-                <div className="space-y-2 mb-4">
-                    {/* Purchase Price */}
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-400"> Cost: </span>
-                        <span className="text-sm font-medium text-gray-300">
-                            {formatPrice(product.purchase_price)}
+            {/* Footer Info */}
+            <div className="bg-[#0C1311] p-2 border-t border-[#1E2826]">
+                <div className="grid grid-cols-3 gap-2 text-center">
+                    {/* BUY */}
+                    <div className="flex flex-col items-center border-r border-[#1E2826] text-xs md:text-sm">
+                        <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">
+                            {" "}
+                            BUY{" "}
+                        </span>
+                        <span className="text-white font-bold">
+                            {" "}
+                            {product.purchase_price}{" "}
                         </span>
                     </div>
 
-                    {/* Sale Price */}
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-400"> Price: </span>
-                        <span className="text-sm font-semibold text-[#2DE3A7]">
-                            {formatPrice(product.sale_price)}
+                    {/* SELL */}
+                    <div className="flex flex-col items-center border-r border-[#1E2826] text-xs md:text-sm">
+                        <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">
+                            Sale
+                        </span>
+                        <span className="text-white font-bold">
+                            {formatPrice(product.sale_price || 0)}
                         </span>
                     </div>
 
-                    {/* Profit */}
-                    <div className="flex items-center justify-between pt-2 border-t border-[#1E2826]">
-                        <span className="text-sm text-gray-400"> Profit: </span>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-[#2DE3A7]">
-                                {formatPrice(profit)}
-                            </span>
-                        </div>
+                    {/* PROFIT */}
+                    <div className="flex flex-col items-center text-xs md:text-sm">
+                        <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">
+                            {" "}
+                            PROFIT{" "}
+                        </span>
+                        <span className="text-white font-bold ">
+                            {" "}
+                            {profit}{" "}
+                        </span>
                     </div>
                 </div>
             </div>
