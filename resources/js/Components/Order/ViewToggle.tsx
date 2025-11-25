@@ -8,7 +8,7 @@ interface Props {
 
 export default function ViewToggle({ viewMode, onChange }: Props) {
     return (
-        <div className="flex bg-[#0E1614] p-1 rounded-lg border border-[#1E2826]">
+        <div className="hidden md:block flex bg-[#0E1614] p-1 rounded-lg border border-[#1E2826]">
             <button
                 onClick={() => onChange("grid")}
                 className={`p-2 rounded-md transition-all duration-200 ${

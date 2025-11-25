@@ -55,6 +55,16 @@ class OrderController extends Controller
             'order' => $order,
         ]);
     }
+
+    public function show(Order $order)
+    {
+        $order->load(['items.product', 'deliveryCharge']);
+        
+        return Inertia::render('Admin/Order/Show', [
+            'order' => $order,
+        ]);
+    }
+
     public function bulkInvoice(Request $request)
     {
         $ids = explode(',', $request->ids);
