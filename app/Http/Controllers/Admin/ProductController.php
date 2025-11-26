@@ -91,10 +91,16 @@ class ProductController extends Controller
         $categories = Category::select(['id', 'title'])->get();
         $supplier = Supplier::select(['id', 'name'])->get();
         $attributes = ProductAttribute::select(['id', 'name'])->get();
+        $attributes = ProductAttribute::select(['id', 'name'])->get();
         return inertia('Admin/Products/Create', [
             'categories' => $categories,
             'suppliers' => $supplier,
             'attributes' => $attributes,
+            'settings' => [
+                'yuan_rate' => get_setting('yuan_rate'),
+                'additional_cost' => get_setting('additional_cost'),
+                'profit' => get_setting('profit'),
+            ]
         ]);
     }
 
@@ -121,7 +127,7 @@ class ProductController extends Controller
                 'description' => $request->description,
                 'purchase_price' => $request->purchase_price,
                 'sale_price' => $request->sale_price,
-                'moq_price' => $request->moq_price,
+                'moq_price' => $request->moq_price ?? 0,
                 'stock' => $request->stock,
                 'uan_price' => $request->uan_price,
                 'category_id' => $request->category_id,
@@ -167,6 +173,11 @@ class ProductController extends Controller
             'suppliers' => $supplier,
             'attributes' => $attributes,
             'variations' => $variations,
+            'settings' => [
+                'yuan_rate' => get_setting('yuan_rate'),
+                'additional_cost' => get_setting('additional_cost'),
+                'profit' => get_setting('profit'),
+            ]
         ]);
     }
 
@@ -202,7 +213,7 @@ class ProductController extends Controller
                 'description' => $request->description,
                 'purchase_price' => $request->purchase_price,
                 'sale_price' => $request->sale_price,
-                'moq_price' => $request->moq_price,
+                'moq_price' => $request->moq_price ?? 0,
                 'stock' => $request->stock,
                 'uan_price' => $request->uan_price,
                 'category_id' => $request->category_id,

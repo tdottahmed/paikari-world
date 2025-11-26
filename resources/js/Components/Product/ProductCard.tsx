@@ -59,7 +59,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
                 {/* Bottom Left: MOQ/Box Badge */}
                 <div className="absolute bottom-2 left-2 bg-[#2DD4BF] text-[#0C1311] text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
                     <Box size={14} strokeWidth={2.5} />
-                    <span>{formatPrice(product.moq_price || 0)}</span>
+                    <span>{formatPrice(product.stock || 0)}</span>
                 </div>
 
                 {/* Bottom Right: UAN/Yen Badge */}

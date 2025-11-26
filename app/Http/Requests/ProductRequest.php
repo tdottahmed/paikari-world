@@ -19,7 +19,7 @@ class ProductRequest extends FormRequest
             'description' => 'required|string',
             'purchase_price' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
-            'moq_price' => 'required|numeric|min:0',
+
             'stock' => 'required|integer|min:0',
             'uan_price' => 'required|numeric|min:0',
             'images' => 'nullable|array',

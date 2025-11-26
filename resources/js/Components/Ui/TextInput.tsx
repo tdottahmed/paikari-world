@@ -10,6 +10,7 @@ interface TextInputProps {
     placeholder?: string;
     isFocused?: boolean;
     required?: boolean;
+    step?: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -25,6 +26,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             placeholder,
             isFocused = false,
             required = false,
+            step,
             onChange,
         },
         ref
@@ -39,14 +41,15 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 
         return (
             <input
-                id={id}
-                ref={ref || inputRef}
-                type={type}
-                name={name}
-                value={value}
-                placeholder={placeholder}
-                required={required}
-                className={`
+                id= { id }
+        ref = { ref || inputRef
+    }
+                type = { type }
+                name = { name }
+                value = { value }
+                placeholder = { placeholder }
+                required = { required }
+                className = {`
                     w-full px-4 py-3 
                     bg-[#0F1A18] border border-[#1E2826] 
                     rounded-lg 
@@ -56,9 +59,10 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                     cursor-pointer
                     ${className}
                 `}
-                autoComplete={autoComplete}
-                onChange={onChange}
-            />
+autoComplete = { autoComplete }
+onChange = { onChange }
+step = { step }
+    />
         );
     }
 );

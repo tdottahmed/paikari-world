@@ -33,6 +33,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
   Route::get('payment-gateways', [PaymentGatewayController::class, 'index'])->name('payment-gateways.index');
   Route::get('courier', [CourierController::class, 'index'])->name('courier.index');
   Route::get('price-calculator', [PriceCalculatorController::class, 'index'])->name('price-calculator.index');
+  Route::post('price-calculator/update', [PriceCalculatorController::class, 'update'])->name('price-calculator.update');
   Route::get('marketing', [MarketingController::class, 'index'])->name('marketing.index');
 
   // Order Management

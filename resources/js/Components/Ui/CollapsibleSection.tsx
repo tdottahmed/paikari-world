@@ -14,13 +14,13 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     const [open, setOpen] = useState(defaultOpen);
 
     return (
-        <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
+        <div className="border border-gray-700 rounded-lg">
             {/* Header */}
             <button
                 onClick={() => setOpen(!open)}
                 className="w-full flex justify-between items-center px-4 py-3
-                           text-left font-medium text-gray-800 dark:text-gray-200
-                           hover:bg-gray-100 dark:hover:bg-gray-800
+                           text-left font-medium text-gray-200
+                           hover:bg-gray-800
                            transition-all duration-200"
             >
                 <span>{title}</span>

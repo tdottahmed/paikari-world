@@ -288,7 +288,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                     {imagePreviews.map((image) => (
                         <div
                             key={image.id}
-                            className="relative group overflow-hidden border-2 border-dashed border-gray-700 rounded-lg p-8 text-center hover:border-[#2DE3A7] transition-colors"
+                            className="relative group overflow-hidden border-2 border-dashed border-gray-700 rounded-lg p-2 lg:p-8 text-center hover:border-[#2DE3A7] transition-colors"
                         >
                             <img
                                 src={

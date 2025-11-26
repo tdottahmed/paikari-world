@@ -1,0 +1,141 @@
+import React from "react";
+import Card, { CardContent, CardHeader, CardTitle } from "@/Components/Ui/Card";
+import CollapsibleSection from "@/Components/Ui/CollapsibleSection";
+import InputLabel from "@/Components/Ui/InputLabel";
+import TextInput from "@/Components/Ui/TextInput";
+import SelectInput from "@/Components/Ui/SelectInput";
+import TextArea from "@/Components/Ui/TextArea";
+import InputError from "@/Components/Ui/InputError";
+
+interface Props {
+    data: any;
+    setData: (key: string, value: any) => void; // Simplified type for setData
+    errors: any;
+    categories: any[];
+    suppliers: any[];
+}
+
+export default function GeneralInformation({
+    data,
+    setData,
+    errors,
+    categories,
+    suppliers,
+}: Props) {
+    return (
+        <div className="mb-2">
+            <CollapsibleSection title="General Information" defaultOpen={true}>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Product Details </CardTitle>
+                    </CardHeader>
+                    <CardContent padding="lg">
+                        <div className="mb-4">
+                            <InputLabel
+                                htmlFor="name"
+                                value="Product Name"
+                                required
+                            />
+                            <TextInput
+                                id="name"
+                                name="name"
+                                value={data.name}
+                                onChange={(e) => {
+                                    setData("name", e.target.value);
+                                    const slug = e.target.value
+                                        .toLowerCase()
+                                        .replace(/[^a-z0-9]+/g, "-")
+                                        .replace(/(^-|-$)/g, "");
+
+                                    setData("slug", slug);
+                                }}
+                                placeholder="Enter product name"
+                                required
+                            />
+                            <InputError message={errors.name} />
+                        </div>
+
+                        <div className="mb-4">
+                            <InputLabel htmlFor="slug" value="Slug" required />
+                            <TextInput
+                                id="slug"
+                                name="slug"
+                                value={data.slug}
+                                onChange={(e) =>
+                                    setData("slug", e.target.value)
+                                }
+                                placeholder="product-slug"
+                                required
+                            />
+                            <InputError message={errors.slug} />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <InputLabel
+                                    htmlFor="category_id"
+                                    value="Category"
+                                    required
+                                />
+                                <SelectInput
+                                    id="category_id"
+                                    name="category_id"
+                                    value={data.category_id}
+                                    onChange={(val) =>
+                                        setData("category_id", val)
+                                    }
+                                    options={categories.map((c) => ({
+                                        value: c.id,
+                                        label: c.title,
+                                    }))}
+                                    placeholder="Select Category"
+                                    error={errors.category_id}
+                                />
+                            </div>
+
+                            <div>
+                                <InputLabel
+                                    htmlFor="supplier_id"
+                                    value="Supplier"
+                                    required
+                                />
+                                <SelectInput
+                                    id="supplier_id"
+                                    name="supplier_id"
+                                    value={data.supplier_id}
+                                    onChange={(val) =>
+                                        setData("supplier_id", val)
+                                    }
+                                    options={suppliers.map((s) => ({
+                                        value: s.id,
+                                        label: s.name,
+                                    }))}
+                                    placeholder="Select Supplier"
+                                    error={errors.supplier_id}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1">
+                            <InputLabel
+                                htmlFor="description"
+                                value="Description"
+                                required
+                            />
+                            <TextArea
+                                id="description"
+                                name="description"
+                                value={data.description}
+                                onChange={(e) =>
+                                    setData("description", e.target.value)
+                                }
+                                required
+                            />
+                            <InputError message={errors.description} />
+                        </div>
+                    </CardContent>
+                </Card>
+            </CollapsibleSection>
+        </div>
+    );
+}
