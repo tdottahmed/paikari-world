@@ -59,13 +59,15 @@ class ProductController extends Controller
         $products = $query->paginate(15)->withQueryString();
 
         // Get all products for stats (without pagination)
-        $allProducts = Product::select(['id', 'stock'])->get();
+        // We can use aggregate queries for better performance
         $stats = [
-            'total' => $allProducts->count(),
-            'in_stock' => $allProducts->where('stock', '>', 0)->count(),
-            'low_stock' => $allProducts->where('stock', '>', 0)->where('stock', '<=', 10)->count(),
-            'out_of_stock' => $allProducts->where('stock', '=', 0)->count(),
+            'total' => Product::count(),
+            'checkouts' => \App\Models\Order::count(),
+            'stock' => Product::sum('stock'),
+            'buy_value' => Product::select(DB::raw('SUM(stock * purchase_price) as total'))->value('total') ?? 0,
+            'sell_value' => Product::select(DB::raw('SUM(stock * sale_price) as total'))->value('total') ?? 0,
         ];
+        $stats['profit'] = $stats['sell_value'] - $stats['buy_value'];
 
         $categories = Category::select(['id', 'title'])->get();
         $suppliers = Supplier::select(['id', 'name'])->get();

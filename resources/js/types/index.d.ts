@@ -171,9 +171,11 @@ export interface ProductsIndexProps {
     suppliers: Supplier[];
     stats: {
         total: number;
-        in_stock: number;
-        low_stock: number;
-        out_of_stock: number;
+        checkouts: number;
+        stock: number;
+        buy_value: number;
+        sell_value: number;
+        profit: number;
     };
     filters: {
         search?: string;
