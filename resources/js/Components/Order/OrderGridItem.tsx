@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Order } from "@/types";
 import Card, { CardContent } from "@/Components/Ui/Card";
 import Checkbox from "@/Components/Ui/Checkbox";
@@ -6,6 +6,8 @@ import SelectInput from "@/Components/Ui/SelectInput";
 import { FileText, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "@inertiajs/react";
+import OrderStatus from "@/Components/Order/OrderStatus";
+import SuccessRate from "@/Components/Order/SuccessRate";
 
 interface Props {
     order: Order;
@@ -13,7 +15,6 @@ interface Props {
     onSelect: () => void;
     onStatusChange: (order: Order, status: string) => void;
     statusOptions: { value: string; label: string }[];
-    getStatusColor: (status: string) => string;
 }
 
 export default function OrderGridItem({
@@ -22,8 +23,18 @@ export default function OrderGridItem({
     onSelect,
     onStatusChange,
     statusOptions,
-    getStatusColor,
 }: Props) {
+    // Generate random stats for demonstration (replace with actual data later)
+    const success_rate = useMemo(() => {
+        const total = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+        const successful = Math.floor(Math.random() * (total - 1 + 1)) + 1;
+        return {
+            total_orders: total,
+            successful_orders: successful,
+            cancel_orders: total - successful,
+        };
+    }, []);
+
     return (
         <Card
             className={`relative group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#2DE3A7]/10 ${
@@ -47,18 +58,7 @@ export default function OrderGridItem({
                             <span className="text-lg font-bold text-white">
                                 #{order.id}{" "}
                             </span>
-                            <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${getStatusColor(
-                                    order.status
-                                )
-                                    .replace("bg-", "bg-opacity-10 bg-")
-                                    .replace(
-                                        "border-",
-                                        "border border-opacity-20 "
-                                    )}`}
-                            >
-                                {order.status}
-                            </span>
+                            <OrderStatus status={order.status} />
                         </div>
                         <div className="text-xs text-gray-500 mt-1">
                             {format(
@@ -79,23 +79,29 @@ export default function OrderGridItem({
                 </div>
 
                 {/* Customer Info */}
-                <div className="bg-[#0C1311] rounded-lg p-3 border border-[#1E2826]">
-                    <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-gray-500">
-                            {" "}
-                            Customer{" "}
-                        </span>
-                        <span className="text-sm font-medium text-gray-300">
-                            {" "}
-                            {order.customer_name || "Guest"}{" "}
-                        </span>
+                <div className="bg-[#0C1311] rounded-lg p-3 border border-[#1E2826] space-y-3">
+                    <div className="space-y-1">
+                        <div className="flex items-center">
+                            <span className="text-xs text-gray-100 pr-2 text-bold">
+                                Customer:{" "}
+                            </span>
+                            <span className="text-sm font-medium text-gray-100">
+                                {order.customer_name || "Guest"}
+                            </span>
+                        </div>
+                        <div className="flex items-center">
+                            <span className="text-xs text-gray-100 pr-2 text-bold">
+                                Phone
+                            </span>
+                            <span className="text-sm text-gray-100">
+                                {order.customer_phone}
+                            </span>
+                        </div>
                     </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-500"> Phone </span>
-                        <span className="text-sm text-gray-400">
-                            {" "}
-                            {order.customer_phone}{" "}
-                        </span>
+
+                    {/* Success Rate */}
+                    <div className="pt-2 border-t border-[#1E2826]">
+                        <SuccessRate rate={success_rate} />
                     </div>
                 </div>
 

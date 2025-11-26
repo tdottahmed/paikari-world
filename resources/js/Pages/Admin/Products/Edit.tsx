@@ -166,6 +166,7 @@ export default function Edit({
                         <div className="flex flex-col gap-3 lg:flex-row lg:justify-end">
                             <PrimaryButton
                                 type="submit"
+                                size="sm"
                                 disabled={processing}
                                 className="w-full sm:w-auto lg:w-auto justify-center"
                             >

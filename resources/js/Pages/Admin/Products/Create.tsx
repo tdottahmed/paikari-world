@@ -89,6 +89,7 @@ export default function Create({
                 <div className="lg:p-6 pt-6 pb-6">
                     <div className="flex flex-col sm:flex-row justify-end gap-3">
                         <PrimaryButton
+                            size="sm"
                             type="submit"
                             disabled={processing}
                             className="w-full sm:w-auto justify-center"

@@ -107,6 +107,7 @@ export interface Order {
     subtotal: number;
     total: number;
     status: string;
+    success_rate?: number;
     created_at: string;
     items?: OrderItem[];
     delivery_charge?: DeliveryCharge;
