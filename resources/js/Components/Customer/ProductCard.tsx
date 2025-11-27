@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, router, usePage } from "@inertiajs/react";
 import { ShoppingCart, Trash2, Plus, Minus, Check } from "lucide-react";
-import { storagePath, isNewProduct } from "@/Utils/helpers";
+import { storagePath, isNewProduct, formatPrice } from "@/Utils/helpers";
 import { Product } from "@/types";
 import Image from "../Ui/Image";
 
@@ -126,7 +126,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 </Link>
                 <div className="mb-2 md:mb-4 px-2">
                     <span className="text-l font-bold text-gray-900">
-                        ৳{product.sale_price}
+                        {formatPrice(product.sale_price)}
                     </span>
                 </div>
 

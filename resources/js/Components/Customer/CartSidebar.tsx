@@ -1,13 +1,14 @@
 import React from "react";
 import { X, ShoppingBag, Trash2 } from "lucide-react";
 import { Link, usePage, useForm, router } from "@inertiajs/react";
+import { formatPrice, storagePath } from "@/Utils/helpers";
 
 interface CartItem {
     product_id: number;
     name: string;
     price: number;
     quantity: number;
-    image: string | null;
+    images: string | [];
 }
 
 interface CartSidebarProps {
@@ -122,9 +123,11 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                                     <div className="flex gap-3">
                                         {/* Image */}
                                         <div className="w-20 h-20 bg-gray-100 rounded-xl flex-shrink-0 overflow-hidden">
-                                            {item.image ? (
+                                            {item.images ? (
                                                 <img
-                                                    src={`/storage/${item.image}`}
+                                                    src={storagePath(
+                                                        item.images[0]
+                                                    )}
                                                     alt={item.name}
                                                     className="w-full h-full object-cover"
                                                 />
@@ -144,8 +147,8 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                                             {/* <span className="inline-block bg-gray-200 text-gray-600 text-[10px] px-1.5 py-0.5 rounded mb-1">7</span> */}
 
                                             <p className="text-xs text-gray-500 font-medium">
-                                                ৳{item.price} × {item.quantity}{" "}
-                                                pc
+                                                {formatPrice(item.price)} ×{" "}
+                                                {item.quantity} pc
                                             </p>
                                         </div>
                                     </div>
