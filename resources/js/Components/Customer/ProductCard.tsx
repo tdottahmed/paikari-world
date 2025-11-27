@@ -163,7 +163,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                         <button
                             onClick={addToCart}
                             disabled={product.stock <= 0}
-                            className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
+                            className={`w-full py-3 rounded-3xl flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
                                 product.stock > 0
                                     ? "bg-[#1A1B2E] text-white hover:bg-[#2D2E45] shadow-lg hover:shadow-xl"
                                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
