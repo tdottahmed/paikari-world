@@ -32,7 +32,7 @@ const CategorySlider: React.FC<CategorySliderProps> = ({ categories }) => {
     if (!categories || categories.length === 0) return null;
 
     return (
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="relative max-w-7xl mx-auto px-2 md:px-6 lg:px-8 py-2 md:py-4 lg:py-6">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold text-gray-900">
                     {" "}
@@ -56,14 +56,14 @@ const CategorySlider: React.FC<CategorySliderProps> = ({ categories }) => {
 
             <div
                 ref={scrollRef}
-                className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x"
+                className="flex gap-1 md:gap-4 overflow-x-auto scrollbar-hide snap-x"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
                 <Link
                     href={route("products.index")}
                     className="flex flex-col items-center gap-3 min-w-[80px] snap-start group cursor-pointer"
                 >
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-purple-100 border-2 border-transparent group-hover:border-indigo-500 transition-all overflow-hidden flex items-center justify-center">
+                    <div className="w-16 h-16 md:w-20 sm:h-20 rounded-full bg-purple-100 border-2 border-transparent group-hover:border-indigo-500 transition-all overflow-hidden flex items-center justify-center">
                         <span className="text-xs font-bold text-gray-400">
                             <GalleryHorizontal size={32} />
                         </span>

@@ -1,33 +1,95 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { storagePath } from "@/Utils/helpers";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const Hero: React.FC = () => {
+interface HeroProps {
+    bannerImages?: string[];
+}
+
+const Hero: React.FC<HeroProps> = ({ bannerImages = [] }) => {
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    // Use provided images or fallback to defaults
+    const displayImages =
+        bannerImages.length > 0
+            ? bannerImages.map((img) => storagePath(img))
+            : ["/images/paikari-banner-1.webp", "/images/banner-2.webp"];
+
+    // Auto-play for slider
+    useEffect(() => {
+        if (displayImages.length <= 1) return;
+
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % displayImages.length);
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [displayImages.length]);
+
+    const nextSlide = () => {
+        setCurrentSlide((prev) => (prev + 1) % displayImages.length);
+    };
+
+    const prevSlide = () => {
+        setCurrentSlide(
+            (prev) => (prev - 1 + displayImages.length) % displayImages.length
+        );
+    };
+
     return (
-        <div className="relative bg-gray-900 overflow-hidden">
-            {/* Background Pattern/Image */}
-            <div className="absolute inset-0 opacity-20">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-800 to-indigo-900 mix-blend-multiply" />
-            </div>
+        <div className="relative max-w-7xl mx-auto px-2 md:px-6 lg:px-8">
+            <div className="relative bg-gray-900 overflow-hidden h-[150px] md:h-[400px] rounded-xl shadow-lg">
+                {displayImages.map((image, index) => (
+                    <div
+                        key={index}
+                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                            index === currentSlide ? "opacity-100" : "opacity-0"
+                        }`}
+                    >
+                        <img
+                            src={image}
+                            alt={`Banner ${index + 1}`}
+                            className="w-full h-full"
+                        />
+                    </div>
+                ))}
 
-            <div className="relative max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8 text-center">
-                <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                    <span className="block"> WELCOME </span>
-                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
-                        TO
-                    </span>
-                    <span className="block"> PAIKARI WORLD </span>
-                </h1>
-                <p className="mt-6 max-w-lg mx-auto text-xl text-gray-300 sm:max-w-3xl">
-                    Your one - stop destination for wholesale products.Best
-                    prices, premium quality, and fast delivery.
-                </p>
+                {/* Slider Controls */}
+                {displayImages.length > 1 && (
+                    <>
+                        {/* Arrows */}
+                        <button
+                            onClick={prevSlide}
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-colors backdrop-blur-sm"
+                            aria-label="Previous slide"
+                        >
+                            <ChevronLeft size={24} />
+                        </button>
+                        <button
+                            onClick={nextSlide}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-colors backdrop-blur-sm"
+                            aria-label="Next slide"
+                        >
+                            <ChevronRight size={24} />
+                        </button>
 
-                {/* Decorative Elements (mimicking the fun vibe of the screenshot) */}
-                <div className="hidden md:block absolute top-1/2 left-10 transform -translate-y-1/2 animate-bounce duration-1000">
-                    <span className="text-6xl">🐹</span>
-                </div>
-                <div className="hidden md:block absolute top-1/2 right-10 transform -translate-y-1/2 animate-bounce duration-1000 delay-150">
-                    <span className="text-6xl">🍌</span>
-                </div>
+                        {/* Indicators */}
+                        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                            {displayImages.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setCurrentSlide(index)}
+                                    className={`w-2 h-2 rounded-full transition-colors ${
+                                        index === currentSlide
+                                            ? "bg-white"
+                                            : "bg-white/50"
+                                    }`}
+                                    aria-label={`Go to slide ${index + 1}`}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

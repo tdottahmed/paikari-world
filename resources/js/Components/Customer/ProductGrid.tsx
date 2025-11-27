@@ -148,7 +148,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
     if (!products || !products.data) return null;
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 md:px-6 lg:px-8 py-2 md:py-4 lg:py-6">
             {/* Error Message */}
             {error && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">

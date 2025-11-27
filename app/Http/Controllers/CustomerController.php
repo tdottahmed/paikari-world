@@ -12,9 +12,11 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         $products = $this->filterProducts($request);
+        $websiteSettings = \App\Models\WebsiteSetting::first();
 
         return Inertia::render('Customer/Home', [
             'products' => $products,
+            'website_settings' => $websiteSettings,
             'filters' => [
                 'search' => $request->input('search'),
                 'min_price' => $request->input('min_price'),

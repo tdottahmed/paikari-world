@@ -17,7 +17,7 @@ Route::get('product/{product:slug}', [CustomerController::class, 'show'])->name(
 Route::get('api/search', [CustomerController::class, 'search'])->name('api.search');
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return redirect()->route('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

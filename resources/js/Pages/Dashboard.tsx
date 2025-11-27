@@ -76,11 +76,11 @@ export default function Dashboard({
     charts,
     filters,
 }: DashboardProps) {
-    const [dateRange, setDateRange] = useState(filters.date_range);
-    const [startDate, setStartDate] = useState(filters.start_date || "");
-    const [endDate, setEndDate] = useState(filters.end_date || "");
+    const [dateRange, setDateRange] = useState(filters?.date_range || "all");
+    const [startDate, setStartDate] = useState(filters?.start_date || "");
+    const [endDate, setEndDate] = useState(filters?.end_date || "");
     const [showCustomDate, setShowCustomDate] = useState(
-        filters.date_range === "custom"
+        filters?.date_range === "custom"
     );
 
     const handleFilterChange = (range: string) => {
