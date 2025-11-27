@@ -348,6 +348,20 @@ export const slugify = (text: string): string => {
         .replace(/^-+|-+$/g, "");
 };
 
+/**
+ * Check if a product is considered new based on creation date
+ * @param createdAt - Creation date string
+ * @param days - Number of days to consider as new (default: 30)
+ * @returns Boolean indicating if product is new
+ */
+export const isNewProduct = (createdAt: string, days: number = 30): boolean => {
+    if (!createdAt) return false;
+    const createdDate = new Date(createdAt);
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() - days);
+    return createdDate > thresholdDate;
+};
+
 // Export all helpers
 export default {
     formatCurrency,
@@ -367,4 +381,5 @@ export default {
     truncateText,
     capitalize,
     slugify,
+    isNewProduct,
 };

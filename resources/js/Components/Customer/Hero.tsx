@@ -9,11 +9,13 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ bannerImages = [] }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    // Use provided images or fallback to defaults
     const displayImages =
         bannerImages.length > 0
             ? bannerImages.map((img) => storagePath(img))
-            : ["/images/paikari-banner-1.webp", "/images/paikari-banner-2.webp"];
+            : [
+                  "/images/paikari-banner-1.webp",
+                  "/images/paikari-banner-2.webp",
+              ];
 
     // Auto-play for slider
     useEffect(() => {

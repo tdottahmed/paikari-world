@@ -56,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick, onMenuClick }) => {
                         </div>
 
                         {/* Desktop Search (Center) */}
-                        <div className="hidden md:flex flex-1 max-w-2xl mx-8">
+                        <div className="hidden md:flex flex-1 max-w-2xl">
                             <SearchAutocomplete />
                         </div>
 

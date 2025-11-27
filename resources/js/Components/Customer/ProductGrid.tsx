@@ -1,16 +1,15 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Link, router } from "@inertiajs/react";
-import { ShoppingCart } from "lucide-react";
-import { storagePath } from "@/Utils/helpers";
+import { router } from "@inertiajs/react";
+import ProductCard from "./ProductCard";
 import { Product } from "@/types";
-import Image from "../Ui/Image";
-import axios from "axios";
 
 interface ProductGridProps {
     products: {
         data: Product[];
         links: any[];
         next_page_url?: string | null;
+        current_page: number;
+        last_page: number;
     };
 }
 
@@ -18,25 +17,37 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
     const [allProducts, setAllProducts] = useState<Product[]>(
         products?.data || []
     );
-    const [nextPageUrl, setNextPageUrl] = useState(products?.next_page_url);
+    const [nextPage, setNextPage] = useState<number | null>(
+        products?.current_page < products?.last_page
+            ? products.current_page + 1
+            : null
+    );
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const loadMoreRef = useRef<HTMLDivElement>(null);
+    const accumulatedProductsRef = useRef<Product[]>(products?.data || []);
 
+    // Reset products when the initial products prop changes (e.g., after filtering)
     useEffect(() => {
-        setAllProducts(products?.data || []);
-        setNextPageUrl(products?.next_page_url);
-        setError(null);
+        // Only reset if it's actually a new search/filter (page 1) or if the data completely changed
+        if (products?.current_page === 1) {
+            setAllProducts(products?.data || []);
+            accumulatedProductsRef.current = products?.data || [];
+            setNextPage(
+                products?.current_page < products?.last_page
+                    ? products.current_page + 1
+                    : null
+            );
+        }
     }, [products]);
 
-    // Infinite scroll implementation
+    // Infinite scroll observer
     useEffect(() => {
-        if (!loadMoreRef.current || !nextPageUrl) return;
+        if (!loadMoreRef.current || !nextPage) return;
 
         const observer = new IntersectionObserver(
             (entries) => {
                 const first = entries[0];
-                if (first.isIntersecting && !isLoading && nextPageUrl) {
+                if (first.isIntersecting && !isLoading && nextPage) {
                     loadMore();
                 }
             },
@@ -50,222 +61,64 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                 observer.unobserve(loadMoreRef.current);
             }
         };
-    }, [nextPageUrl, isLoading]);
+    }, [nextPage, isLoading]);
 
-    const loadMore = async () => {
-        if (!nextPageUrl || isLoading) return;
+    const loadMore = () => {
+        if (isLoading || !nextPage) return;
 
         setIsLoading(true);
-        setError(null);
-        console.log("Loading more products from:", nextPageUrl);
 
-        try {
-            const response = await axios.get(nextPageUrl, {
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest",
-                    "X-Inertia": "true",
-                    "X-Inertia-Version": window.history.state?.version || "",
-                    Accept: "application/json",
-                },
-                timeout: 10000, // 10 second timeout
-            });
+        // Get current URL search params
+        const currentParams = new URLSearchParams(window.location.search);
 
-            const data = response.data;
-            console.log("Load more response:", data);
+        // Create new URLSearchParams with page parameter
+        const params: Record<string, any> = {};
+        currentParams.forEach((value, key) => {
+            params[key] = value;
+        });
+        params.page = nextPage;
 
-            // Check if data has the expected structure
-            if (!data || !data.props || !data.props.products) {
-                console.error("Unexpected response structure:", data);
-                throw new Error("Unexpected response format");
-            }
+        router.get(window.location.pathname, params, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            only: ["products"],
+            onSuccess: (page) => {
+                const newProducts = page.props.products as typeof products;
+                const updatedProducts = [
+                    ...accumulatedProductsRef.current,
+                    ...newProducts.data,
+                ];
 
-            const newProducts = data.props.products;
+                accumulatedProductsRef.current = updatedProducts;
+                setAllProducts(updatedProducts);
 
-            if (newProducts && Array.isArray(newProducts.data)) {
-                setAllProducts((prev) => [...prev, ...newProducts.data]);
-                setNextPageUrl(newProducts.next_page_url);
-            } else {
-                throw new Error("Invalid products data structure");
-            }
-        } catch (error: any) {
-            console.error("Failed to load more products:", error);
+                setNextPage(
+                    newProducts.current_page < newProducts.last_page
+                        ? newProducts.current_page + 1
+                        : null
+                );
 
-            let errorMessage = "Failed to load more products";
-
-            if (axios.isAxiosError(error)) {
-                if (error.code === "ECONNABORTED") {
-                    errorMessage = "Request timeout. Please try again.";
-                } else if (error.response) {
-                    // Server responded with error status
-                    if (error.response.status === 404) {
-                        errorMessage = "Products not found.";
-                    } else if (error.response.status === 500) {
-                        errorMessage = "Server error. Please try again later.";
-                    } else {
-                        errorMessage = `Server error: ${error.response.status}`;
-                    }
-                } else if (error.request) {
-                    // Request made but no response received
-                    errorMessage =
-                        "Network error. Please check your connection.";
-                }
-            } else {
-                errorMessage = error?.message || "Failed to load more products";
-            }
-
-            setError(errorMessage);
-            setNextPageUrl(null); // Stop infinite scroll on error
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // Retry loading more products
-    const handleRetry = () => {
-        if (nextPageUrl) {
-            setError(null);
-            loadMore();
-        }
-    };
-
-    const addToCart = (product: Product) => {
-        router.post(
-            route("cart.store"),
-            {
-                product_id: product.id,
-                quantity: 1,
+                setIsLoading(false);
             },
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    // Dispatch event to open cart sidebar
-                    window.dispatchEvent(new CustomEvent("open-cart"));
-                },
-            }
-        );
+            onError: (errors) => {
+                console.error("Failed to load more products:", errors);
+                setIsLoading(false);
+            },
+        });
     };
 
     if (!products || !products.data) return null;
 
     return (
         <div className="max-w-7xl mx-auto px-2 md:px-6 lg:px-8 py-2 md:py-4 lg:py-6">
-            {/* Error Message */}
-            {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <svg
-                                className="h-5 w-5 text-red-400 mr-2"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                            <span className="text-red-800 text-sm">
-                                {error}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {nextPageUrl && (
-                                <button
-                                    onClick={handleRetry}
-                                    className="text-red-600 hover:text-red-800 text-sm font-medium px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
-                                >
-                                    Retry
-                                </button>
-                            )}
-                            <button
-                                onClick={() => setError(null)}
-                                className="text-red-400 hover:text-red-600"
-                            >
-                                <svg
-                                    className="h-4 w-4"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Product Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 md:gap-4 sm:gap-6">
                 {allProducts.map((product) => (
-                    <div
-                        key={product.id}
-                        className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
-                    >
-                        {/* Image Container */}
-                        <div className="relative aspect-square bg-gray-100 overflow-hidden">
-                            {product.stock > 0 ? (
-                                <span className="absolute top-2 left-2 z-10 bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                    In Stock
-                                </span>
-                            ) : (
-                                <span className="absolute top-2 left-2 z-10 bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                    Out of Stock
-                                </span>
-                            )}
-
-                            <Link href={route("products.show", product.slug)}>
-                                <Image
-                                    src={storagePath(product.images?.[0])}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
-                            </Link>
-
-                            {/* Quick Add Button (Visible on Hover) */}
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    addToCart(product);
-                                }}
-                                className="absolute bottom-3 right-3 p-2 bg-white text-gray-900 rounded-full shadow-md opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:bg-gray-900 hover:text-white"
-                            >
-                                <ShoppingCart size={18} />
-                            </button>
-                        </div>
-
-                        {/* Content */}
-                        <div className="p-4 flex-1 flex flex-col">
-                            <Link
-                                href={route("products.show", product.slug)}
-                                className="block"
-                            >
-                                <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1 group-hover:text-indigo-600 transition-colors">
-                                    {product.name}
-                                </h3>
-                            </Link>
-
-                            <div className="mt-auto pt-2 flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-xs text-gray-500">
-                                        {product.category?.title}
-                                    </span>
-                                    <span className="text-lg font-bold text-gray-900">
-                                        ৳{product.sale_price}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <ProductCard key={product.id} product={product} />
                 ))}
             </div>
 
-            {/* Loading Indicator */}
-            {nextPageUrl && (
+            {nextPage && (
                 <div ref={loadMoreRef} className="mt-8 text-center">
                     {isLoading ? (
                         <div className="inline-flex items-center gap-2 text-gray-500">
@@ -283,7 +136,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
             )}
 
             {/* No more products message */}
-            {!nextPageUrl && allProducts.length > 0 && (
+            {!nextPage && allProducts.length > 0 && (
                 <div className="mt-8 text-center text-sm text-gray-400">
                     You've reached the end
                 </div>
