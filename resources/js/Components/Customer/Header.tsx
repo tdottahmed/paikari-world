@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Link, usePage } from "@inertiajs/react";
 import { User, MessageCircle, X, Menu } from "lucide-react";
-import { CartItem, PageProps } from "@/types";
 
 import Logo from "./Header/Logo";
 import MobileMenuButton from "./Header/MobileMenuButton";
@@ -9,21 +7,19 @@ import MessengerIcon from "./Header/MessengerIcon";
 import CartIcon from "./Header/CartIcon";
 import SearchToggle from "./Header/SearchToggle";
 import SearchAutocomplete from "./SearchAutocomplete";
+import { useCartStore } from "@/Stores/useCartStore";
 
 interface HeaderProps {
-    onCartClick: () => void;
     onMenuClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onCartClick, onMenuClick }) => {
-    const { props } = usePage<PageProps<{ cart: Record<string, CartItem> }>>();
-    const cart = props.cart || {};
-    const cartItemCount = Object.values(cart).reduce(
-        (acc: number, item: CartItem) => acc + item.quantity,
-        0
-    );
-
+const Header = ({ onMenuClick }: HeaderProps) => {
+    const { setIsOpen, getCartCount } = useCartStore();
+    const cartCount = getCartCount();
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+    const onCartClick = () => {
+        setIsOpen(true);
+    };
 
     return (
         <>
@@ -69,7 +65,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick, onMenuClick }) => {
                                 onClick={onCartClick}
                                 className="p-2 text-gray-800 hover:text-gray-900 transition-colors"
                             >
-                                <CartIcon count={cartItemCount} />
+                                <CartIcon count={cartCount} />
                             </button>
                         </div>
 
@@ -83,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick, onMenuClick }) => {
                                     Cart
                                 </span>
                                 <CartIcon
-                                    count={cartItemCount}
+                                    count={cartCount}
                                     className="text-white"
                                 />
                             </button>
