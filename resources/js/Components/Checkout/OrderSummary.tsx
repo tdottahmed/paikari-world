@@ -11,9 +11,9 @@ interface OrderSummaryProps {
     processing: boolean;
     onRemoveItem: (e: React.MouseEvent, id: number) => void;
     onQuantityChange: (
-        e: React.MouseEvent,
         id: number,
-        newQuantity: number
+        newQuantity: number,
+        e?: React.MouseEvent
     ) => void;
 }
 

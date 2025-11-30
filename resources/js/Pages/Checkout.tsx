@@ -65,12 +65,14 @@ export default function Checkout({
     };
 
     const handleQuantityChange = (
-        e: React.MouseEvent,
         id: number,
-        newQuantity: number
+        newQuantity: number,
+        e?: React.MouseEvent
     ) => {
-        e.preventDefault();
-        e.stopPropagation();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         handleUpdateQuantity(id, newQuantity);
     };
 

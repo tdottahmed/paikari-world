@@ -8,9 +8,9 @@ interface CheckoutItemProps {
     item: CartItem;
     onRemove: (e: React.MouseEvent, id: number) => void;
     onQuantityChange: (
-        e: React.MouseEvent,
         id: number,
-        newQuantity: number
+        newQuantity: number,
+        e?: React.MouseEvent
     ) => void;
 }
 
@@ -66,16 +66,14 @@ export default function CheckoutItem({
                         {/* Quantity Controls */}
                         <QuantitySelector
                             quantity={item.quantity}
-                            onDecrease={(e) =>
+                            onDecrease={() =>
                                 onQuantityChange(
-                                    e,
                                     item.product_id,
                                     item.quantity - 1
                                 )
                             }
-                            onIncrease={(e) =>
+                            onIncrease={() =>
                                 onQuantityChange(
-                                    e,
                                     item.product_id,
                                     item.quantity + 1
                                 )
