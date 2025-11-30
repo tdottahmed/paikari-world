@@ -63,3 +63,5 @@ className = "block w-full bg-blue-600 text-white text-center px-6 py-3 rounded h
     </CustomerLayout>
     );
 }
+
+export default Cart;

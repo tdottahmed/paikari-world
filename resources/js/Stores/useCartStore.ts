@@ -39,7 +39,7 @@ export const useCartStore = create<CartState>()(
                                 image: product.images?.[0] || null,
                             },
                         },
-                        isOpen: true,
+                        isOpen: window.innerWidth >= 768,
                     };
                 });
             },

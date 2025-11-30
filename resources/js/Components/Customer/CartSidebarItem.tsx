@@ -4,6 +4,7 @@ import { formatPrice, storagePath } from "@/Utils/helpers";
 import { CartItem } from "@/types";
 import { useDebounce } from "@/Hooks/useDebounce";
 import { useCartStore } from "@/Stores/useCartStore";
+import QuantitySelector from "../Ui/QuantitySelector";
 
 interface CartSidebarItemProps {
     item: CartItem;
@@ -34,71 +35,61 @@ const CartSidebarItem: React.FC<CartSidebarItemProps> = ({ item }) => {
     };
 
     return (
-        <div className= "bg-white p-3 rounded-2xl border border-gray-100 shadow-sm relative" >
-        <div className="flex gap-3" >
-            {/* Image */ }
-            < div className = "w-20 h-20 bg-gray-100 rounded-xl flex-shrink-0 overflow-hidden" >
-            {
-                item.image ? (
-                    <img
-                            src= { storagePath(item.image) }
-                            alt={ item.name }
+        <div className="group relative bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="flex gap-3">
+                {/* Image */}
+                <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100 relative">
+                    {item.image ? (
+                        <img
+                            src={storagePath(item.image)}
+                            alt={item.name}
                             className="w-full h-full object-cover"
-                />
+                        />
                     ) : (
-    <div className= "w-full h-full flex items-center justify-center text-gray-300" >
-    <ShoppingBag size={ 24 } />
-        </div>
+                        <div className="w-full h-full flex items-center justify-center text-gray-300">
+                            <ShoppingBag size={24} />
+                        </div>
                     )}
-</div>
-
-{/* Content */ }
-<div className="flex-1 min-w-0" >
-    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight mb-1" >
-        { item.name }
-        </h3>
-
-        < p className = "text-xs text-gray-500 font-medium" >
-            { formatPrice(item.price) } × { quantity } pc
-                </p>
-                </div>
                 </div>
 
-{/* Bottom Row: Price & Controls */ }
-<div className="flex items-end justify-between mt-3" >
-    <div className="font-bold text-gray-900 text-lg" >
-                    ৳{ item.price * quantity }
-</div>
+                {/* Content */}
+                <div className="flex-1 flex flex-col justify-between min-w-0">
+                    <div>
+                        <div className="flex justify-between items-start gap-2">
+                            <h3 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug">
+                                {item.name}
+                            </h3>
+                            <button
+                                onClick={() => removeItem(item.product_id)}
+                                className="text-rose-500 hover:text-red-800 transition-colors p-1 -mr-1 -mt-1 rounded-full hover:bg-red-50"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                            {formatPrice(item.price)} / unit
+                        </p>
+                    </div>
 
-    < div className = "flex items-center gap-2" >
-        <button
-                        onClick={ () => removeItem(item.product_id) }
-className = "w-8 h-8 flex items-center justify-center rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition-colors"
-    >
-    <Trash2 size={ 14 } />
-        </button>
+                    <div className="flex items-end justify-between mt-2">
+                        <div className="font-bold text-gray-900 text-base">
+                            ৳ {formatPrice(item.price * quantity)}
+                        </div>
 
-        < div className = "flex items-center bg-gray-100 rounded-full px-1 h-8" >
-            <button
-                            onClick={ () => handleQuantityChange(quantity - 1) }
-className = "w-7 h-full flex items-center justify-center text-gray-600 hover:text-gray-900"
-disabled = { quantity <= 1}
-                        >
-    -
-    </button>
-    < span className = "w-6 text-center text-sm font-bold text-gray-900" >
-        { quantity }
-        </span>
-        < button
-onClick = {() => handleQuantityChange(quantity + 1)}
-className = "w-7 h-full flex items-center justify-center text-gray-600 hover:text-gray-900"
-    >
-    +
-    </button>
-    </div>
-    </div>
-    </div>
-    </div>
+                        <QuantitySelector
+                            quantity={quantity}
+                            onDecrease={() =>
+                                handleQuantityChange(quantity - 1)
+                            }
+                            onIncrease={() =>
+                                handleQuantityChange(quantity + 1)
+                            }
+                            size="sm"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 

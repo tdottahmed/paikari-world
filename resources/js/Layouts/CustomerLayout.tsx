@@ -5,6 +5,7 @@ import Header from "@/Components/Customer/Header";
 import CartSidebar from "@/Components/Customer/CartSidebar";
 import CategorySidebar from "@/Components/Customer/CategorySidebar";
 import Preloader from "@/Components/Utility/Preloader";
+import Footer from "@/Components/Customer/Footer";
 
 import { useCartStore } from "@/Stores/useCartStore";
 
@@ -68,13 +69,7 @@ onClose = {() => setIsMenuOpen(false)}
             )
 }
 
-<footer className="bg-white border-t border-gray-200 mt-12" >
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8" >
-        <p className="text-center text-gray-500 text-sm" >
-                        & copy; { new Date().getFullYear() } Paikari World.All rights reserved.
-                    </p>
-    </div>
-    </footer>
+<Footer />
     </div>
     );
 };

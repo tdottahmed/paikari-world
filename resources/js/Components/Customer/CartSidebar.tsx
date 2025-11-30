@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react";
-import { X, ShoppingBag } from "lucide-react";
+import { X, ShoppingBag, ArrowRight } from "lucide-react";
 import { formatPrice } from "@/Utils/helpers";
 import CartSidebarItem from "./CartSidebarItem";
 
@@ -78,20 +78,14 @@ const CartSidebar = () => {
                                 <p className="text-sm text-gray-500">
                                     Shipping and taxes calculated at checkout.
                                 </p>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Link
-                                        href={route("cart.index")}
-                                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                                        onClick={onClose}
-                                    >
-                                        View Cart
-                                    </Link>
+                                <div className="flex flex-col gap-3">
                                     <Link
                                         href={route("checkout.index")}
-                                        className="flex items-center justify-center rounded-md border border-transparent bg-gray-900 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-gray-800"
+                                        className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-900 px-6 py-4 text-base font-bold text-white shadow-lg hover:bg-gray-800 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 active:translate-y-0 active:shadow-md"
                                         onClick={onClose}
                                     >
-                                        Checkout
+                                        Proceed to Checkout
+                                        <ArrowRight size={20} />
                                     </Link>
                                 </div>
                             </div>
