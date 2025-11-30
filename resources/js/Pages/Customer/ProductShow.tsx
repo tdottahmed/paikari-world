@@ -67,7 +67,7 @@ export default function ProductShow({
             <Head title={product.name} />
 
             <div className="bg-gray-50 py-4 md:py-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
                     {/* Breadcrumbs */}
                     <nav className="hidden md:flex items-center text-sm text-gray-500 mb-8">
                         <Link href="/" className="hover:text-gray-900">
@@ -142,7 +142,9 @@ export default function ProductShow({
                                                         }`}
                                                     >
                                                         <img
-                                                            src={`/storage/${image}`}
+                                                            src={storagePath(
+                                                                image
+                                                            )}
                                                             alt={`${
                                                                 product.name
                                                             } ${index + 1}`}
@@ -181,9 +183,7 @@ export default function ProductShow({
                                 </div>
 
                                 <div className="mt-auto space-y-6">
-                                    {/* Quantity & Actions */}
-                                    {/* Quantity & Actions */}
-                                    <div className="flex flex-col sm:flex-row gap-4">
+                                    <div className="flex flex-col items-center sm:flex-row gap-4 sm:items-center sm:justify-center">
                                         <QuantitySelector
                                             quantity={quantity}
                                             onDecrease={() =>
@@ -200,7 +200,7 @@ export default function ProductShow({
                                             size="lg"
                                         />
                                         <button
-                                            className={`flex-1 px-8 py-3.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md ${
+                                            className={`w-full sm:flex-1 px-8 py-3.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md ${
                                                 isInCart
                                                     ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200"
                                                     : "bg-gray-900 hover:bg-gray-800 text-white shadow-gray-200"

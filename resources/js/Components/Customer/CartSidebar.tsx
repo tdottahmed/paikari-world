@@ -4,13 +4,24 @@ import { formatPrice } from "@/Utils/helpers";
 import CartSidebarItem from "./CartSidebarItem";
 
 import { useCartStore } from "@/Stores/useCartStore";
+import { toast } from "sonner";
 
 const CartSidebar = () => {
-    const { cart, isOpen, setIsOpen, getCartTotal } = useCartStore();
+    const { cart, isOpen, setIsOpen, getCartTotal, getCartCount } =
+        useCartStore();
     const cartItems = Object.values(cart);
     const cartTotal = getCartTotal();
 
     const onClose = () => setIsOpen(false);
+
+    const handleCheckout = (e: React.MouseEvent) => {
+        if (getCartCount() < 3) {
+            e.preventDefault();
+            toast.warning("You have to order at least 3 products");
+        } else {
+            onClose();
+        }
+    };
 
     return (
         <>
@@ -82,7 +93,7 @@ const CartSidebar = () => {
                                     <Link
                                         href={route("checkout.index")}
                                         className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-900 px-6 py-4 text-base font-bold text-white shadow-lg hover:bg-gray-800 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 active:translate-y-0 active:shadow-md"
-                                        onClick={onClose}
+                                        onClick={handleCheckout}
                                     >
                                         Proceed to Checkout
                                         <ArrowRight size={20} />

@@ -5,10 +5,19 @@ import { formatPrice } from "@/Utils/helpers";
 import CartRowItem from "@/Components/Customer/CartRowItem";
 import { useCartStore } from "@/Stores/useCartStore";
 
+import { Toaster, toast } from "sonner";
+
 const Cart = () => {
-    const { cart, getCartTotal } = useCartStore();
+    const { cart, getCartTotal, getCartCount } = useCartStore();
     const cartItems = Object.values(cart);
     const cartTotal = getCartTotal();
+
+    const handleCheckout = (e: React.MouseEvent) => {
+        if (getCartCount() < 3) {
+            e.preventDefault();
+            toast.warning("You have to order at least 3 products");
+        }
+    };
 
     return (
         <CustomerLayout>
@@ -50,6 +59,7 @@ const Cart = () => {
     < div className = "border-t my-4" > </div>
         < Link
 href = { route("checkout.index") }
+onClick = { handleCheckout }
 className = "block w-full bg-blue-600 text-white text-center px-6 py-3 rounded hover:bg-blue-700 transition font-semibold"
     >
     Proceed to Checkout
@@ -57,11 +67,10 @@ className = "block w-full bg-blue-600 text-white text-center px-6 py-3 rounded h
         </div>
         </div>
         </div>
-                )
-    }
+                )}
 </div>
     </CustomerLayout>
     );
-}
+};
 
 export default Cart;

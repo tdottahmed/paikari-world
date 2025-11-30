@@ -9,6 +9,8 @@ import Footer from "@/Components/Customer/Footer";
 
 import { useCartStore } from "@/Stores/useCartStore";
 
+import { Toaster } from "sonner";
+
 interface CustomerLayoutProps {
     children: ReactNode;
 }
@@ -29,48 +31,43 @@ const CustomerLayout: React.FC<CustomerLayoutProps> = ({ children }) => {
     }, [setIsOpen]);
 
     return (
-        <div className= "min-h-screen bg-gray-50 pb-20 md:pb-0" >
-        {/* {isLoading && <Preloader onFinish={() => setIsLoading(false)} />} */ }
+        <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+            <Toaster position="top-center" richColors />
+            {/* {isLoading && <Preloader onFinish={() => setIsLoading(false)} />} */}
 
-        < Header
-    onMenuClick = {() => setIsMenuOpen(true)}
+            <Header onMenuClick={() => setIsMenuOpen(true)} />
+
+            <CartSidebar />
+
+            <CategorySidebar
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
             />
 
-    < CartSidebar />
+            <main> {children} </main>
 
-    <CategorySidebar
-                isOpen={ isMenuOpen }
-onClose = {() => setIsMenuOpen(false)}
-            />
+            {/* Floating Cart Button for Mobile */}
+            {cartItemCount > 0 && (
+                <div className="fixed bottom-6 right-6 z-40 md:hidden">
+                    <button
+                        onClick={() => setIsOpen(true)}
+                        className="bg-[#1A1B2E] text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-3 hover:bg-[#2D2E45] transition-colors"
+                    >
+                        <div className="relative">
+                            <ShoppingBag size={20} />
+                            {cartItemCount > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                                    {cartItemCount}
+                                </span>
+                            )}
+                        </div>
+                        <span className="font-bold text-sm"> View Cart </span>
+                    </button>
+                </div>
+            )}
 
-    < main > { children } </main>
-
-{/* Floating Cart Button for Mobile */ }
-{
-    cartItemCount > 0 && (
-        <div className="fixed bottom-6 right-6 z-40 md:hidden" >
-            <button
-                        onClick={ () => setIsOpen(true) }
-    className = "bg-[#1A1B2E] text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-3 hover:bg-[#2D2E45] transition-colors"
-        >
-        <div className="relative" >
-            <ShoppingBag size={ 20 } />
-    {
-        cartItemCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full" >
-                { cartItemCount }
-                </span>
-                            )
-    }
-    </div>
-        < span className = "font-bold text-sm" > View Cart </span>
-            </button>
-            </div>
-            )
-}
-
-<Footer />
-    </div>
+            <Footer />
+        </div>
     );
 };
 
