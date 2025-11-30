@@ -60,7 +60,7 @@ export const formatPrice = (
             maximumFractionDigits: 0,
         }).format(numericAmount);
 
-        return `${formattedNumber}`;
+        return ` ৳ ${formattedNumber}`;
     } catch (error) {
         return `${numericAmount.toFixed(0)}`;
     }
