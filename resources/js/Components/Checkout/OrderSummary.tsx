@@ -65,13 +65,13 @@ export default function OrderSummary({
                 <div className="flex justify-between text-sm text-gray-600">
                     <span>Product Total </span>
                     <span className="font-semibold text-gray-900">
-                        ৳{formatPrice(cartTotal)}
+                        {formatPrice(cartTotal)}
                     </span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
                     <span>Delivery Charge </span>
                     <span className="font-semibold text-gray-900">
-                        ৳{deliveryCost}
+                        {formatPrice(deliveryCost)}
                     </span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
@@ -85,7 +85,7 @@ export default function OrderSummary({
                             Final Total
                         </span>
                         <span className="text-2xl font-bold text-gray-900">
-                            ৳{formatPrice(total)}
+                            {formatPrice(total)}
                         </span>
                     </div>
                 </div>
