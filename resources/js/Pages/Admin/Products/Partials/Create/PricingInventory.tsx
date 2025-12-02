@@ -44,14 +44,14 @@ export default function PricingInventory({
     // Calculate Purchase Price from UAN Price
     const calculatePurchaseFromUan = (uanPrice: number) => {
         const rate = parseFloat(settings.yuan_rate) || 0;
-        const additional = parseFloat(settings.additional_cost) || 0;
-        return (uanPrice * rate + additional).toFixed(2);
+        return (uanPrice * rate).toFixed(2);
     };
 
     // Calculate Sale Price based on Purchase Price and Profit %
     const calculateSaleFromPurchase = (purchasePrice: number) => {
         const profitMargin = parseFloat(settings.profit) || 0;
-        return (purchasePrice * (1 + profitMargin / 100)).toFixed(2);
+        const additional = parseFloat(settings.additional_cost) || 0;
+        return (purchasePrice + profitMargin + additional).toFixed(2);
     };
 
     // Calculate Profit Amount based on Purchase and Sale Price

@@ -72,106 +72,103 @@ export default function ImagesVariations({
     };
 
     return (
-        <div className= "lg:p-6 sm:p-2" >
-        <Card className="mt-4" >
-            <CardHeader>
-            <CardTitle>Product Images & Variations </CardTitle>
+        <div className="lg:p-6 sm:p-2">
+            <Card className="mt-4">
+                <CardHeader>
+                    <CardTitle>Product Images & Variations </CardTitle>
                 </CardHeader>
-                < CardContent padding = "lg" >
+                <CardContent padding="lg">
                     <ImageUploader
                         label="Product Images"
-    value = { data.images }
-    onChange = { handleImagesChange }
-    error = { errors.images }
-    existingImages = { existingImages }
-    onRemoveExisting = { onRemoveExisting }
-        />
-        </CardContent>
-        </Card>
-        < Card className = "mt-4" >
-            <CardHeader className="flex items-center justify-between" >
-                <CardTitle>Variations </CardTitle>
-                < PrimaryButton
-    type = "button"
-    variant = "outline"
-    onClick = { addVariation }
-    className = "flex justify-end text-xs md:text-xl"
-        >
-        <PlusIcon size={ 16 } />
+                        value={data.images}
+                        onChange={handleImagesChange}
+                        error={errors.images}
+                        existingImages={existingImages}
+                        onRemoveExisting={onRemoveExisting}
+                    />
+                </CardContent>
+            </Card>
+            <Card className="mt-4">
+                <CardHeader className="flex items-center justify-between">
+                    <CardTitle>Variations </CardTitle>
+                    <PrimaryButton
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={addVariation}
+                        className="flex justify-end text-xs md:text-l"
+                    >
+                        <PlusIcon size={16} />
                         Add Variant
-        </PrimaryButton>
-        </CardHeader>
-    {
-        data.variations.map((variation: Variation, index: number) => (
-            <CardContent>
-            <Card key= { variation.id } className = "relative" >
-            <CardContent className="pt-6" >
-        <div className="absolute top-3 right-3" >
-        <button
+                    </PrimaryButton>
+                </CardHeader>
+                {data.variations.map((variation: Variation, index: number) => (
+                    <CardContent>
+                        <Card key={variation.id} className="relative">
+                            <CardContent className="pt-6">
+                                <div className="absolute top-3 right-3">
+                                    <button
                                         type="button"
-                                        onClick = {() =>
-            removeVariation(variation.id)
+                                        onClick={() =>
+                                            removeVariation(variation.id)
                                         }
-    className = "text-red-500 hover:text-red-700"
-        >
-        <Trash2Icon size={ 18 } />
-            </button>
-            </div>
-            < div className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4" >
-                <div>
-                <InputLabel
-                                            htmlFor={ `variation-attribute-${variation.id}` }
-    value = "Attribute"
-    required
-        />
-        <SelectInput
-                                            id={ `variation-attribute-${variation.id}` }
-    name = {`variations[${index}][attribute_id]`
-}
-value = { variation.attribute_id }
-onChange = {(val) =>
-updateVariation(
-    variation.id,
-    "attribute_id",
-    val
-)
+                                        className="text-red-500 hover:text-red-700"
+                                    >
+                                        <Trash2Icon size={18} />
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                                    <div>
+                                        <InputLabel
+                                            htmlFor={`variation-attribute-${variation.id}`}
+                                            value="Attribute"
+                                            required
+                                        />
+                                        <SelectInput
+                                            id={`variation-attribute-${variation.id}`}
+                                            name={`variations[${index}][attribute_id]`}
+                                            value={variation.attribute_id}
+                                            onChange={(val) =>
+                                                updateVariation(
+                                                    variation.id,
+                                                    "attribute_id",
+                                                    val
+                                                )
                                             }
-options = {
-    attributes.map((attr) => ({
-        value: attr.id,
-        label: attr.name,
-    }))
-}
-placeholder = "Select Attribute"
-    />
-    </div>
-    < div >
-    <InputLabel
-                                            htmlFor={ `variation-value-${variation.id}` }
-value = "Value"
-required
-    />
-    <TextInput
-                                            id={ `variation-value-${variation.id}` }
-name = {`variations[${index}][value]`}
-value = { variation.value }
-onChange = {(e) =>
-updateVariation(
-    variation.id,
-    "value",
-    e.target.value
-)
+                                            options={attributes.map((attr) => ({
+                                                value: attr.id,
+                                                label: attr.name,
+                                            }))}
+                                            placeholder="Select Attribute"
+                                        />
+                                    </div>
+                                    <div>
+                                        <InputLabel
+                                            htmlFor={`variation-value-${variation.id}`}
+                                            value="Value"
+                                            required
+                                        />
+                                        <TextInput
+                                            id={`variation-value-${variation.id}`}
+                                            name={`variations[${index}][value]`}
+                                            value={variation.value}
+                                            onChange={(e) =>
+                                                updateVariation(
+                                                    variation.id,
+                                                    "value",
+                                                    e.target.value
+                                                )
                                             }
-placeholder = "e.g., Red, Large"
-required
-    />
-    </div>
-    </div>
-    </CardContent>
-    </Card>
-    </CardContent>
+                                            placeholder="e.g., Red, Large"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CardContent>
                 ))}
-</Card>
-    </div>
+            </Card>
+        </div>
     );
 }

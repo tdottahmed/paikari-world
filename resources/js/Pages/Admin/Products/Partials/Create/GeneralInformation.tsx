@@ -6,6 +6,7 @@ import TextInput from "@/Components/Ui/TextInput";
 import SelectInput from "@/Components/Ui/SelectInput";
 import TextArea from "@/Components/Ui/TextArea";
 import InputError from "@/Components/Ui/InputError";
+import Checkbox from "@/Components/Ui/Checkbox";
 
 interface Props {
     data: any;
@@ -132,6 +133,21 @@ export default function GeneralInformation({
                                 required
                             />
                             <InputError message={errors.description} />
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-4">
+                            <Checkbox
+                                name="is_preorder"
+                                checked={data.is_preorder}
+                                onChange={(e) =>
+                                    setData("is_preorder", e.target.checked)
+                                }
+                            />
+                            <InputLabel
+                                htmlFor="is_preorder"
+                                value="Is Preorder Product?"
+                                className="!mb-0 cursor-pointer"
+                            />
                         </div>
                     </CardContent>
                 </Card>

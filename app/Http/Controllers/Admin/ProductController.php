@@ -134,6 +134,7 @@ class ProductController extends Controller
                 'supplier_id' => $request->supplier_id,
                 'images' => $uploadedImages,
                 'qty_price' => $qtyPriceData,
+                'is_preorder' => $request->is_preorder ?? false,
             ]);
 
             if ($request->has('variations') && !empty($request->variations)) {
@@ -220,6 +221,7 @@ class ProductController extends Controller
                 'supplier_id' => $request->supplier_id,
                 'images' => $currentImages,
                 'qty_price' => $qtyPriceData,
+                'is_preorder' => $request->is_preorder ?? false,
             ]);
             if ($request->has('variations') && !empty($request->variations)) {
                 $product->product_variations()->delete();

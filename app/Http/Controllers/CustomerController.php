@@ -13,9 +13,11 @@ class CustomerController extends Controller
     {
         $products = $this->filterProducts($request);
         $websiteSettings = \App\Models\WebsiteSetting::first();
+        $categories = Category::select(['id', 'title', 'slug', 'image'])->get();
 
         return Inertia::render('Customer/Home', [
             'products' => $products,
+            'categories' => $categories,
             'website_settings' => $websiteSettings,
             'filters' => [
                 'search' => $request->input('search'),
@@ -23,6 +25,7 @@ class CustomerController extends Controller
                 'max_price' => $request->input('max_price'),
                 'sort' => $request->input('sort', 'latest'),
                 'in_stock' => $request->input('in_stock'),
+                'is_preorder' => $request->input('is_preorder'),
             ],
         ]);
     }
@@ -33,15 +36,21 @@ class CustomerController extends Controller
 
         $products = $this->filterProducts($request, $category->id);
 
-        return Inertia::render('Customer/ProductList', [
+        $websiteSettings = \App\Models\WebsiteSetting::first();
+        $categories = Category::select(['id', 'title', 'slug', 'image'])->get();
+
+        return Inertia::render('Customer/Home', [
             'category' => $category,
             'products' => $products,
+            'categories' => $categories,
+            'website_settings' => $websiteSettings,
             'filters' => [
                 'search' => $request->input('search'),
                 'min_price' => $request->input('min_price'),
                 'max_price' => $request->input('max_price'),
                 'sort' => $request->input('sort', 'latest'),
                 'in_stock' => $request->input('in_stock'),
+                'is_preorder' => $request->input('is_preorder'),
             ],
         ]);
     }
@@ -50,14 +59,20 @@ class CustomerController extends Controller
     {
         $products = $this->filterProducts($request);
 
-        return Inertia::render('Customer/ProductList', [
+        $websiteSettings = \App\Models\WebsiteSetting::first();
+        $categories = Category::select(['id', 'title', 'slug', 'image'])->get();
+
+        return Inertia::render('Customer/Home', [
             'products' => $products,
+            'categories' => $categories,
+            'website_settings' => $websiteSettings,
             'filters' => [
                 'search' => $request->input('search'),
                 'min_price' => $request->input('min_price'),
                 'max_price' => $request->input('max_price'),
                 'sort' => $request->input('sort', 'latest'),
                 'in_stock' => $request->input('in_stock'),
+                'is_preorder' => $request->input('is_preorder'),
             ],
         ]);
     }
@@ -88,6 +103,13 @@ class CustomerController extends Controller
         // Stock status
         if ($request->input('in_stock') === 'true') {
             $query->where('stock', '>', 0);
+        }
+
+        // Preorder status
+        if ($request->input('is_preorder') === 'true') {
+            $query->where('is_preorder', true);
+        } else {
+            $query->where('is_preorder', false);
         }
 
         // Sorting

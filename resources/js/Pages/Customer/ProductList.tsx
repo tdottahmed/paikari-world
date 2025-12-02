@@ -15,6 +15,7 @@ interface ProductListProps {
         max_price?: string;
         sort?: string;
         in_stock?: string;
+        is_preorder?: string;
     };
 }
 
@@ -44,6 +45,7 @@ const ProductList: React.FC<ProductListProps> = ({
         if (filters.sort && filters.sort !== "latest")
             params.sort = filters.sort;
         if (filters.in_stock) params.in_stock = filters.in_stock;
+        if (filters.is_preorder) params.is_preorder = filters.is_preorder;
 
         router.visit(currentUrl, {
             data: params,
@@ -70,7 +72,7 @@ const ProductList: React.FC<ProductListProps> = ({
             <div className="bg-white shadow-sm border-b border-gray-200">
                 <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
+                        {/* <div>
                             <h1 className="text-3xl font-extrabold text-gray-900">
                                 {category ? category.title : "All Products"}
                             </h1>
@@ -79,7 +81,7 @@ const ProductList: React.FC<ProductListProps> = ({
                                     Browse our collection of {category.title}
                                 </p>
                             )}
-                        </div>
+                        </div> */}
 
                         {/* Search and Filter Controls */}
                         <div className="flex gap-2 items-center">
@@ -112,6 +114,48 @@ const ProductList: React.FC<ProductListProps> = ({
                                     {" "}
                                     Filters{" "}
                                 </span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const params: Record<string, string> = {};
+                                    if (searchQuery)
+                                        params.search = searchQuery;
+                                    if (filters.min_price)
+                                        params.min_price = filters.min_price;
+                                    if (filters.max_price)
+                                        params.max_price = filters.max_price;
+                                    if (
+                                        filters.sort &&
+                                        filters.sort !== "latest"
+                                    )
+                                        params.sort = filters.sort;
+                                    if (filters.in_stock)
+                                        params.in_stock = filters.in_stock;
+
+                                    // Toggle preorder
+                                    if (filters.is_preorder === "true") {
+                                        delete params.is_preorder;
+                                    } else {
+                                        params.is_preorder = "true";
+                                    }
+
+                                    router.visit(currentUrl, {
+                                        data: params,
+                                        preserveState: true,
+                                        preserveScroll: false,
+                                    });
+                                }}
+                                className={`px-4 py-2 border rounded-lg transition-colors flex items-center gap-2 ${
+                                    filters.is_preorder === "true"
+                                        ? "bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700"
+                                        : "border-gray-300 hover:bg-gray-50"
+                                }`}
+                            >
+                                <span className="hidden sm:inline">
+                                    {" "}
+                                    Preorder{" "}
+                                </span>
+                                <span className="sm:hidden"> Pre </span>
                             </button>
                         </div>
                     </div>

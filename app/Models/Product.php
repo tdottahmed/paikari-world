@@ -18,6 +18,7 @@ class Product extends Model
         'moq_price' => 'float',
         'uan_price' => 'float',
         'stock' => 'integer',
+        'is_preorder' => 'boolean',
     ];
 
     public function category()
