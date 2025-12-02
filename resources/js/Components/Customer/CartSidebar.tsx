@@ -1,16 +1,25 @@
 import { Link } from "@inertiajs/react";
-import { X, ShoppingBag, ArrowRight } from "lucide-react";
+import {
+    X,
+    ShoppingBag,
+    ArrowRight,
+    ShoppingCart,
+    History,
+} from "lucide-react";
 import { formatPrice } from "@/Utils/helpers";
 import CartSidebarItem from "./CartSidebarItem";
+import OrderHistoryList from "./OrderHistoryList";
 
 import { useCartStore } from "@/Stores/useCartStore";
 import { toast } from "sonner";
+import { useState } from "react";
 
 const CartSidebar = () => {
     const { cart, isOpen, setIsOpen, getCartTotal, getCartCount } =
         useCartStore();
     const cartItems = Object.values(cart);
     const cartTotal = getCartTotal();
+    const [activeTab, setActiveTab] = useState<"cart" | "orders">("cart");
 
     const onClose = () => setIsOpen(false);
 
@@ -42,9 +51,36 @@ const CartSidebar = () => {
                 <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b">
-                        <h2 className="text-lg font-semibold text-gray-900">
-                            Shopping Cart({cartItems.length})
-                        </h2>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setActiveTab("cart")}
+                                className={`flex items-center gap-2 pb-2 text-sm font-semibold transition-colors relative ${
+                                    activeTab === "cart"
+                                        ? "text-gray-900"
+                                        : "text-gray-400 hover:text-gray-600"
+                                }`}
+                            >
+                                <ShoppingCart size={18} />
+                                Cart({cartItems.length})
+                                {activeTab === "cart" && (
+                                    <span className="absolute bottom-[-17px] left-0 w-full h-0.5 bg-gray-900" />
+                                )}
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("orders")}
+                                className={`flex items-center gap-2 pb-2 text-sm font-semibold transition-colors relative ${
+                                    activeTab === "orders"
+                                        ? "text-gray-900"
+                                        : "text-gray-400 hover:text-gray-600"
+                                }`}
+                            >
+                                <History size={18} />
+                                Orders
+                                {activeTab === "orders" && (
+                                    <span className="absolute bottom-[-17px] left-0 w-full h-0.5 bg-gray-900" />
+                                )}
+                            </button>
+                        </div>
                         <button
                             onClick={onClose}
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -53,34 +89,43 @@ const CartSidebar = () => {
                         </button>
                     </div>
 
-                    {/* Cart Items */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                        {cartItems.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-full text-gray-500 space-y-4">
-                                <ShoppingBag size={48} className="opacity-50" />
-                                <p className="text-lg font-medium">
-                                    Your cart is empty
-                                </p>
-                                <button
-                                    onClick={onClose}
-                                    className="text-indigo-600 hover:text-indigo-700 font-medium"
-                                >
-                                    Continue Shopping
-                                </button>
+                    {/* Content */}
+                    <div className="flex-1 overflow-y-auto bg-gray-50">
+                        {activeTab === "cart" ? (
+                            <div className="p-4 space-y-4">
+                                {cartItems.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center h-[60vh] text-gray-500 space-y-4">
+                                        <ShoppingBag
+                                            size={48}
+                                            className="opacity-50"
+                                        />
+                                        <p className="text-lg font-medium">
+                                            Your cart is empty
+                                        </p>
+                                        <button
+                                            onClick={onClose}
+                                            className="text-indigo-600 hover:text-indigo-700 font-medium"
+                                        >
+                                            Continue Shopping
+                                        </button>
+                                    </div>
+                                ) : (
+                                    cartItems.map((item) => (
+                                        <CartSidebarItem
+                                            key={item.product_id}
+                                            item={item}
+                                        />
+                                    ))
+                                )}
                             </div>
                         ) : (
-                            cartItems.map((item) => (
-                                <CartSidebarItem
-                                    key={item.product_id}
-                                    item={item}
-                                />
-                            ))
+                            <OrderHistoryList />
                         )}
                     </div>
 
-                    {/* Footer */}
-                    {cartItems.length > 0 && (
-                        <div className="p-4 border-t bg-gray-50">
+                    {/* Footer - Only show for Cart tab */}
+                    {activeTab === "cart" && cartItems.length > 0 && (
+                        <div className="p-4 border-t bg-white">
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between text-base font-medium text-gray-900">
                                     <p>Subtotal </p>

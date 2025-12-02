@@ -31,6 +31,7 @@ Route::get('cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('order-success/{order}', [CheckoutController::class, 'success'])->name('order.success');
+Route::post('api/orders/history', [CheckoutController::class, 'getOrders'])->name('api.orders.history');
 
 require __DIR__ . '/admin.php';
 

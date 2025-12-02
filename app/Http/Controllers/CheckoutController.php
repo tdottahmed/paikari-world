@@ -77,4 +77,19 @@ class CheckoutController extends Controller
     {
         return Inertia::render('OrderSuccess', ['order' => $order]);
     }
+
+    public function getOrders(Request $request)
+    {
+        $request->validate([
+            'order_ids' => 'required|array',
+            'order_ids.*' => 'integer|exists:orders,id',
+        ]);
+
+        $orders = Order::whereIn('id', $request->order_ids)
+            ->with('items.product') // Eager load items and products
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($orders);
+    }
 }
