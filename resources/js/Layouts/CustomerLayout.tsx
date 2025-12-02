@@ -20,6 +20,9 @@ const CustomerLayout: React.FC<CustomerLayoutProps> = ({ children }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const cartItemCount = getCartCount();
 
+    const { url, component } = usePage();
+    const isCheckoutPage = url.includes("/checkout");
+
     React.useEffect(() => {
         const handleOpenCart = () => {
             if (window.innerWidth >= 768) {
@@ -47,7 +50,7 @@ const CustomerLayout: React.FC<CustomerLayoutProps> = ({ children }) => {
             <main> {children} </main>
 
             {/* Floating Cart Button for Mobile */}
-            {cartItemCount > 0 && (
+            {cartItemCount > 0 && !isCheckoutPage && (
                 <div className="fixed bottom-6 right-6 z-40 md:hidden">
                     <button
                         onClick={() => setIsOpen(true)}
