@@ -1,5 +1,5 @@
 import React from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Clock, PackageX } from "lucide-react";
 
 interface ProductFiltersProps {
     sort: string;
@@ -12,8 +12,10 @@ interface ProductFiltersProps {
         sort?: string;
         in_stock?: string;
         is_preorder?: string;
+        stock_out?: string;
     };
     togglePreorder: () => void;
+    toggleStockOut: () => void;
 }
 
 const ProductFilters: React.FC<ProductFiltersProps> = ({
@@ -22,6 +24,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
     setIsFilterOpen,
     filters,
     togglePreorder,
+    toggleStockOut, // Added toggleStockOut to destructured props
 }) => {
     return (
         <div className= "bg-white border-b border-gray-200" >
@@ -31,9 +34,9 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                     Products
                     </h2>
     {/* Sort and Filter Controls */ }
-    <div className="flex items-center gap-3 w-full sm:w-auto" >
+    <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 no-scrollbar" >
         {/* Sort Dropdown */ }
-        < div className = "relative flex-1 sm:flex-initial min-w-[160px]" >
+        < div className = "relative hidden sm:block flex-1 sm:flex-initial min-w-[160px]" >
             <select
                                 value={ sort }
     onChange = {(e) => setSort(e.target.value)}
@@ -61,23 +64,35 @@ viewBox = "0 0 20 20"
 
         < button
 onClick = {() => setIsFilterOpen(true)}
-className = "flex-1 sm:flex-initial px-4 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+className = "flex-1 sm:flex-initial px-4 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-sm font-medium whitespace-nowrap shadow-sm"
     >
-    <SlidersHorizontal size={ 18 } />
-        < span > Filters </span>
+    <SlidersHorizontal size={ 18 } className = "text-gray-500" />
+        <span>Filters </span>
         </button>
 
         < button
 onClick = { togglePreorder }
-className = {`flex-1 sm:flex-initial px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-medium border ${filters.is_preorder === "true"
+className = {`flex-1 sm:flex-initial px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium border whitespace-nowrap shadow-sm ${filters.is_preorder === "true"
     ? "bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700"
-    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+    : "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
     }`}
-        >
-    <span>Preorder </span>
-    </button>
-    </div>
-    </div>
+                        >
+    <Clock size={ 18 } />
+        < span > Preorder </span>
+        </button>
+
+        < button
+onClick = { toggleStockOut }
+className = {`flex-1 sm:flex-initial px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium border whitespace-nowrap shadow-sm ${filters.stock_out === "true"
+    ? "bg-rose-600 text-white border-rose-600 hover:bg-rose-700"
+    : "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100"
+    }`}
+                        >
+    <PackageX size={ 18 } />
+        < span > Stock Out </span>
+            </button>
+            </div>
+            </div>
 
 {/* Active Filters Display */ }
 {

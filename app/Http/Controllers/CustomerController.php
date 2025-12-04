@@ -25,6 +25,7 @@ class CustomerController extends Controller
                 'max_price' => $request->input('max_price'),
                 'sort' => $request->input('sort', 'latest'),
                 'in_stock' => $request->input('in_stock'),
+                'stock_out' => $request->input('stock_out'),
                 'is_preorder' => $request->input('is_preorder'),
             ],
         ]);
@@ -50,6 +51,7 @@ class CustomerController extends Controller
                 'max_price' => $request->input('max_price'),
                 'sort' => $request->input('sort', 'latest'),
                 'in_stock' => $request->input('in_stock'),
+                'stock_out' => $request->input('stock_out'),
                 'is_preorder' => $request->input('is_preorder'),
             ],
         ]);
@@ -72,6 +74,7 @@ class CustomerController extends Controller
                 'max_price' => $request->input('max_price'),
                 'sort' => $request->input('sort', 'latest'),
                 'in_stock' => $request->input('in_stock'),
+                'stock_out' => $request->input('stock_out'),
                 'is_preorder' => $request->input('is_preorder'),
             ],
         ]);
@@ -103,6 +106,9 @@ class CustomerController extends Controller
         // Stock status
         if ($request->input('in_stock') === 'true') {
             $query->where('stock', '>', 0);
+        }
+        if ($request->input('stock_out') === 'true') {
+            $query->where('stock', '<=', 0);
         }
 
         // Preorder status
