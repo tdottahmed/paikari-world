@@ -204,7 +204,6 @@ export default function PricingInventory({
                                     handlePurchasePriceChange(e.target.value)
                                 }
                                 placeholder="0.00"
-                                required
                             />
                             <InputError message={errors.purchase_price} />
                         </div>
@@ -336,7 +335,6 @@ export default function PricingInventory({
                         value={data.stock}
                         onChange={(e) => setData("stock", e.target.value)}
                         placeholder="0"
-                        required
                     />
                     <InputError message={errors.stock} />
                 </CardContent>

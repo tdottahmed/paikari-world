@@ -137,6 +137,7 @@ export interface Product {
     weight?: number;
     dimensions?: string;
     featured?: boolean;
+    is_preorder?: boolean;
     created_at: string;
     updated_at: string;
 }

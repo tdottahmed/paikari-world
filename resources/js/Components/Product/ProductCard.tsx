@@ -50,22 +50,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
                     </div>
                 )}
 
-                {/* Top Right: Stock Badge */}
-                <div className="absolute top-2 right-2 bg-[#00E3A5] text-[#0C1311] text-[10px] font-bold px-2 py-0.5 rounded-md">
-                    <SwatchBookIcon size={14} strokeWidth={2.5} />
-                    <span>{product.stock}</span>
-                </div>
-
                 {/* Bottom Left: MOQ/Box Badge */}
                 <div className="absolute bottom-2 left-2 bg-[#2DD4BF] text-[#0C1311] text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
                     <Box size={14} strokeWidth={2.5} />
-                    <span>{formatPrice(product.stock || 0)}</span>
+                    <span>{product.stock || 0}</span>
                 </div>
 
                 {/* Bottom Right: UAN/Yen Badge */}
                 <div className="absolute bottom-2 right-2 bg-[#F472B6] text-[#0C1311] text-xs font-bold px-2 py-1 rounded-md flex items-center gap-0.5">
                     <span className="text-[10px]">¥</span>
-                    <span> {formatPrice(product.uan_price || 0)}</span>
+                    <span> {product.uan_price || 0}</span>
                 </div>
 
                 {/* Quick Actions Overlay (Hidden by default, shown on hover) */}
@@ -100,7 +94,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
                         </span>
                         <span className="text-white font-bold">
                             {" "}
-                            {product.purchase_price}{" "}
+                            {formatPrice(product.purchase_price || 0)}{" "}
                         </span>
                     </div>
 

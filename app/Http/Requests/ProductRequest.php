@@ -20,7 +20,7 @@ class ProductRequest extends FormRequest
             'purchase_price' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
 
-            'stock' => 'required|integer|min:0',
+            'stock' => 'nullable|integer|min:0',
             'uan_price' => 'required|numeric|min:0',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -35,6 +35,7 @@ class ProductRequest extends FormRequest
             'variations.*.value' => 'required_with:variations|string',
             'variations.*.stock' => 'nullable|integer|min:0',
             'variations.*.price' => 'nullable|numeric|min:0',
+            'is_preorder' => 'boolean',
         ];
     }
 

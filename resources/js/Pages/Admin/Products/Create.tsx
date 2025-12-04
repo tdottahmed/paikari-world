@@ -46,6 +46,7 @@ export default function Create({
 
         stock: "",
         uan_price: "",
+        is_preorder: false,
         qty_prices: [] as QtyPrice[],
         images: [] as File[],
         variations: [] as Variation[],
@@ -60,45 +61,45 @@ export default function Create({
 
     return (
         <Master
-            title="Create Product"
-            head={<Header title="Create Product" showUserMenu={true} />}
+            title= "Create Product"
+    head = {< Header title = "Create Product" showUserMenu = { true} />}
         >
-            <form onSubmit={handleSubmit}>
-                <GeneralInformation
-                    data={data}
-                    setData={setData}
-                    errors={errors}
-                    categories={categories}
-                    suppliers={suppliers}
-                />
+    <form onSubmit={ handleSubmit }>
+        <GeneralInformation
+                    data={ data }
+setData = { setData }
+errors = { errors }
+categories = { categories }
+suppliers = { suppliers }
+    />
 
-                <PricingInventory
-                    data={data}
-                    setData={setData}
-                    errors={errors}
-                    settings={settings}
-                />
+    <PricingInventory
+                    data={ data }
+setData = { setData }
+errors = { errors }
+settings = { settings }
+    />
 
-                <ImagesVariations
-                    data={data}
-                    setData={setData}
-                    errors={errors}
-                    attributes={attributes}
-                />
+    <ImagesVariations
+                    data={ data }
+setData = { setData }
+errors = { errors }
+attributes = { attributes }
+    />
 
-                <div className="lg:p-6 pt-6 pb-6">
-                    <div className="flex flex-col sm:flex-row justify-end gap-3">
-                        <PrimaryButton
+    <div className="lg:p-6 pt-6 pb-6" >
+        <div className="flex flex-col sm:flex-row justify-end gap-3" >
+            <PrimaryButton
                             size="sm"
-                            type="submit"
-                            disabled={processing}
-                            className="w-full sm:w-auto justify-center"
-                        >
-                            {processing ? "Creating..." : "Create Product"}
-                        </PrimaryButton>
-                    </div>
-                </div>
-            </form>
-        </Master>
+type = "submit"
+disabled = { processing }
+className = "w-full sm:w-auto justify-center"
+    >
+    { processing? "Creating...": "Create Product" }
+    </PrimaryButton>
+    </div>
+    </div>
+    </form>
+    </Master>
     );
 }
