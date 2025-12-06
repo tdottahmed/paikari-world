@@ -11,6 +11,8 @@ import {
     Calendar,
     DollarSign,
     TrendingUp,
+    Shield,
+    AlertTriangle,
 } from "lucide-react";
 import Card, { CardContent } from "@/Components/Ui/Card";
 import { format } from "date-fns";
@@ -26,6 +28,8 @@ export default function Show({ order }: Props) {
     const [isUpdating, setIsUpdating] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState("");
+    const [fraudData, setFraudData] = useState<any>(null);
+    const [isLoadingFraudCheck, setIsLoadingFraudCheck] = useState(false);
 
     const statusOptions = [
         { value: "pending", label: "Pending" },
@@ -70,6 +74,19 @@ export default function Show({ order }: Props) {
                 },
             }
         );
+    };
+
+    const handleCheckFraud = async () => {
+        setIsLoadingFraudCheck(true);
+        try {
+            const response = await fetch(route("admin.orders.check-fraud", order.id));
+            const data = await response.json();
+            setFraudData(data);
+        } catch (error) {
+            console.error("Error checking fraud status:", error);
+        } finally {
+            setIsLoadingFraudCheck(false);
+        }
     };
 
     const calculateProfit = () => {
@@ -237,8 +254,55 @@ className = "flex items-center justify-center gap-2 px-4 py-2 bg-[#2DE3A7] text-
                                                                     </div>
                                                                     </div>
                                                                     </div>
-                                                                    </CardContent>
-                                                                    </Card>
+
+{/* Fraud Check Section */ }
+<div className="pt-4 border-t border-[#1E2826]" >
+    <div className="flex items-center justify-between mb-2" >
+        <h4 className="text-sm font-semibold text-gray-300 flex items-center gap-2" >
+            <Shield className="w-4 h-4 text-[#2DE3A7]" />
+                Fraud Check
+                    </h4>
+{
+    !fraudData && (
+        <button
+                                                                                    onClick={ handleCheckFraud }
+    disabled = { isLoadingFraudCheck }
+    className = "text-xs px-2 py-1 bg-[#2DE3A7]/10 text-[#2DE3A7] rounded hover:bg-[#2DE3A7]/20 transition-colors disabled:opacity-50"
+        >
+        { isLoadingFraudCheck? "Checking...": "Check Status" }
+        </button>
+                                                                            )
+}
+</div>
+
+{
+    fraudData && (
+        <div className="space-y-2 text-sm" >
+            <div className="flex justify-between items-center" >
+                <span className="text-gray-500" > Success Ratio </span>
+                    < span className = {`font-bold ${fraudData.success_ratio >= 80 ? "text-green-500" :
+                        fraudData.success_ratio >= 50 ? "text-yellow-500" : "text-red-500"
+                        }`
+}>
+    { fraudData.success_ratio } %
+    </span>
+    </div>
+    < div className = "flex justify-between items-center" >
+        <span className="text-gray-500" > Total Orders </span>
+            < span className = "text-white" > { fraudData.total_orders } </span>
+                </div>
+                < div className = "flex justify-between items-center" >
+                    <span className="text-gray-500" > Cancelled </span>
+                        < span className = "text-red-400" > { fraudData.cancel_orders } </span>
+                            </div>
+                            < div className = "text-xs text-gray-600 mt-1 text-right" >
+                                Last checked: { format(new Date(fraudData.last_checked_at), "MMM d, h:mm a") }
+</div>
+    </div>
+                                                                        )}
+</div>
+    </CardContent>
+    </Card>
 
 {/* Delivery Information */ }
 <Card className="bg-[#0E1614] border-[#1E2826]" >
@@ -305,10 +369,10 @@ disabled = {
     order.status === option.value
                                             }
 className = {`w-full text-left px-4 py-3 rounded-lg border transition-all ${order.status === option.value
-        ? getStatusColor(
-            option.value
-        ) + " font-semibold"
-        : "bg-[#1E2826] border-[#2A3633] text-gray-300 hover:bg-[#2A3633] hover:border-[#2DE3A7]/30"
+    ? getStatusColor(
+        option.value
+    ) + " font-semibold"
+    : "bg-[#1E2826] border-[#2A3633] text-gray-300 hover:bg-[#2A3633] hover:border-[#2DE3A7]/30"
     } disabled:opacity-50 disabled:cursor-not-allowed`}
                                         >
     { option.label }
@@ -399,9 +463,9 @@ className = {`w-full text-left px-4 py-3 rounded-lg border transition-all ${orde
 {
     item
         .product
-    ?.sku && (
-        <div className="text-xs text-gray-500" >
-            SKU: { " " }
+        ?.sku && (
+            <div className="text-xs text-gray-500" >
+                SKU: { " " }
     {
         item
             .product

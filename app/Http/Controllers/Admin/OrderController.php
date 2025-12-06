@@ -11,14 +11,14 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::query()->with(['items.product', 'deliveryCharge']);
+        $query = Order::query()->with(['items.product', 'deliveryCharge', 'courierOrderHistory']);
 
         // Search
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('customer_name', 'like', '%' . $request->search . '%')
-                  ->orWhere('customer_phone', 'like', '%' . $request->search . '%')
-                  ->orWhere('id', 'like', '%' . $request->search . '%');
+                    ->orWhere('customer_phone', 'like', '%' . $request->search . '%')
+                    ->orWhere('id', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -59,7 +59,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load(['items.product', 'deliveryCharge']);
-        
+
         return Inertia::render('Admin/Order/Show', [
             'order' => $order,
         ]);
@@ -83,5 +83,11 @@ class OrderController extends Controller
         return Inertia::render('Admin/Order/BulkDetails', [
             'orders' => $orders,
         ]);
+    }
+    public function checkFraud(Order $order, \App\Services\CourierFraudCheckerService $fraudChecker)
+    {
+        $result = $fraudChecker->check($order->customer_phone);
+
+        return response()->json($result);
     }
 }

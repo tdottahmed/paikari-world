@@ -111,6 +111,12 @@ export interface Order {
     created_at: string;
     items?: OrderItem[];
     delivery_charge?: DeliveryCharge;
+    courier_order_history?: {
+        total_orders: number;
+        cancel_orders: number;
+        success_ratio: number;
+        successful_orders: number;
+    };
 }
 
 // Main Product interface

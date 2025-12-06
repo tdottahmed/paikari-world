@@ -29,4 +29,8 @@ class Order extends Model
     {
         return $this->belongsTo(DeliveryCharge::class);
     }
+    public function courierOrderHistory()
+    {
+        return $this->hasOne(CourierOrderHistory::class, 'phone', 'customer_phone');
+    }
 }

@@ -42,5 +42,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
   Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
   Route::post('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
   Route::get('orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
+  Route::get('orders/{order}/check-fraud', [OrderController::class, 'checkFraud'])->name('orders.check-fraud');
   Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 });
