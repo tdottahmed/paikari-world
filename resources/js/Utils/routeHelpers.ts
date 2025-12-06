@@ -72,14 +72,19 @@ export function useRouteMatchAny(patterns: string[]): boolean {
 export function useActiveRoute(): string {
     const { url } = usePage();
 
-    // Extract the main section from the URL
+    // Extract the main section from the URL, ignoring query parameters
     // e.g., /admin/products/create -> products
-    // e.g., /admin/dashboard -> dashboard
-    const parts = url.split('/').filter(Boolean);
+    // e.g., /admin/orders?page=2 -> orders
+    const path = url.split("?")[0];
+    const parts = path.split("/").filter(Boolean);
 
     if (parts.length >= 2) {
         return parts[1]; // Return the second part (after /admin/)
     }
 
-    return parts[0] || 'dashboard';
+    if (parts[0] === "admin") {
+        return "dashboard";
+    }
+
+    return parts[0] || "dashboard";
 }

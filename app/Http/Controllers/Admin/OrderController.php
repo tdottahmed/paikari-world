@@ -39,7 +39,54 @@ class OrderController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,unreachable,preparing,shipping,completed,canceled,returned',
+            'create_consignment' => 'nullable|boolean',
+            'name' => 'required_if:create_consignment,true|string|max:255',
+            'address' => 'required_if:create_consignment,true|string|max:255',
+            'phone' => 'required_if:create_consignment,true|string|max:20',
         ]);
+
+        if ($request->create_consignment) {
+            // Update Order Details
+            $order->update([
+                'customer_name' => $request->name,
+                'customer_address' => $request->address,
+                'customer_phone' => $request->phone,
+            ]);
+
+            // Create Consignment
+            try {
+                $courierData = [
+                    'invoice' => (string) $order->id,
+                    'recipient_name' => $order->customer_name,
+                    'recipient_phone' => $order->customer_phone,
+                    'recipient_address' => $order->customer_address,
+                    'cod_amount' => $order->total, // Assuming COD amount is total
+                    'note' => $order->note ?? 'Order #' . $order->id,
+                ];
+
+                $response = \SteadFast\SteadFastCourierLaravelPackage\Facades\SteadfastCourier::placeOrder($courierData);
+
+                if (isset($response['status']) && $response['status'] == 200) {
+                     // Consignment created successfully
+                     // Maybe save consignment_id or tracking_code if available in response
+                     // $response['consignment']['consignment_id']
+                } else {
+                    // Handle error
+                    // For now, we just log or flash error?
+                    // But we proceed to update status as per user request flow, or should we stop?
+                    // Let's assume we proceed but flash a warning if it failed.
+                    // Actually, if it fails, we probably shouldn't set status to shipping.
+                    
+                    if (isset($response['message'])) {
+                         return redirect()->back()->with('error', 'Steadfast Error: ' . json_encode($response['message']));
+                    }
+                     return redirect()->back()->with('error', 'Failed to create consignment with Steadfast.');
+                }
+
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Steadfast Exception: ' . $e->getMessage());
+            }
+        }
 
         $order->update(['status' => $request->status]);
 

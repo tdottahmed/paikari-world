@@ -16,6 +16,8 @@ class CourierController extends Controller
                 'pathao_password' => env('PATHAO_PASSWORD'),
                 'steadfast_user' => env('STEADFAST_USER'),
                 'steadfast_password' => env('STEADFAST_PASSWORD'),
+                'steadfast_api_key' => env('STEADFAST_API_KEY'),
+                'steadfast_secret_key' => env('STEADFAST_SECRET_KEY'),
                 'redx_phone' => env('REDX_PHONE'),
                 'redx_password' => env('REDX_PASSWORD'),
             ]
@@ -29,6 +31,8 @@ class CourierController extends Controller
             'pathao_password' => 'nullable|string',
             'steadfast_user' => 'nullable|string',
             'steadfast_password' => 'nullable|string',
+            'steadfast_api_key' => 'nullable|string',
+            'steadfast_secret_key' => 'nullable|string',
             'redx_phone' => 'nullable|string',
             'redx_password' => 'nullable|string',
         ]);
@@ -49,6 +53,8 @@ class CourierController extends Controller
                 'PATHAO_PASSWORD' => $data['pathao_password'] ?? '',
                 'STEADFAST_USER' => $data['steadfast_user'] ?? '',
                 'STEADFAST_PASSWORD' => $data['steadfast_password'] ?? '',
+                'STEADFAST_API_KEY' => $data['steadfast_api_key'] ?? '',
+                'STEADFAST_SECRET_KEY' => $data['steadfast_secret_key'] ?? '',
                 'REDX_PHONE' => $data['redx_phone'] ?? '',
                 'REDX_PASSWORD' => $data['redx_password'] ?? '',
             ];

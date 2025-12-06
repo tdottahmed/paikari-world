@@ -10,6 +10,7 @@ import OrderHeader from "./Partials/OrderHeader";
 import OrderToolbar from "./Partials/OrderToolbar";
 import OrderBulkActions from "./Partials/OrderBulkActions";
 import OrderEmptyState from "./Partials/OrderEmptyState";
+import ShippingConfirmationModal from "./Partials/ShippingConfirmationModal";
 
 interface Props extends PageProps {
     orders: PaginatedData<Order>;
@@ -24,6 +25,12 @@ export default function Index({ orders, filters }: Props) {
     const [search, setSearch] = useState(filters.search || "");
     const debouncedSearch = useDebounce(search, 500);
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+    // Shipping Modal State
+    const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
+    const [selectedOrderForShipping, setSelectedOrderForShipping] =
+        useState<Order | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // Active Search Effect
     useEffect(() => {
@@ -79,6 +86,12 @@ export default function Index({ orders, filters }: Props) {
 
     // Handle Status Update
     const updateStatus = (order: Order, newStatus: string) => {
+        if (newStatus === "shipping") {
+            setSelectedOrderForShipping(order);
+            setIsShippingModalOpen(true);
+            return;
+        }
+
         router.post(
             route("admin.orders.update-status", order.id),
             {
@@ -88,6 +101,33 @@ export default function Index({ orders, filters }: Props) {
                 preserveScroll: true,
                 onSuccess: () => {
                     // Optional toast notification could go here
+                },
+            }
+        );
+    };
+
+    const handleShippingConfirm = (data: {
+        name: string;
+        address: string;
+        phone: string;
+        note?: string;
+    }) => {
+        if (!selectedOrderForShipping) return;
+
+        router.post(
+            route("admin.orders.update-status", selectedOrderForShipping.id),
+            {
+                status: "shipping",
+                ...data,
+                create_consignment: true,
+            },
+            {
+                preserveScroll: true,
+                onStart: () => setIsProcessing(true),
+                onFinish: () => setIsProcessing(false),
+                onSuccess: () => {
+                    setIsShippingModalOpen(false);
+                    setSelectedOrderForShipping(null);
                 },
             }
         );
@@ -204,6 +244,14 @@ export default function Index({ orders, filters }: Props) {
                     <OrderEmptyState />
                 )}
                 <Pagination data={orders} />
+
+                <ShippingConfirmationModal
+                    isOpen={isShippingModalOpen}
+                    onClose={() => setIsShippingModalOpen(false)}
+                    onConfirm={handleShippingConfirm}
+                    order={selectedOrderForShipping}
+                    processing={isProcessing}
+                />
             </div>
         </Master>
     );

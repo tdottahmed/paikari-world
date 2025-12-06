@@ -22,12 +22,14 @@ const Master: React.FC<LayoutProps> = ({ children, head, title }) => {
         (item) => item.urlPattern && url.startsWith(item.urlPattern)
     );
 
-    const [isSecondarySidebarOpen, setIsSecondarySidebarOpen] =
-        useState(shouldOpenSidebar);
+    const [isSecondarySidebarOpen, setIsSecondarySidebarOpen] = useState(false);
 
     useEffect(() => {
-        setIsSecondarySidebarOpen(shouldOpenSidebar);
-    }, [url]);
+        // Only open automatically on desktop
+        if (window.innerWidth >= 768 && shouldOpenSidebar) {
+            setIsSecondarySidebarOpen(true);
+        }
+    }, []); // Run once on mount
 
     useEffect(() => {
         if (flash?.success) {

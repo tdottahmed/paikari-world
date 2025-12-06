@@ -49,7 +49,16 @@ const PrimarySidebar: React.FC<PrimarySidebarProps> = ({ onMoreClick }) => {
 
     const isActive = (item: (typeof primaryMenuItems)[0]) => {
         if (item.key === "dashboard") {
-            return activeRoute === "dashboard" || activeRoute === "";
+            return (
+                activeRoute === "dashboard" ||
+                activeRoute === "admin" ||
+                activeRoute === ""
+            );
+        }
+
+        if (item.key === "more") {
+            const mainKeys = ["dashboard", "products", "orders"];
+            return !mainKeys.includes(activeRoute);
         }
 
         return activeRoute === item.key;

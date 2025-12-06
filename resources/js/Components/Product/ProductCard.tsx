@@ -20,15 +20,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
         new Date(product.created_at) >
         new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    const handleEdit = (e: React.MouseEvent) => {
-        e.preventDefault();
-        if (onEdit) {
-            onEdit(product);
-        } else {
-            window.location.href = `/admin/products/${product.id}/edit`;
-        }
-    };
-
     return (
         <div className="bg-[#0E1614] border border-[#1E2826] rounded-lg shadow-sm hover:shadow-lg hover:border-[#2DE3A7]/30 transition-all duration-300 overflow-hidden group flex flex-col h-full relative">
             {/* Image Container */}
@@ -72,13 +63,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
                         >
                             <Eye size={18} />
                         </Link>
-                        <button
-                            onClick={handleEdit}
+                        <Link
+                            href={route("admin.product.edit", product.id)}
                             className="p-2 bg-white text-black rounded-full hover:bg-[#2DE3A7] transition-colors"
                             title="Edit product"
                         >
                             <Edit2 size={18} />
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>

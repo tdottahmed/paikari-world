@@ -12,6 +12,8 @@ interface Props {
         pathao_password?: string;
         steadfast_user?: string;
         steadfast_password?: string;
+        steadfast_api_key?: string;
+        steadfast_secret_key?: string;
         redx_phone?: string;
         redx_password?: string;
     };
@@ -23,6 +25,8 @@ export default function Index({ credentials }: Props) {
         pathao_password: credentials.pathao_password || "",
         steadfast_user: credentials.steadfast_user || "",
         steadfast_password: credentials.steadfast_password || "",
+        steadfast_api_key: credentials.steadfast_api_key || "",
+        steadfast_secret_key: credentials.steadfast_secret_key || "",
         redx_phone: credentials.redx_phone || "",
         redx_password: credentials.redx_password || "",
     });
@@ -129,6 +133,44 @@ export default function Index({ credentials }: Props) {
                                         onChange={(e) =>
                                             setData(
                                                 "steadfast_password",
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                </div>
+                                <div>
+                                    <InputLabel
+                                        htmlFor="steadfast_api_key"
+                                        value="Steadfast API Key"
+                                    />
+                                    <TextInput
+                                        id="steadfast_api_key"
+                                        name="steadfast_api_key"
+                                        type="text"
+                                        className="mt-1 block w-full"
+                                        value={data.steadfast_api_key}
+                                        onChange={(e) =>
+                                            setData(
+                                                "steadfast_api_key",
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                </div>
+                                <div>
+                                    <InputLabel
+                                        htmlFor="steadfast_secret_key"
+                                        value="Steadfast Secret Key"
+                                    />
+                                    <TextInput
+                                        id="steadfast_secret_key"
+                                        name="steadfast_secret_key"
+                                        type="text"
+                                        className="mt-1 block w-full"
+                                        value={data.steadfast_secret_key}
+                                        onChange={(e) =>
+                                            setData(
+                                                "steadfast_secret_key",
                                                 e.target.value
                                             )
                                         }
