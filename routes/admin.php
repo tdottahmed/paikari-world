@@ -31,7 +31,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
   Route::post('website/update', [WebsiteController::class, 'update'])->name('website.update');
   Route::get('users', [UserController::class, 'index'])->name('users.index');
   Route::get('payment-gateways', [PaymentGatewayController::class, 'index'])->name('payment-gateways.index');
+  Route::post('payment-gateways/update', [PaymentGatewayController::class, 'update'])->name('payment-gateways.update');
   Route::get('courier', [CourierController::class, 'index'])->name('courier.index');
+  Route::post('courier/update', [CourierController::class, 'update'])->name('courier.update');
   Route::get('price-calculator', [PriceCalculatorController::class, 'index'])->name('price-calculator.index');
   Route::post('price-calculator/update', [PriceCalculatorController::class, 'update'])->name('price-calculator.update');
   Route::get('marketing', [MarketingController::class, 'index'])->name('marketing.index');
