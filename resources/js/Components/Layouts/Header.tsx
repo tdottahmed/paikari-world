@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "@inertiajs/react";
+import { Globe } from "lucide-react";
 import UserMenu from "./UserMenu";
 import BrandLogo from "../Utility/BrandLogo";
 
@@ -98,6 +100,21 @@ const Header: React.FC<HeaderProps> = ({
                         <div className="flex items-center space-x-2">
                             {actions}
                         </div>
+                    )}
+
+                    {/* View Frontend Button */}
+                    {showUserMenu && (
+                        <Link
+                            href={route("home")}
+                            className="flex items-center gap-2 px-4 py-2 bg-[#1E2826] hover:bg-[#2A3532] border border-[#2DE3A7]/20 hover:border-[#2DE3A7]/40 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:text-[#2DE3A7]"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Globe size={16} />
+                            <span className="hidden md:inline">
+                                View Frontend
+                            </span>
+                        </Link>
                     )}
 
                     {/* User Menu */}

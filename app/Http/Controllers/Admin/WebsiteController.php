@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DeliveryCharge;
 use App\Models\WebsiteSetting;
+use App\Models\Setting;
 use App\Utility\FileUpload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class WebsiteController extends Controller
@@ -15,7 +17,8 @@ class WebsiteController extends Controller
     {
         return Inertia::render('Admin/Settings/Website/Index', [
             'setting' => WebsiteSetting::first() ?? ['banner_active' => true, 'banner_images' => []],
-            'deliveryCharges' => DeliveryCharge::all()
+            'deliveryCharges' => DeliveryCharge::all(),
+            'messengerLink' => get_setting('messenger_link'),
         ]);
     }
 
@@ -72,6 +75,20 @@ class WebsiteController extends Controller
                 }
             }
             return back()->with('success', 'Delivery charges updated successfully.');
+        }
+
+        if ($type === 'messenger') {
+            $request->validate([
+                'messenger_link' => 'nullable|url|max:500',
+            ]);
+
+            Setting::updateOrCreate(
+                ['key' => 'messenger_link'],
+                ['value' => $request->messenger_link ?? '']
+            );
+            Cache::forget('setting_messenger_link');
+
+            return back()->with('success', 'Messenger link updated successfully.');
         }
 
         return back()->with('error', 'Invalid update type.');

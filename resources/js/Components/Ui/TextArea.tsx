@@ -10,6 +10,7 @@ interface TextAreaProps {
     isFocused?: boolean;
     required?: boolean;
     rows?: number;
+    disabled?: boolean;
     onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
@@ -25,6 +26,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             isFocused = false,
             required = false,
             rows = 4,
+            disabled = false,
             onChange,
         },
         ref
@@ -53,13 +55,18 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
                     text-gray-100 placeholder-gray-500
                     focus:border-[#2DE3A7] focus:ring-1 focus:ring-[#2DE3A7]
                     transition-all duration-200 ease-in-out
-                    cursor-pointer
+                    ${
+                        disabled
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer"
+                    }
                     resize-vertical
                     min-h-[100px]
                     ${className}
                 `}
                 autoComplete={autoComplete}
                 onChange={onChange}
+                disabled={disabled}
             />
         );
     }

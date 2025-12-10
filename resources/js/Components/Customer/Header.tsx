@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { User, MessageCircle, X, Menu } from "lucide-react";
+import { User, MessageCircle, X, Menu, LogIn } from "lucide-react";
+import { Link, usePage } from "@inertiajs/react";
 
 import Logo from "./Header/Logo";
 import MobileMenuButton from "./Header/MobileMenuButton";
@@ -17,6 +18,9 @@ const Header = ({ onMenuClick }: HeaderProps) => {
     const { setIsOpen, getCartCount } = useCartStore();
     const cartCount = getCartCount();
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+    const { auth, messengerLink }: any = usePage().props;
+    const isAuthenticated = !!auth?.user;
+
     const onCartClick = () => {
         setIsOpen(true);
     };
@@ -40,9 +44,17 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                             >
                                 <Menu size={24} />
                             </button>
-                            <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
-                                <MessageCircle size={20} />
-                            </button>
+                            {messengerLink && (
+                                <a
+                                    href={messengerLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                                    aria-label="Messenger"
+                                >
+                                    <MessageCircle size={20} />
+                                </a>
+                            )}
                             <Logo />
                         </div>
 
@@ -56,11 +68,19 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                             <SearchAutocomplete />
                         </div>
 
-                        {/* Mobile Right: Search & Cart */}
+                        {/* Mobile Right: Search, Login & Cart */}
                         <div className="flex items-center gap-2 md:hidden">
                             <SearchToggle
                                 onClick={() => setIsMobileSearchOpen(true)}
                             />
+                            {!isAuthenticated && (
+                                <Link
+                                    href={route("login")}
+                                    className="p-2 text-gray-800 hover:text-gray-900 transition-colors"
+                                >
+                                    <LogIn size={20} />
+                                </Link>
+                            )}
                             <button
                                 onClick={onCartClick}
                                 className="p-2 text-gray-800 hover:text-gray-900 transition-colors"
@@ -69,8 +89,19 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                             </button>
                         </div>
 
-                        {/* Desktop Right: Cart */}
+                        {/* Desktop Right: Login & Cart */}
                         <div className="hidden md:flex items-center gap-2 sm:gap-4">
+                            {!isAuthenticated && (
+                                <Link
+                                    href={route("login")}
+                                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                                >
+                                    <LogIn size={18} />
+                                    <span className="text-sm font-medium">
+                                        Login
+                                    </span>
+                                </Link>
+                            )}
                             <button
                                 onClick={onCartClick}
                                 className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors"

@@ -37,6 +37,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
   Route::get('price-calculator', [PriceCalculatorController::class, 'index'])->name('price-calculator.index');
   Route::post('price-calculator/update', [PriceCalculatorController::class, 'update'])->name('price-calculator.update');
   Route::get('marketing', [MarketingController::class, 'index'])->name('marketing.index');
+  Route::post('marketing/update', [MarketingController::class, 'update'])->name('marketing.update');
 
   // Order Management
   Route::get('orders/bulk-details', [OrderController::class, 'bulkDetails'])->name('orders.bulk-details');
