@@ -121,7 +121,7 @@ export default function Login({
             </form>
 
             {/* Additional Links */}
-            <div className="mt-8 text-center">
+            {/* <div className="mt-8 text-center">
                 <p className="text-gray-400 text-sm">
                     Don't have an account?{" "}
                     <Link
@@ -131,7 +131,7 @@ export default function Login({
                         Sign up
                     </Link>
                 </p>
-            </div>
+            </div> */}
         </GuestLayout>
     );
 }
