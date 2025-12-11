@@ -91,22 +91,6 @@ const UserMenu: React.FC = () => {
                             >
                                 Your Profile
                             </Link>
-
-                            <Link
-                                href="/settings"
-                                className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#1E2826] hover:text-white"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Settings
-                            </Link>
-
-                            <Link
-                                href="/billing"
-                                className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#1E2826] hover:text-white"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Billing
-                            </Link>
                         </div>
 
                         {/* Logout */}
