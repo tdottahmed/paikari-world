@@ -161,7 +161,11 @@ export default function PricingInventory({
                                         : "bg-red-100 text-red-700"
                                 }`}
                             >
-                                Profit: {profit.toFixed(2)}
+                                Profit:{" "}
+                                {(
+                                    profit -
+                                    parseFloat(settings.additional_cost)
+                                ).toFixed(2)}
                             </div>
                         )}
                     </CardTitle>

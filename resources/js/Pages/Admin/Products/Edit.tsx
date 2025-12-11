@@ -109,96 +109,95 @@ export default function Edit({
 
     return (
         <Master
-            title= {`Edit ${product.name}`
-}
-head = {< Header title = {`Edit ${product.name}`} showUserMenu = { true} />}
+            title={`Edit ${product.name}`}
+            head={<Header title={`Edit ${product.name}`} showUserMenu={true} />}
         >
-    <form onSubmit={ handleSubmit }>
-        <div className="lg:p-6 p-4" >
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6" >
-                <div>
-                <h1 className="text-2xl font-bold text-white" >
-                    Edit Product
-                        </h1>
-                        < p className = "text-gray-600 dark:text-gray-400 mt-1" >
-                            Update product information and pricing
-                                </p>
-                                </div>
-                                < div className = "flex flex-col sm:flex-row gap-3 w-full sm:w-auto" >
-                                    <DangerButton
+            <form onSubmit={handleSubmit}>
+                <div className="lg:p-6 p-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h1 className="text-2xl font-bold text-white">
+                                Edit Product
+                            </h1>
+                            <p className="text-gray-600 dark:text-gray-400 mt-1">
+                                Update product information and pricing
+                            </p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <DangerButton
                                 type="button"
-variant = "outline"
-onClick = {() => setShowDeleteDialog(true)}
-disabled = { processing || processingDelete}
-className = "w-full sm:w-auto order-2 sm:order-1"
-    >
-    <Trash2Icon size={ 16 } className = "mr-2" />
-        Delete Product
-            </DangerButton>
-            </div>
-            </div>
-            </div>
+                                variant="outline"
+                                onClick={() => setShowDeleteDialog(true)}
+                                disabled={processing || processingDelete}
+                                className="w-full sm:w-auto order-2 sm:order-1"
+                            >
+                                <Trash2Icon size={16} className="mr-2" />
+                                Delete Product
+                            </DangerButton>
+                        </div>
+                    </div>
+                </div>
 
-            < GeneralInformation
-data = { data }
-setData = { setData }
-errors = { errors }
-categories = { categories }
-suppliers = { suppliers }
-    />
+                <GeneralInformation
+                    data={data}
+                    setData={setData}
+                    errors={errors}
+                    categories={categories}
+                    suppliers={suppliers}
+                />
 
-    <PricingInventory
-                    data={ data }
-setData = { setData }
-errors = { errors }
-settings = { settings }
-    />
+                <PricingInventory
+                    data={data}
+                    setData={setData}
+                    errors={errors}
+                    settings={settings}
+                />
 
-    <ImagesVariations
-                    data={ data }
-setData = { setData }
-errors = { errors }
-attributes = { attributes }
-existingImages = { existingImages }
-onRemoveExisting = { handleRemoveExistingImage }
-    />
+                <ImagesVariations
+                    data={data}
+                    setData={setData}
+                    errors={errors}
+                    attributes={attributes}
+                    existingImages={existingImages}
+                    onRemoveExisting={handleRemoveExistingImage}
+                />
 
-    <div className="pt-6 pb-6" >
-        <div className="max-w-7xl mx-auto" >
-            <div className="flex flex-col gap-3 lg:flex-row lg:justify-end" >
-                <PrimaryButton
+                <div className="pt-6 pb-6">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex flex-col gap-3 lg:flex-row lg:justify-end">
+                            <PrimaryButton
                                 type="submit"
-size = "sm"
-disabled = { processing }
-className = "w-full sm:w-auto lg:w-auto justify-center"
-    >
-    { processing? "Updating...": "Update Product" }
-    </PrimaryButton>
-    < PrimaryButton
-as = "link"
-href = { route("admin.products.index") }
-variant = "outline"
-className = "w-full sm:w-auto lg:w-auto justify-center"
-    >
-    <ArrowLeftIcon size={ 16 } className = "mr-2" /> { " "}
+                                size="sm"
+                                disabled={processing}
+                                className="w-full sm:w-auto lg:w-auto justify-center"
+                            >
+                                {processing ? "Updating..." : "Update Product"}
+                            </PrimaryButton>
+                            <PrimaryButton
+                                as="link"
+                                href={route("admin.products.index")}
+                                variant="outline"
+                                className="w-full sm:w-auto lg:w-auto justify-center"
+                            >
+                                <ArrowLeftIcon size={16} className="mr-2" />{" "}
                                 Back to Products
-    </PrimaryButton>
-    </div>
-    </div>
-    </div>
-    </form>
+                            </PrimaryButton>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
-    < DeleteConfirmationDialog
-isOpen = { showDeleteDialog }
-onClose = {() => setShowDeleteDialog(false)}
-onConfirm = { handleDelete }
-title = "Delete Product"
-message = {`Are you sure you want to delete "${product.name}"? This action cannot be undone.`}
-confirmText = {
-    processingDelete? "Deleting...": "Delete Product"
-}
-isProcessing = { processingDelete }
-    />
-    </Master>
+            <DeleteConfirmationDialog
+                isOpen={showDeleteDialog}
+                onClose={() => setShowDeleteDialog(false)}
+                onConfirm={handleDelete}
+                title="Delete Product"
+                message={`Are you sure you want to delete "${product.name}"? This action cannot be undone.`}
+                confirmText={
+                    processingDelete ? "Deleting..." : "Delete Product"
+                }
+                isProcessing={processingDelete}
+            />
+        </Master>
     );
 }
