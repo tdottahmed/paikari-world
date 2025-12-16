@@ -27,6 +27,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
   // New Modules
   Route::get('discounts', [DiscountController::class, 'index'])->name('discounts.index');
+  Route::post('discounts/update', [DiscountController::class, 'update'])->name('discounts.update');
   Route::get('website', [WebsiteController::class, 'index'])->name('website.index');
   Route::post('website/update', [WebsiteController::class, 'update'])->name('website.update');
   Route::get('users', [UserController::class, 'index'])->name('users.index');

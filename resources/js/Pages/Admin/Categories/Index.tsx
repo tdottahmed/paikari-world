@@ -31,10 +31,10 @@ const Index: React.FC<CategoriesIndexProps> = ({ categories }) => {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl md:text-3xl font-bold ext-white">
                             Categories
                         </h1>
-                        <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="text-sm md:text-base text-gray-400 mt-1">
                             Manage product categories
                         </p>
                     </div>
@@ -78,7 +78,7 @@ const Index: React.FC<CategoriesIndexProps> = ({ categories }) => {
 
                                 {/* Category Info */}
                                 <div className="p-4">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                                    <h3 className="text-lg font-semibold text-white mb-1">
                                         {category.title}
                                     </h3>
                                     <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">

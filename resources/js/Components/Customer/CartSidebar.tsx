@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
     X,
     ShoppingBag,
@@ -31,6 +31,27 @@ const CartSidebar = () => {
             onClose();
         }
     };
+
+    const { props } = usePage();
+    const discountRules = props.discount
+        ? JSON.parse(props.discount as string)
+        : [];
+
+    const getDiscount = () => {
+        const totalQty = cartItems.reduce(
+            (acc, item) => acc + item.quantity,
+            0
+        );
+        const applicableRule = discountRules
+            .sort((a: any, b: any) => parseInt(b.qty) - parseInt(a.qty))
+            .find((rule: any) => totalQty >= parseInt(rule.qty));
+
+        if (!applicableRule) return 0;
+        return totalQty * parseFloat(applicableRule.discount);
+    };
+
+    const discountAmount = getDiscount();
+    const finalTotal = cartTotal - discountAmount;
 
     return (
         <>
@@ -127,9 +148,26 @@ const CartSidebar = () => {
                     {activeTab === "cart" && cartItems.length > 0 && (
                         <div className="p-4 border-t bg-white">
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between text-base font-medium text-gray-900">
-                                    <p>Subtotal </p>
-                                    <p> {formatPrice(cartTotal)} </p>
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between text-base text-gray-600">
+                                        <p>Subtotal </p>
+                                        <p> {formatPrice(cartTotal)} </p>
+                                    </div>
+                                    {discountAmount > 0 && (
+                                        <div className="flex items-center justify-between text-base text-green-600 font-medium">
+                                            <p>Quantity Discount </p>
+                                            <p>
+                                                {" "}
+                                                -{formatPrice(
+                                                    discountAmount
+                                                )}{" "}
+                                            </p>
+                                        </div>
+                                    )}
+                                    <div className="flex items-center justify-between text-lg font-bold text-gray-900 pt-2 border-t">
+                                        <p>Total </p>
+                                        <p> {formatPrice(finalTotal)} </p>
+                                    </div>
                                 </div>
                                 <p className="text-sm text-gray-500">
                                     Shipping and taxes calculated at checkout.

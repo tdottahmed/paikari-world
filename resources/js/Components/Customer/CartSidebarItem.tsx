@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { Trash2, ShoppingBag } from "lucide-react";
 import { formatPrice, storagePath } from "@/Utils/helpers";
 import { CartItem } from "@/types";
@@ -26,6 +27,10 @@ const CartSidebarItem: React.FC<CartSidebarItemProps> = ({ item }) => {
     }, [debouncedQuantity, updateQuantity, item.product_id]);
 
     const handleQuantityChange = (newQuantity: number) => {
+        if (item.stock && newQuantity > item.stock) {
+            toast.warning(`Only ${item.stock} items available in stock`);
+            return;
+        }
         setQuantity(newQuantity);
     };
 
@@ -83,7 +88,8 @@ const CartSidebarItem: React.FC<CartSidebarItemProps> = ({ item }) => {
                             onIncrease={() =>
                                 handleQuantityChange(quantity + 1)
                             }
-                            min={3}
+                            min={1}
+                            max={item.stock}
                             size="sm"
                         />
                     </div>

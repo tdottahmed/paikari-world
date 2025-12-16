@@ -7,6 +7,7 @@ interface OrderSummaryProps {
     cartItems: CartItem[];
     cartTotal: number;
     deliveryCost: number;
+    discountAmount?: number;
     total: number;
     processing: boolean;
     onRemoveItem: (e: React.MouseEvent, id: number) => void;
@@ -21,6 +22,7 @@ export default function OrderSummary({
     cartItems,
     cartTotal,
     deliveryCost,
+    discountAmount = 0,
     total,
     processing,
     onRemoveItem,
@@ -74,10 +76,18 @@ export default function OrderSummary({
                         {formatPrice(deliveryCost)}
                     </span>
                 </div>
-                <div className="flex justify-between text-sm text-gray-600">
-                    <span>Discount </span>
-                    <span className="font-semibold text-gray-900">৳0 </span>
-                </div>
+                {discountAmount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600 font-medium">
+                        <span>Quantity Discount </span>
+                        <span> -{formatPrice(discountAmount)} </span>
+                    </div>
+                )}
+                {!discountAmount && (
+                    <div className="flex justify-between text-sm text-gray-600">
+                        <span>Discount </span>
+                        <span className="font-semibold text-gray-900">৳0 </span>
+                    </div>
+                )}
 
                 <div className="pt-4 mt-2 border-t border-gray-100">
                     <div className="flex justify-between items-end">

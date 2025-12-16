@@ -43,6 +43,7 @@ class HandleInertiaRequests extends Middleware
             'cart' => fn() => $request->session()->get('cart', []),
             'messengerLink' => fn() => get_setting('messenger_link'),
             'additionalCost' => fn() => get_setting('additional_cost', 0),
+            'discount' => fn() => get_setting('quantity_discounts'),
         ];
     }
 }

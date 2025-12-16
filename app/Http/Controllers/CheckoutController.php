@@ -34,12 +34,34 @@ class CheckoutController extends Controller
 
         $cart = $request->items;
 
-        $deliveryCharge = DeliveryCharge::find($request->delivery_charge_id);
+        $totalQty = 0;
         $subtotal = 0;
         foreach ($cart as $item) {
+            $totalQty += $item['quantity'];
             $subtotal += $item['price'] * $item['quantity'];
         }
-        $total = $subtotal + $deliveryCharge->cost;
+
+        // Calculate discount
+        $discountSetting = \App\Models\Setting::where('key', 'quantity_discounts')->value('value');
+        $discountRules = $discountSetting ? json_decode($discountSetting, true) : [];
+
+        $discountAmount = 0;
+        if (!empty($discountRules)) {
+            // Sort by qty desc
+            usort($discountRules, function ($a, $b) {
+                return $b['qty'] - $a['qty'];
+            });
+
+            foreach ($discountRules as $rule) {
+                if ($totalQty >= (int)$rule['qty']) {
+                    $discountAmount = $totalQty * (float)$rule['discount'];
+                    break;
+                }
+            }
+        }
+
+        $deliveryCharge = DeliveryCharge::find($request->delivery_charge_id);
+        $total = $subtotal + $deliveryCharge->cost - $discountAmount;
 
         DB::beginTransaction();
         try {
@@ -66,7 +88,6 @@ class CheckoutController extends Controller
             DB::commit();
 
             return redirect()->route('order.success', ['order' => $order->id])->with('success', 'Order placed successfully!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Something went wrong. Please try again.');
