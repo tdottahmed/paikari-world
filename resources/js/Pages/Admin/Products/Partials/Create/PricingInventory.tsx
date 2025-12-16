@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { calculateProfit } from "@/Utils/helpers";
 import Card, { CardContent, CardHeader, CardTitle } from "@/Components/Ui/Card";
 import InputLabel from "@/Components/Ui/InputLabel";
 import TextInput from "@/Components/Ui/TextInput";
@@ -54,24 +55,18 @@ export default function PricingInventory({
         return (purchasePrice + profitMargin + additional).toFixed(2);
     };
 
-    // Calculate Profit Amount based on Purchase and Sale Price
-    const calculateProfitAmount = (
-        purchasePrice: number,
-        salePrice: number
-    ) => {
-        return (salePrice - purchasePrice).toFixed(2);
-    };
-
     // Effect to update profit display when prices change
     useEffect(() => {
         const purchase = parseFloat(data.purchase_price) || 0;
         const sale = parseFloat(data.sale_price) || 0;
+        const additional = parseFloat(settings.additional_cost) || 0;
+
         if (purchase > 0 && sale > 0) {
-            setProfit(sale - purchase);
+            setProfit(calculateProfit(sale, purchase, additional));
         } else {
             setProfit(null);
         }
-    }, [data.purchase_price, data.sale_price]);
+    }, [data.purchase_price, data.sale_price, settings.additional_cost]);
 
     const handlePurchasePriceChange = (val: string) => {
         const purchase = parseFloat(val);
@@ -161,11 +156,7 @@ export default function PricingInventory({
                                         : "bg-red-100 text-red-700"
                                 }`}
                             >
-                                Profit:{" "}
-                                {(
-                                    profit -
-                                    parseFloat(settings.additional_cost)
-                                ).toFixed(2)}
+                                Profit: {profit.toFixed(2)}
                             </div>
                         )}
                     </CardTitle>

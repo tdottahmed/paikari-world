@@ -14,23 +14,15 @@ class SupplierTableSeeder extends Seeder
     {
         $suppliers = [
             [
-                'name' => 'Apple',
-                'email' => 'apple@example.com',
-                'phone' => '+91-1234567890',
-                'address' => '123 Main Street, Anytown, USA',
+                'name' => 'China',
+                'email' => 'china@example.com',
+                'phone' => '+91-1234567890'
             ],
             [
-                'name' => 'Samsung',
-                'email' => 'samsung@example.com',
+                'name' => 'Local',
+                'email' => 'local@example.com',
                 'phone' => '+91-1234567890',
-                'address' => '123 Main Street, Anytown, USA',
-            ],
-            [
-                'name' => 'Sony',
-                'email' => 'sony@example.com',
-                'phone' => '+91-1234567890',
-                'address' => '123 Main Street, Anytown, USA',
-            ],
+            ]
         ];
 
         foreach ($suppliers as $supplier) {

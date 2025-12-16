@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { Edit2, Eye, Box, Package, SwatchBookIcon } from "lucide-react";
 import { storagePath, formatPrice } from "@/Utils/helpers";
 import { Product } from "@/types";
@@ -13,9 +13,10 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
-    const profit = formatPrice(
-        (product.sale_price || 0) - (product.purchase_price || 0)
-    );
+    const { additionalCost } = usePage().props as any;
+    const actualCost =
+        (product.purchase_price || 0) + (parseFloat(additionalCost) || 0);
+    const profit = formatPrice(product.sale_price - actualCost);
     const isNew =
         new Date(product.created_at) >
         new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);

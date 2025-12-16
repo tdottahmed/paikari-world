@@ -362,6 +362,21 @@ export const isNewProduct = (createdAt: string, days: number = 30): boolean => {
     return createdDate > thresholdDate;
 };
 
+/**
+ * Calculate profit based on sale price, purchase price and additional costs
+ * @param salePrice - Sale price
+ * @param purchasePrice - Purchase price
+ * @param additionalCost - Additional cost (default: 0)
+ * @returns Calculated profit
+ */
+export const calculateProfit = (
+    salePrice: number,
+    purchasePrice: number,
+    additionalCost: number = 0
+): number => {
+    return salePrice - (purchasePrice + additionalCost);
+};
+
 // Export all helpers
 export default {
     formatCurrency,
@@ -382,4 +397,5 @@ export default {
     capitalize,
     slugify,
     isNewProduct,
+    calculateProfit,
 };
