@@ -167,15 +167,6 @@ export default function ProductShow({
                                     <div className="text-2xl md:text-3xl font-bold text-indigo-600">
                                         ৳{product.sale_price}
                                     </div>
-                                    {product.stock > 0 ? (
-                                        <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                                            In Stock({product.stock} available)
-                                        </span>
-                                    ) : (
-                                        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                                            Out of Stock
-                                        </span>
-                                    )}
                                 </div>
 
                                 <div className="prose prose-sm text-gray-600 mb-8 max-w-none">
