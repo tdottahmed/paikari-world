@@ -3,7 +3,8 @@ import { Link } from "@inertiajs/react";
 import { Search, X } from "lucide-react";
 import axios from "axios";
 import { debounce } from "@/Utils/helpers";
-import { storagePath, formatPrice } from "@/Utils/helpers";
+import { getAssetUrl, formatPrice } from "@/Utils/helpers";
+import Image from "../Ui/Image";
 
 interface SearchResult {
     id: number;
@@ -206,8 +207,8 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
                                             onClose?.();
                                         }}
                                     >
-                                        <img
-                                            src={storagePath(product.image)}
+                                        <Image
+                                            src={getAssetUrl(product.image)}
                                             alt={product.name}
                                             className="w-12 h-12 object-cover rounded-md flex-shrink-0"
                                         />

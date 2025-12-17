@@ -1,98 +1,87 @@
-import React, { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { Trash2, ShoppingBag } from "lucide-react";
-import { formatPrice, storagePath } from "@/Utils/helpers";
+import React, { useState } from "react";
+import { formatPrice, getAssetUrl } from "@/Utils/helpers";
 import { CartItem } from "@/types";
-import { useDebounce } from "@/Hooks/useDebounce";
 import { useCartStore } from "@/Stores/useCartStore";
+import { X, Trash2 } from "lucide-react";
 import QuantitySelector from "../Ui/QuantitySelector";
+import Image from "../Ui/Image";
 
 interface CartSidebarItemProps {
     item: CartItem;
 }
 
 const CartSidebarItem: React.FC<CartSidebarItemProps> = ({ item }) => {
-    const { updateQuantity, removeFromCart } = useCartStore();
-    const [quantity, setQuantity] = useState(item.quantity);
-    const debouncedQuantity = useDebounce(quantity, 500);
+    const { removeFromCart, updateQuantity } = useCartStore();
+    const [quantity, setQuantity] = useState<number>(item.quantity ?? 1);
 
-    useEffect(() => {
-        setQuantity(item.quantity);
-    }, [item.quantity]);
-
-    useEffect(() => {
-        if (debouncedQuantity !== item.quantity && debouncedQuantity > 0) {
-            updateQuantity(item.product_id, debouncedQuantity);
-        }
-    }, [debouncedQuantity, updateQuantity, item.product_id]);
-
-    const handleQuantityChange = (newQuantity: number) => {
-        if (item.stock && newQuantity > item.stock) {
-            toast.warning(`Only ${item.stock} items available in stock`);
-            return;
-        }
-        setQuantity(newQuantity);
+    const handleUpdateQuantity = (newQuantity: number) => {
+        if (newQuantity < 1) return;
+        updateQuantity(item.product_id, newQuantity);
     };
 
-    const removeItem = (id: number) => {
-        removeFromCart(id);
+    const handleQuantityChange = (newQuantity: number) => {
+        if (newQuantity < 1) return;
+        setQuantity(newQuantity);
+        handleUpdateQuantity(newQuantity);
+    };
+
+    const handleRemove = () => {
+        removeFromCart(item.product_id);
     };
 
     return (
-        <div className="group relative bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="flex gap-3">
-                {/* Image */}
-                <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100 relative">
-                    {item.image ? (
-                        <img
-                            src={storagePath(item.image)}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            <ShoppingBag size={24} />
-                        </div>
-                    )}
-                </div>
+        <div className="flex gap-4 p-4 bg-gray-50 rounded-xl relative group">
+            <button
+                onClick={handleRemove}
+                className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 text-red-500 hover:text-red-700"
+                aria-label="Remove item"
+            >
+                <X size={16} />
+            </button>
 
-                {/* Content */}
-                <div className="flex-1 flex flex-col justify-between min-w-0">
+            <div className="w-20 h-20 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
+                <Image
+                    src={getAssetUrl(item.image)}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                />
+            </div>
+
+            <div className="flex-1">
+                <div className="flex items-start justify-between">
                     <div>
-                        <div className="flex justify-between items-start gap-2">
-                            <h3 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug">
-                                {item.name}
-                            </h3>
-                            <button
-                                onClick={() => removeItem(item.product_id)}
-                                className="text-rose-500 hover:text-red-800 transition-colors p-1 -mr-1 -mt-1 rounded-full hover:bg-red-50"
-                            >
-                                <Trash2 size={16} />
-                            </button>
+                        <div className="font-medium text-gray-900">
+                            {item.name}
                         </div>
                         <p className="text-xs text-gray-500 mt-0.5">
                             {formatPrice(item.price)} / unit
                         </p>
                     </div>
 
-                    <div className="flex items-end justify-between mt-2">
+                    <div className="text-right">
                         <div className="font-bold text-gray-900 text-base">
                             {formatPrice(item.price * quantity)}
                         </div>
-
-                        <QuantitySelector
-                            quantity={quantity}
-                            onDecrease={() =>
-                                handleQuantityChange(quantity - 1)
-                            }
-                            onIncrease={() =>
-                                handleQuantityChange(quantity + 1)
-                            }
-                            min={1}
-                            max={item.stock}
-                            size="sm"
-                        />
                     </div>
+                </div>
+
+                <div className="flex items-center justify-between mt-2">
+                    <QuantitySelector
+                        quantity={quantity}
+                        onDecrease={() => handleQuantityChange(quantity - 1)}
+                        onIncrease={() => handleQuantityChange(quantity + 1)}
+                        min={1}
+                        max={item.stock}
+                        size="sm"
+                    />
+
+                    <button
+                        onClick={handleRemove}
+                        className="text-rose-500 hover:text-red-800 transition-colors p-1 -mr-1 -mt-1 rounded-full hover:bg-red-50"
+                        aria-label="Remove item"
+                    >
+                        <Trash2 size={16} />
+                    </button>
                 </div>
             </div>
         </div>

@@ -1,0 +1,11 @@
+[
+    { "id": 1, "title": "Necklace", "icon": "31P2aN_512x543.png" },
+    { "id": 2, "title": "Earrings", "icon": "31P6ZJ_530x526.png" },
+    { "id": 3, "title": "Bracelet", "icon": "31P8vw_574x554.png" },
+    { "id": 4, "title": "Anklets", "icon": "34q27M_520x534.png" },
+    { "id": 5, "title": "Jewelry Set", "icon": "40AJRJ_1024x1024.png" },
+    { "id": 7, "title": "Ring", "icon": "7gQ1gK_1024x1024.png" },
+    { "id": 8, "title": "Cosmetics", "icon": "e8Gyuf9wA_195x195.png" },
+    { "id": 9, "title": "Fake-Nail", "icon": "e8GyxtlRK_195x195.png" },
+    { "id": 10, "title": "Hair Accessories", "icon": "e7KbPYLJz_195x195.png" }
+]

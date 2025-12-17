@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { Edit2, Eye, Box, Package, SwatchBookIcon } from "lucide-react";
-import { storagePath, formatPrice } from "@/Utils/helpers";
+import { getAssetUrl, formatPrice } from "@/Utils/helpers";
 import { Product } from "@/types";
 import Image from "../Ui/Image";
 
@@ -25,11 +25,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
         <div className="bg-[#0E1614] border border-[#1E2826] rounded-lg shadow-sm hover:shadow-lg hover:border-[#2DE3A7]/30 transition-all duration-300 overflow-hidden group flex flex-col h-full relative">
             {/* Image Container */}
             <div className="relative aspect-[4/4] bg-[#F5F5F0] overflow-hidden shrink-0">
-                <Image
+                <img
                     src={
                         product.images && product.images.length > 0
-                            ? storagePath(product.images[0])
-                            : undefined
+                            ? getAssetUrl(product.images[0])
+                            : "/placeholder.png"
                     }
                     alt={product.name}
                     className="w-full h-full object-cover"
@@ -45,13 +45,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
                 {/* Bottom Left: MOQ/Box Badge */}
                 <div className="absolute bottom-2 left-2 bg-[#2DD4BF] text-[#0C1311] text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
                     <Box size={14} strokeWidth={2.5} />
-                    <span>{product.stock || 0}</span>
+                    <span>{product.stock || 0} </span>
                 </div>
 
                 {/* Bottom Right: UAN/Yen Badge */}
                 <div className="absolute bottom-2 right-2 bg-[#F472B6] text-[#0C1311] text-xs font-bold px-2 py-1 rounded-md flex items-center gap-0.5">
                     <span className="text-[10px]">¥</span>
-                    <span> {product.uan_price || 0}</span>
+                    <span> {product.uan_price || 0} </span>
                 </div>
 
                 {/* Quick Actions Overlay (Hidden by default, shown on hover) */}

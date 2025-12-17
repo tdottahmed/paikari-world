@@ -4,7 +4,7 @@ import CustomerLayout from "@/Layouts/CustomerLayout";
 import { Product } from "@/types";
 import { ShoppingCart, Heart, Share2, ChevronRight, Check } from "lucide-react";
 import Image from "@/Components/Ui/Image";
-import { storagePath } from "@/Utils/helpers";
+import { getAssetUrl } from "@/Utils/helpers";
 import { useCartStore } from "@/Stores/useCartStore";
 import { useDebounce } from "@/Hooks/useDebounce";
 import QuantitySelector from "@/Components/Ui/QuantitySelector";
@@ -106,7 +106,7 @@ export default function ProductShow({
                             <div className="space-y-4">
                                 <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
                                     <Image
-                                        src={storagePath(
+                                        src={getAssetUrl(
                                             selectedImage || product.images[0]
                                         )}
                                         alt={product.name}
@@ -142,7 +142,7 @@ export default function ProductShow({
                                                         }`}
                                                     >
                                                         <img
-                                                            src={storagePath(
+                                                            src={getAssetUrl(
                                                                 image
                                                             )}
                                                             alt={`${

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
 import { ShoppingCart, Trash2, Check } from "lucide-react";
-import { storagePath, isNewProduct, formatPrice } from "@/Utils/helpers";
+import { getAssetUrl, isNewProduct, formatPrice } from "@/Utils/helpers";
 import { Product } from "@/types";
 import Image from "../Ui/Image";
 import { useCartStore } from "@/Stores/useCartStore";
@@ -88,7 +88,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <div className="relative aspect-square bg-gray-100 overflow-hidden">
                 <Link href={route("products.show", product.slug)}>
                     <Image
-                        src={storagePath(product.images?.[0])}
+                        src={getAssetUrl(product.images?.[0])}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

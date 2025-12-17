@@ -377,6 +377,34 @@ export const calculateProfit = (
     return salePrice - (purchasePrice + additionalCost);
 };
 
+/**
+ * Generate full URL for assets
+ * - Returns absolute URLs as is
+ * - Returns CDN URL for simple filenames (imported images)
+ * - Returns storage URL for relative paths (local uploads)
+ * @param path - Image filename or full URL
+ * @returns Full URL
+ */
+export const getAssetUrl = (path: string | null | undefined): string => {
+    if (!path) return "/placeholder.png";
+
+    if (
+        path.startsWith("http://") ||
+        path.startsWith("https://") ||
+        path.startsWith("//")
+    ) {
+        return path;
+    }
+
+    // If it's just a filename (no slashes), assuming it's from the CDN source
+    if (!path.includes("/")) {
+        return `https://cdn.jsdelivr.net/gh/legend-sabbir/paikari-world@latest/${path}`;
+    }
+
+    // Otherwise treat as local storage path
+    return storagePath(path);
+};
+
 // Export all helpers
 export default {
     formatCurrency,
@@ -398,4 +426,5 @@ export default {
     slugify,
     isNewProduct,
     calculateProfit,
+    getAssetUrl,
 };

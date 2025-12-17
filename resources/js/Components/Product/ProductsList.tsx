@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
 import { Edit2, Eye, Package, TrendingUp } from "lucide-react";
-import { storagePath, formatPrice } from "@/Utils/helpers";
+import { getAssetUrl, formatPrice } from "@/Utils/helpers";
 import { Product } from "@/types";
 import Image from "../Ui/Image";
 
@@ -110,13 +110,14 @@ const ProductListItem: React.FC<ProductListItemProps> = ({ product }) => {
                 <div className="flex gap-4">
                     {/* Product Image */}
                     <div className="relative w-24 h-24 bg-[#0F1A18] rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
+                        <img
                             src={
                                 product.images && product.images.length > 0
-                                    ? storagePath(product.images[0])
-                                    : undefined
+                                    ? getAssetUrl(product.images[0])
+                                    : "/placeholder.png"
                             }
                             alt={product.name}
+                            className="w-full h-full object-cover"
                         />
                         {/* Profit Badge */}
                         <div className="absolute top-1 left-1 bg-[#2DE3A7] text-[#0C1311] px-1.5 py-0.5 rounded text-xs font-bold">

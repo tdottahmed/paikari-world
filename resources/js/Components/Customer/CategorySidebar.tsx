@@ -8,7 +8,7 @@ import {
 import { Link, usePage } from "@inertiajs/react";
 import { PageProps } from "@/types";
 import Image from "../Ui/Image";
-import { storagePath } from "@/Utils/helpers";
+import { getAssetUrl } from "@/Utils/helpers";
 
 interface CategorySidebarProps {
     isOpen: boolean;
@@ -96,7 +96,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                                         >
                                             <div className="flex items-center gap-3">
                                                 <Image
-                                                    src={storagePath(
+                                                    src={getAssetUrl(
                                                         category.image
                                                     )}
                                                     alt={category.title}

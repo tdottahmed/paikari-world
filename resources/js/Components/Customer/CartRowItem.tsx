@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { formatPrice, storagePath } from "@/Utils/helpers";
+import { formatPrice, getAssetUrl } from "@/Utils/helpers";
 import { CartItem } from "@/types";
 import { useDebounce } from "@/Hooks/useDebounce";
 import { useCartStore } from "@/Stores/useCartStore";
 import QuantitySelector from "../Ui/QuantitySelector";
+import Image from "../Ui/Image";
 
 interface CartRowItemProps {
     item: CartItem;
@@ -35,16 +36,17 @@ const CartRowItem: React.FC<CartRowItemProps> = ({ item }) => {
 
     return (
         <div className="flex items-center border-b py-4">
-            <img
-                src={storagePath(item.image)}
-                alt={item.name}
-                className="w-24 h-24 object-cover rounded mr-4"
-            />
+            <div className="w-24 h-24 mr-4 flex-shrink-0">
+                <Image
+                    src={getAssetUrl(item.image)}
+                    alt={item.name}
+                    className="w-full h-full object-cover rounded"
+                />
+            </div>
             <div className="flex-grow">
                 <h3 className="text-lg font-semibold"> {item.name} </h3>
                 <p className="text-gray-600">
-                    {" "}
-                    Price: {formatPrice(item.price)}{" "}
+                    Price: {formatPrice(item.price)}
                 </p>
             </div>
             <div className="flex items-center">
@@ -57,7 +59,7 @@ const CartRowItem: React.FC<CartRowItemProps> = ({ item }) => {
             </div>
             <div className="ml-4">
                 <p className="font-semibold">
-                    {formatPrice(item.price * quantity)}{" "}
+                    {formatPrice(item.price * quantity)}
                 </p>
             </div>
             <button
