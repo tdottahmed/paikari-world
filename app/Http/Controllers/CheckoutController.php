@@ -77,6 +77,18 @@ class CheckoutController extends Controller
             ]);
 
             foreach ($cart as $item) {
+                $product = \App\Models\Product::lockForUpdate()->find($item['product_id']);
+                
+                if (!$product) {
+                    throw new \Exception("Product not found");
+                }
+
+                if (!$product->is_preorder && $product->stock < $item['quantity']) {
+                    throw new \Exception("Insufficient stock for product: " . $product->name);
+                }
+
+                $product->decrement('stock', $item['quantity']);
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'],
