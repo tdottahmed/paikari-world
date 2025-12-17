@@ -18,7 +18,7 @@ import Card, { CardContent } from "@/Components/Ui/Card";
 import { format } from "date-fns";
 import { useState } from "react";
 import ConfirmModal from "@/Components/Ui/ConfirmModal";
-import { formatPrice } from "@/Utils/helpers";
+import { formatPrice, getAssetUrl } from "@/Utils/helpers";
 
 interface Props extends PageProps {
     order: Order;
@@ -462,7 +462,11 @@ export default function Show({ order }: Props) {
                                                                 {item.product
                                                                     ?.images?.[0] && (
                                                                     <img
-                                                                        src={`/storage/${item.product.images[0]}`}
+                                                                        src={getAssetUrl(
+                                                                            item
+                                                                                .product
+                                                                                ?.images?.[0]
+                                                                        )}
                                                                         alt={
                                                                             item
                                                                                 .product
@@ -540,7 +544,10 @@ export default function Show({ order }: Props) {
                                                     {item.product
                                                         ?.images?.[0] && (
                                                         <img
-                                                            src={`/storage/${item.product.images[0]}`}
+                                                            src={getAssetUrl(
+                                                                item.product
+                                                                    .images[0]
+                                                            )}
                                                             alt={
                                                                 item.product
                                                                     ?.name || ""

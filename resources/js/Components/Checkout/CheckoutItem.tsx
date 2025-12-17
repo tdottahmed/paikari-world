@@ -2,7 +2,7 @@ import React from "react";
 import { Trash2, ShoppingBag } from "lucide-react";
 import { CartItem } from "@/types";
 import QuantitySelector from "@/Components/Ui/QuantitySelector";
-import { formatPrice } from "@/Utils/helpers";
+import { formatPrice, getAssetUrl } from "@/Utils/helpers";
 
 interface CheckoutItemProps {
     item: CartItem;
@@ -26,7 +26,7 @@ export default function CheckoutItem({
                 <div className="w-20 h-20 flex-shrink-0 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden relative">
                     {item.image ? (
                         <img
-                            src={`/storage/${item.image}`}
+                            src={getAssetUrl(item.image)}
                             alt={item.name}
                             className="w-full h-full object-cover"
                         />

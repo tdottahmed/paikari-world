@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 import { formatPrice, formatDate, getAssetUrl } from "@/Utils/helpers";
 import Image from "../Ui/Image";
 
@@ -29,14 +29,22 @@ interface OrderDetailsModalProps {
     order: Order | null;
     isOpen: boolean;
     onClose: () => void;
+    onDelete: (orderId: number) => void;
 }
 
 const OrderDetailsModal = ({
     order,
     isOpen,
     onClose,
+    onDelete,
 }: OrderDetailsModalProps) => {
     if (!isOpen || !order) return null;
+
+    const handleDelete = () => {
+        if (confirm("Are you sure you want to delete this order?")) {
+            onDelete(order.id);
+        }
+    };
 
     return (
         <div className= "fixed inset-0 z-[60] flex items-center justify-center p-4" >
@@ -69,9 +77,10 @@ const OrderDetailsModal = ({
     {/* Scrollable Content */ }
     <div className="flex-1 overflow-y-auto p-6 space-y-6" >
         {/* Status Badge */ }
-        < div className = "flex items-center gap-2" >
-            <span className="text-sm font-medium text-gray-500" >
-                Status: { " " }
+        < div className = "flex items-center justify-between" >
+            <div className="flex items-center gap-2" >
+                <span className="text-sm font-medium text-gray-500" >
+                    Status: { " " }
     </span>
         < span
     className = {`px-3 py-1 rounded-full text-sm font-medium capitalize
@@ -82,10 +91,24 @@ const OrderDetailsModal = ({
                 : "bg-gray-100 text-gray-700"
         }`
 }
-                        >
+                            >
     { order.status }
     </span>
     </div>
+
+{/* Delete Button for Pending Orders */ }
+{
+    order.status === "pending" && (
+        <button
+                                onClick={ handleDelete }
+    className = "flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+        >
+        <Trash2 size={ 16 } />
+                                Delete Order
+        </button>
+                        )
+}
+</div>
 
 {/* Items List */ }
 <div className="space-y-4" >
@@ -122,7 +145,11 @@ const OrderDetailsModal = ({
             </p>
             </div>
             < div className = "text-sm font-medium text-gray-900" >
-                { formatPrice(item.price * item.quantity) }
+            {
+                formatPrice(
+                    item.price * item.quantity
+                                        )
+            }
                 </div>
                 </div>
                             ))}
@@ -145,7 +172,10 @@ const OrderDetailsModal = ({
 { order.customer_phone }
 </p>
     < p >
-    <span className="font-medium" > Address: </span>{" "}
+    <span className="font-medium" >
+        { " "}
+Address: { " " }
+</span>{" "}
 { order.customer_address }
 </p>
     </div>

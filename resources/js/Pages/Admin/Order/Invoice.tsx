@@ -2,6 +2,7 @@ import React from "react";
 import { Head } from "@inertiajs/react";
 import { Order } from "@/types";
 import { format } from "date-fns";
+import { getAssetUrl } from "@/Utils/helpers";
 
 interface Props {
     order: Order;
@@ -83,7 +84,9 @@ export default function Invoice({ order }: Props) {
                                     {item.product?.images &&
                                         item.product.images.length > 0 && (
                                             <img
-                                                src={`/storage/${item.product.images[0]}`}
+                                                src={getAssetUrl(
+                                                    item.product.images[0]
+                                                )}
                                                 alt={item.product.name}
                                                 className="w-12 h-12 object-cover rounded"
                                             />

@@ -13,7 +13,8 @@ import {
     AlertTriangleIcon,
 } from "lucide-react";
 import ImageGallery from "@/Components/Ui/ImageGallery";
-import { formatPrice } from "@/Utils/helpers";
+import { formatPrice, getAssetUrl } from "@/Utils/helpers";
+import { get } from "http";
 
 export default function Show({ product }: ShowPageProps) {
     const profit = product.sale_price - product.purchase_price;
@@ -99,7 +100,7 @@ export default function Show({ product }: ShowPageProps) {
                                         images={product.images.map(
                                             (url, index) => ({
                                                 id: index.toString(),
-                                                url,
+                                                url: getAssetUrl(url),
                                                 alt: `${product.name} image ${
                                                     index + 1
                                                 }`,

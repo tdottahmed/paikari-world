@@ -125,4 +125,34 @@ class CheckoutController extends Controller
 
         return response()->json($orders);
     }
+
+    public function destroy(Order $order)
+    {
+        if ($order->status !== 'pending') {
+            return response()->json(['message' => 'Only pending orders can be deleted.'], 403);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Restore stock
+            foreach ($order->items as $item) {
+                $product = $item->product;
+                if ($product) {
+                    $product->increment('stock', $item->quantity);
+                }
+            }
+
+            // Delete order items and order
+            $order->items()->delete();
+            $order->delete();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Order deleted successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to delete order.'], 500);
+        }
+    }
 }

@@ -5,6 +5,7 @@ import PrimaryButton from "@/Components/Actions/PrimaryButton";
 import { Link, router } from "@inertiajs/react";
 import { Plus, Edit, Trash2, Package } from "lucide-react";
 import { Category } from "@/types";
+import { getAssetUrl } from "@/Utils/helpers";
 
 interface CategoriesIndexProps {
     categories: (Category & { products_count: number })[];
@@ -62,7 +63,7 @@ const Index: React.FC<CategoriesIndexProps> = ({ categories }) => {
                                 <div className="aspect-video bg-[#0E1614] relative">
                                     {category.image ? (
                                         <img
-                                            src={`/storage/${category.image}`}
+                                            src={getAssetUrl(category.image)}
                                             alt={category.title}
                                             className="w-full h-full object-cover"
                                         />

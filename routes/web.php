@@ -32,6 +32,7 @@ Route::get('checkout', [CheckoutController::class, 'index'])->name('checkout.ind
 Route::post('checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('order-success/{order}', [CheckoutController::class, 'success'])->name('order.success');
 Route::post('api/orders/history', [CheckoutController::class, 'getOrders'])->name('api.orders.history');
+Route::delete('api/orders/{order}', [CheckoutController::class, 'destroy'])->name('api.orders.destroy');
 
 require __DIR__ . '/admin.php';
 
