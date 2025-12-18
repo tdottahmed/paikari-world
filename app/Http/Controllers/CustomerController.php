@@ -109,6 +109,8 @@ class CustomerController extends Controller
         }
         if ($request->input('stock_out') === 'true') {
             $query->where('stock', '<=', 0);
+        } else {
+            $query->where('stock', '>', 0);
         }
 
         // Preorder status

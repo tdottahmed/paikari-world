@@ -89,18 +89,18 @@ class ImportProducts extends Command
 
                 // Parse Images JSON: "[\"img1.png\", ...]"
                 $images = is_string($item['images']) ? json_decode($item['images'], true) : $item['images'];
-                
+
                 // Handle Category
                 $categoryId = $item['category_id'];
 
                 if (is_null($categoryId)) {
-                     $uncategorized = \App\Models\Category::firstOrCreate(
+                    $uncategorized = \App\Models\Category::firstOrCreate(
                         ['title' => 'Uncategorized'],
                         ['slug' => 'uncategorized', 'image' => null]
-                     );
-                     $categoryId = $uncategorized->id;
+                    );
+                    $categoryId = $uncategorized->id;
                 }
-                
+
                 $createdAt = isset($item['created_at']) ? \Carbon\Carbon::createFromTimestamp($item['created_at'] / 1000) : now();
 
                 $slug = \Illuminate\Support\Str::slug($item['title'] . '-' . $item['id']);
@@ -119,12 +119,11 @@ class ImportProducts extends Command
                         'uan_price' => $item['yuan'] ?? 0,
                         'stock' => $item['stock'] ?? 0,
                         'images' => $images,
-                        'is_preorder' => ($item['stock'] <= 0),
+                        'is_preorder' => isset($item['is_preorder']) ? (bool)$item['is_preorder'] : false,
                         'created_at' => $createdAt,
                         'updated_at' => $createdAt,
                     ]
                 );
-
             } catch (\Exception $e) {
                 $this->error("Error importing product ID {$item['id']}: " . $e->getMessage());
             }

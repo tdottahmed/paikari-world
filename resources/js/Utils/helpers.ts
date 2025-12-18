@@ -397,9 +397,9 @@ export const getAssetUrl = (path: string | null | undefined): string => {
     }
 
     // If it's just a filename (no slashes), assuming it's from the CDN source
-    if (!path.includes("/")) {
-        return `https://cdn.jsdelivr.net/gh/legend-sabbir/paikari-world@latest/${path}`;
-    }
+    // if (!path.includes("/")) {
+    //     return `https://cdn.jsdelivr.net/gh/legend-sabbir/paikari-world@latest/${path}`;
+    // }
 
     // Otherwise treat as local storage path
     return storagePath(path);
