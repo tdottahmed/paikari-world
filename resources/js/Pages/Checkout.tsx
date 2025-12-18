@@ -54,16 +54,20 @@ export default function Checkout({
         : [];
 
     const getDiscount = () => {
-        const totalQty = cartItems.reduce(
-            (acc, item) => acc + item.quantity,
-            0
-        );
-        const applicableRule = discountRules
-            .sort((a: any, b: any) => parseInt(b.qty) - parseInt(a.qty))
-            .find((rule: any) => totalQty >= parseInt(rule.qty));
+        let totalDiscount = 0;
 
-        if (!applicableRule) return 0;
-        return totalQty * parseFloat(applicableRule.discount);
+        cartItems.forEach((item) => {
+            const applicableRule = discountRules
+                .sort((a: any, b: any) => parseInt(b.qty) - parseInt(a.qty))
+                .find((rule: any) => item.quantity >= parseInt(rule.qty));
+
+            if (applicableRule) {
+                totalDiscount +=
+                    item.quantity * parseFloat(applicableRule.discount);
+            }
+        });
+
+        return totalDiscount;
     };
 
     const discountAmount = getDiscount();
@@ -116,59 +120,59 @@ export default function Checkout({
 
     return (
         <CustomerLayout>
-            <Head title="Checkout" />
-            <div className="min-h-screen bg-[#F8F9FA] py-8 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center justify-between mb-4 md:mb-8">
-                        <Link
+        <Head title= "Checkout" />
+        <div className="min-h-screen bg-[#F8F9FA] py-8 px-4 sm:px-6 lg:px-8" >
+            <div className="max-w-7xl mx-auto" >
+                <div className="flex items-center justify-between mb-4 md:mb-8" >
+                    <Link
                             href="/"
-                            className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-                        >
-                            <ArrowLeft className="w-6 h-6 text-gray-700" />
-                        </Link>
-                        <div className="text-xl font-bold text-[#1A1A1A]">
-                            Paikari World
-                        </div>
+    className = "p-2 hover:bg-gray-200 rounded-full transition-colors"
+        >
+        <ArrowLeft className="w-6 h-6 text-gray-700" />
+            </Link>
+            < div className = "text-xl font-bold text-[#1A1A1A]" >
+                Paikari World
+                    </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                        {/* Left Column: Form & Delivery */}
-                        <div className="lg:col-span-7 space-y-6">
+                    < div className = "grid grid-cols-1 lg:grid-cols-12 gap-8" >
+                        {/* Left Column: Form & Delivery */ }
+                        < div className = "lg:col-span-7 space-y-6" >
                             <CustomerForm
-                                data={data}
-                                setData={setData}
-                                errors={errors}
-                                handleSubmit={handleSubmit}
-                            />
+                                data={ data }
+    setData = { setData }
+    errors = { errors }
+    handleSubmit = { handleSubmit }
+        />
 
-                            <DeliveryOptions
-                                deliveryCharges={deliveryCharges}
-                                selectedId={data.delivery_charge_id}
-                                onChange={handleDeliveryChange}
-                                error={errors.delivery_charge_id}
-                            />
-                        </div>
+        <DeliveryOptions
+                                deliveryCharges={ deliveryCharges }
+    selectedId = { data.delivery_charge_id }
+    onChange = { handleDeliveryChange }
+    error = { errors.delivery_charge_id }
+        />
+        </div>
 
-                        {/* Right Column: Order Summary */}
-                        <div className="lg:col-span-5">
-                            <OrderSummary
-                                cartItems={cartItems}
-                                cartTotal={cartTotal}
-                                deliveryCost={
-                                    selectedDelivery
-                                        ? Number(selectedDelivery.cost)
+    {/* Right Column: Order Summary */ }
+    <div className="lg:col-span-5" >
+        <OrderSummary
+                                cartItems={ cartItems }
+    cartTotal = { cartTotal }
+    deliveryCost = {
+        selectedDelivery
+        ? Number(selectedDelivery.cost)
                                         : 0
                                 }
-                                discountAmount={discountAmount}
-                                total={total}
-                                processing={processing}
-                                onRemoveItem={handleRemoveItem}
-                                onQuantityChange={handleQuantityChange}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+    discountAmount = { discountAmount }
+    total = { total }
+    processing = { processing }
+    onRemoveItem = { handleRemoveItem }
+    onQuantityChange = { handleQuantityChange }
+        />
+        </div>
+        </div>
+        </div>
+        </div>
         </CustomerLayout>
     );
 }

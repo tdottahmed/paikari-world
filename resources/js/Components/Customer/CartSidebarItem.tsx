@@ -71,7 +71,7 @@ const CartSidebarItem: React.FC<CartSidebarItemProps> = ({ item }) => {
                         onDecrease={() => handleQuantityChange(quantity - 1)}
                         onIncrease={() => handleQuantityChange(quantity + 1)}
                         min={1}
-                        max={item.stock}
+                        max={item.is_preorder ? undefined : item.stock}
                         size="sm"
                     />
 

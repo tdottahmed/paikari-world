@@ -27,19 +27,22 @@ const OrderHistoryList = () => {
         const fetchOrders = async () => {
             try {
                 // Get order IDs from cookie
-                const cookies = document.cookie.split(";");
-                const guestOrdersCookie = cookies.find((c) =>
-                    c.trim().startsWith("guest_orders=")
-                );
+                const getCookie = (name: string) => {
+                    const value = `; ${document.cookie}`;
+                    const parts = value.split(`; ${name}=`);
+                    if (parts.length === 2)
+                        return parts.pop()?.split(";").shift();
+                    return null;
+                };
 
-                if (!guestOrdersCookie) {
+                const cookieValue = getCookie("guest_orders");
+
+                if (!cookieValue) {
                     setLoading(false);
                     return;
                 }
 
-                const orderIds = JSON.parse(
-                    decodeURIComponent(guestOrdersCookie.split("=")[1])
-                );
+                const orderIds = JSON.parse(decodeURIComponent(cookieValue));
 
                 if (orderIds && orderIds.length > 0) {
                     const response = await axios.post(
@@ -49,9 +52,18 @@ const OrderHistoryList = () => {
                         }
                     );
                     setOrders(response.data);
+
+                    // Self-healing: Update cookie to only include existing orders
+                    const validOrderIds = response.data.map((o: Order) => o.id);
+                    document.cookie = `guest_orders=${encodeURIComponent(
+                        JSON.stringify(validOrderIds)
+                    )}; path=/; max-age=31536000`;
                 }
             } catch (error) {
                 console.error("Failed to fetch order history:", error);
+
+                // If 404 or 422, potentially clear cookie or specific bad IDs? 
+                // For now, just logging is safer than nuking data.
             } finally {
                 setLoading(false);
             }

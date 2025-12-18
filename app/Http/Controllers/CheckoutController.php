@@ -52,10 +52,13 @@ class CheckoutController extends Controller
                 return $b['qty'] - $a['qty'];
             });
 
-            foreach ($discountRules as $rule) {
-                if ($totalQty >= (int)$rule['qty']) {
-                    $discountAmount = $totalQty * (float)$rule['discount'];
-                    break;
+            foreach ($cart as $item) {
+                $itemQty = $item['quantity'];
+                foreach ($discountRules as $rule) {
+                    if ($itemQty >= (int)$rule['qty']) {
+                        $discountAmount += $itemQty * (float)$rule['discount'];
+                        break;
+                    }
                 }
             }
         }
@@ -115,7 +118,7 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'order_ids' => 'required|array',
-            'order_ids.*' => 'integer|exists:orders,id',
+            'order_ids.*' => 'integer',
         ]);
 
         $orders = Order::whereIn('id', $request->order_ids)

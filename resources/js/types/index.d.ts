@@ -80,6 +80,7 @@ export interface CartItem {
     quantity: number;
     stock: number;
     image: string | null;
+    is_preorder?: boolean;
 }
 
 export interface DeliveryCharge {

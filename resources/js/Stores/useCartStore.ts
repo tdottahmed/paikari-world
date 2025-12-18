@@ -38,6 +38,7 @@ export const useCartStore = create<CartState>()(
                                 stock: product.stock,
                                 quantity: newQuantity,
                                 image: product.images?.[0] || null,
+                                is_preorder: product.is_preorder,
                             },
                         },
                         isOpen: window.innerWidth >= 768,
