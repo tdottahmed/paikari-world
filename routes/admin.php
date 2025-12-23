@@ -20,7 +20,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
   Route::post('product/store', [ProductController::class, 'store'])->name('product.store');
   Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('product.edit');
   Route::post('products/{product}/update', [ProductController::class, 'update'])->name('product.update');
-  Route::delete('products/delete/{product}', [ProductController::class, 'destroy'])->name('product.delete');
+  Route::delete('products/delete/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
   Route::get('products/show/{product}', [ProductController::class, 'show'])->name('product.show');
 
   Route::resource('categories', CategoryController::class);

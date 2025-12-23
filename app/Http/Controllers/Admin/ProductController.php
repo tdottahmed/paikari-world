@@ -270,4 +270,18 @@ class ProductController extends Controller
         }
         return $qtyPrices;
     }
+
+    public function destroy(Product $product)
+    {
+        // Check if product is in any order
+        if ($product->orderItems()->exists()) {
+            return back()->with('error', 'Cannot delete product because it is part of existing orders.');
+        }
+
+        // Delete variations (if not handled by DB cascade, though they are usually)
+        $product->product_variations()->delete();
+
+        $product->delete();
+        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully!');
+    }
 }
