@@ -75,7 +75,7 @@ class DashboardController extends Controller
         $extraCosts = $orders->sum('delivery_cost');
         $totalOrders = $orders->count();
         $completedOrdersCount = $completedOrders->count();
-        $canceledOrders = $orders->where('status', 'canceled')->count();
+        $canceledOrders = $orders->where('status', 'cancelled')->count();
         
         $totalItems = $orders->sum(function ($order) {
             return $order->items->count();

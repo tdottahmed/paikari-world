@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class OrderController extends Controller
@@ -38,7 +39,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,unreachable,preparing,shipping,completed,canceled,returned',
+            'status' => 'required|in:pending,unreachable,preparing,shipping,completed,cancelled,returned',
             'create_consignment' => 'nullable|boolean',
             'name' => 'required_if:create_consignment,true|string|max:255',
             'address' => 'required_if:create_consignment,true|string|max:255',
@@ -67,25 +68,45 @@ class OrderController extends Controller
                 $response = \SteadFast\SteadFastCourierLaravelPackage\Facades\SteadfastCourier::placeOrder($courierData);
 
                 if (isset($response['status']) && $response['status'] == 200) {
-                     // Consignment created successfully
-                     // Maybe save consignment_id or tracking_code if available in response
-                     // $response['consignment']['consignment_id']
+                    // Consignment created successfully
+                    // Maybe save consignment_id or tracking_code if available in response
+                    // $response['consignment']['consignment_id']
                 } else {
-                    // Handle error
-                    // For now, we just log or flash error?
-                    // But we proceed to update status as per user request flow, or should we stop?
-                    // Let's assume we proceed but flash a warning if it failed.
-                    // Actually, if it fails, we probably shouldn't set status to shipping.
-                    
-                    if (isset($response['message'])) {
-                         return redirect()->back()->with('error', 'Steadfast Error: ' . json_encode($response['message']));
-                    }
-                     return redirect()->back()->with('error', 'Failed to create consignment with Steadfast.');
-                }
 
+                    if (isset($response['message'])) {
+                        return redirect()->back()->with('error', 'Steadfast Error: ' . json_encode($response['message']));
+                    }
+                    return redirect()->back()->with('error', 'Failed to create consignment with Steadfast.');
+                }
             } catch (\Exception $e) {
                 return redirect()->back()->with('error', 'Steadfast Exception: ' . $e->getMessage());
             }
+        }
+
+        // Handle order cancellation - restore stock
+        if ($request->status === 'cancelled' && $order->status !== 'cancelled') {
+            DB::transaction(function () use ($order) {
+                $order->load('items.product.product_variations');
+
+                foreach ($order->items as $item) {
+                    $product = $item->product;
+
+                    if ($product) {
+                        // Restore main product stock
+                        $product->increment('stock', $item->quantity);
+
+                        // Restore variation stock if variations exist
+                        if ($item->variation_ids && is_array($item->variation_ids)) {
+                            foreach ($item->variation_ids as $variationId) {
+                                $variation = \App\Models\ProductVariation::find($variationId);
+                                if ($variation && $variation->stock !== null) {
+                                    $variation->increment('stock', $item->quantity);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         $order->update(['status' => $request->status]);
