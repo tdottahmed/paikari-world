@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductVariation;
@@ -275,10 +276,14 @@ class ProductController extends Controller
     {
         // Check if product is in any order
         if ($product->orderItems()->exists()) {
-            return back()->with('error', 'Cannot delete product because it is part of existing orders.');
+            // Get unique orders that contain this product through OrderItems
+            $orderIds = $product->orderItems()->pluck('order_id')->unique();
+            $orders = Order::whereIn('id', $orderIds)->get();
+            foreach ($orders as $order) {
+                $order->delete();
+            }
         }
 
-        // Delete variations (if not handled by DB cascade, though they are usually)
         $product->product_variations()->delete();
 
         $product->delete();
