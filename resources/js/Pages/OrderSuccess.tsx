@@ -4,7 +4,7 @@ import { Order } from "@/types";
 import { useEffect } from "react";
 import { useCartStore } from "@/Stores/useCartStore";
 import { CheckCircle, ArrowRight, ShoppingBag, Receipt } from "lucide-react";
-import { formatPrice } from "@/Utils/helpers";
+import { formatPrice, addGuestOrder } from "@/Utils/helpers";
 
 interface OrderSuccessProps {
     order: Order;
@@ -14,46 +14,9 @@ export default function OrderSuccess({ order }: OrderSuccessProps) {
     const { clearCart } = useCartStore();
 
     useEffect(() => {
-        const saveOrderToHistory = () => {
-            const getCookie = (name: string) => {
-                const value = `; ${document.cookie}`;
-                const parts = value.split(`; ${name}=`);
-                if (parts.length === 2) return parts.pop()?.split(";").shift();
-                return null;
-            };
-
-            let guestOrders: number[] = [];
-            const cookieName = "guest_orders";
-            const cookieValue = getCookie(cookieName);
-
-            if (cookieValue) {
-                try {
-                    guestOrders = JSON.parse(decodeURIComponent(cookieValue));
-                } catch (e) {
-                    console.error("Failed to parse guest orders cookie", e);
-                    guestOrders = [];
-                }
-            }
-
-            if (!guestOrders.includes(order.id)) {
-                guestOrders.unshift(order.id);
-                if (guestOrders.length > 50)
-                    guestOrders = guestOrders.slice(0, 50);
-
-                const d = new Date();
-                d.setTime(d.getTime() + 365 * 24 * 60 * 60 * 1000);
-                const expires = "expires=" + d.toUTCString();
-                document.cookie =
-                    cookieName +
-                    "=" +
-                    encodeURIComponent(JSON.stringify(guestOrders)) +
-                    ";" +
-                    expires +
-                    ";path=/";
-            }
-        };
-
-        saveOrderToHistory();
+        // Save order to history with reliable cookie management
+        // This will add the order and refresh cookie expiration to 2 years
+        addGuestOrder(order.id);
         clearCart();
     }, [order.id]);
 

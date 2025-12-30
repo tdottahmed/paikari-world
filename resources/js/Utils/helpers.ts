@@ -405,6 +405,149 @@ export const getAssetUrl = (path: string | null | undefined): string => {
     return storagePath(path);
 };
 
+/**
+ * Cookie utility functions for reliable cookie management
+ */
+
+/**
+ * Get a cookie value by name
+ * @param name - Cookie name
+ * @returns Cookie value or null if not found
+ */
+export const getCookie = (name: string): string | null => {
+    if (typeof document === "undefined") return null;
+    
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return parts.pop()?.split(";").shift() || null;
+    }
+    return null;
+};
+
+/**
+ * Set a cookie with reliable expiration
+ * @param name - Cookie name
+ * @param value - Cookie value
+ * @param maxAgeDays - Maximum age in days (default: 730 days / 2 years)
+ * @param options - Additional cookie options
+ */
+export const setCookie = (
+    name: string,
+    value: string,
+    maxAgeDays: number = 730,
+    options: {
+        path?: string;
+        sameSite?: "Strict" | "Lax" | "None";
+        secure?: boolean;
+    } = {}
+): void => {
+    if (typeof document === "undefined") return;
+
+    const {
+        path = "/",
+        sameSite = "Lax",
+        secure = false,
+    } = options;
+
+    // Convert days to seconds for max-age
+    const maxAgeSeconds = maxAgeDays * 24 * 60 * 60;
+
+    // Build cookie string with max-age (more reliable than expires)
+    let cookieString = `${name}=${encodeURIComponent(value)}; path=${path}; max-age=${maxAgeSeconds}; SameSite=${sameSite}`;
+
+    // Add secure flag if needed (required for SameSite=None)
+    if (secure || sameSite === "None") {
+        cookieString += "; Secure";
+    }
+
+    document.cookie = cookieString;
+};
+
+/**
+ * Delete a cookie
+ * @param name - Cookie name
+ * @param path - Cookie path (default: /)
+ */
+export const deleteCookie = (name: string, path: string = "/"): void => {
+    if (typeof document === "undefined") return;
+    document.cookie = `${name}=; path=${path}; max-age=0; SameSite=Lax`;
+};
+
+/**
+ * Get and parse guest orders from cookie
+ * @returns Array of order IDs or empty array
+ */
+export const getGuestOrders = (): number[] => {
+    const cookieValue = getCookie("guest_orders");
+    if (!cookieValue) return [];
+
+    try {
+        const parsed = JSON.parse(decodeURIComponent(cookieValue));
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        console.error("Failed to parse guest orders cookie", e);
+        return [];
+    }
+};
+
+/**
+ * Set guest orders cookie with automatic expiration refresh
+ * @param orderIds - Array of order IDs
+ * @param maxAgeDays - Maximum age in days (default: 730 days / 2 years)
+ */
+export const setGuestOrders = (
+    orderIds: number[],
+    maxAgeDays: number = 730
+): void => {
+    if (!Array.isArray(orderIds) || orderIds.length === 0) {
+        // If empty, don't set cookie (or delete it)
+        deleteCookie("guest_orders");
+        return;
+    }
+
+    // Limit to 50 orders to prevent cookie size issues
+    const limitedOrderIds = orderIds.slice(0, 50);
+    setCookie("guest_orders", JSON.stringify(limitedOrderIds), maxAgeDays);
+};
+
+/**
+ * Add an order ID to guest orders cookie (with expiration refresh)
+ * @param orderId - Order ID to add
+ * @param maxAgeDays - Maximum age in days (default: 730 days / 2 years)
+ */
+export const addGuestOrder = (
+    orderId: number,
+    maxAgeDays: number = 730
+): void => {
+    const existingOrders = getGuestOrders();
+    
+    // Don't add if already exists
+    if (existingOrders.includes(orderId)) {
+        // Still refresh expiration even if order already exists
+        setGuestOrders(existingOrders, maxAgeDays);
+        return;
+    }
+
+    // Add to beginning of array
+    const updatedOrders = [orderId, ...existingOrders];
+    setGuestOrders(updatedOrders, maxAgeDays);
+};
+
+/**
+ * Remove an order ID from guest orders cookie (with expiration refresh)
+ * @param orderId - Order ID to remove
+ * @param maxAgeDays - Maximum age in days (default: 730 days / 2 years)
+ */
+export const removeGuestOrder = (
+    orderId: number,
+    maxAgeDays: number = 730
+): void => {
+    const existingOrders = getGuestOrders();
+    const updatedOrders = existingOrders.filter((id) => id !== orderId);
+    setGuestOrders(updatedOrders, maxAgeDays);
+};
+
 // Export all helpers
 export default {
     formatCurrency,
@@ -427,4 +570,11 @@ export default {
     isNewProduct,
     calculateProfit,
     getAssetUrl,
+    getCookie,
+    setCookie,
+    deleteCookie,
+    getGuestOrders,
+    setGuestOrders,
+    addGuestOrder,
+    removeGuestOrder,
 };
