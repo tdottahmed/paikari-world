@@ -35,7 +35,9 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
             // Group by product_attribute_id
             const attrId = variation.product_attribute_id;
             const attrName =
-                variation.product_attribute?.name || variation.name || "Option";
+                variation.product_attribute?.name ||
+                variation.attribute?.name ||
+                "Option";
 
             if (attrId) {
                 if (!groups[attrId]) {
@@ -159,7 +161,9 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                         {product.images?.[0] && (
                                             <div className="w-20 h-20 rounded-lg border border-gray-200 overflow-hidden flex-shrink-0">
                                                 <img
-                                                    src={getAssetUrl(product.images[0])}
+                                                    src={getAssetUrl(
+                                                        product.images[0]
+                                                    )}
                                                     alt={product.name}
                                                     className="w-full h-full object-cover"
                                                 />
@@ -228,7 +232,7 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                     </div>
 
                                     {/* Stock Info */}
-                                    {isAllSelected && (
+                                    {/* {isAllSelected && (
                                         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                                             <div className="flex items-center justify-between text-sm">
                                                 <span className="text-gray-600">
@@ -245,7 +249,7 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                                 </span>
                                             </div>
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {/* Quantity */}
                                     <div className="mt-6 flex items-center justify-between">

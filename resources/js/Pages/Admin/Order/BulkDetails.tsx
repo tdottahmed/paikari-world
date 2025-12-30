@@ -322,6 +322,24 @@ title = "View Details"
                             "Unknown Product"
                     }
                     </div>
+                    {item.variation_ids && item.variation_ids.length > 0 && item.product?.product_variations && (
+                        <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                            {item.variation_ids.map((variationId) => {
+                                const variation = item.product?.product_variations?.find(
+                                    (v) => v.id === variationId
+                                );
+                                if (!variation) return null;
+                                return (
+                                    <div key={variationId}>
+                                        <span className="font-medium text-gray-400">
+                                            {variation.product_attribute?.name || "Option"}:
+                                        </span>{" "}
+                                        <span>{variation.value}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                     < div className = "text-xs text-gray-500 mt-0.5" >
                     Qty: { " "}
                                                                     {

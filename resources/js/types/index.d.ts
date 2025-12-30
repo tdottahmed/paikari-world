@@ -98,6 +98,7 @@ export interface OrderItem {
     product?: Product;
     quantity: number;
     price: number;
+    variation_ids?: number[];
 }
 
 export interface Order {
@@ -376,11 +377,11 @@ export interface SelectOption {
 // Bulk Action types
 export interface BulkAction {
     type:
-    | "delete"
-    | "activate"
-    | "deactivate"
-    | "update_category"
-    | "update_supplier";
+        | "delete"
+        | "activate"
+        | "deactivate"
+        | "update_category"
+        | "update_supplier";
     ids: number[];
     data?: any;
 }

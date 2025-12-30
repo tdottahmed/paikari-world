@@ -30,6 +30,7 @@ class CheckoutController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric|min:0',
+            'items.*.variations' => 'nullable|array',
         ]);
 
         $cart = $request->items;
@@ -81,7 +82,7 @@ class CheckoutController extends Controller
 
             foreach ($cart as $item) {
                 $product = \App\Models\Product::lockForUpdate()->find($item['product_id']);
-                
+
                 if (!$product) {
                     throw new \Exception("Product not found");
                 }
@@ -90,6 +91,33 @@ class CheckoutController extends Controller
                     throw new \Exception("Insufficient stock for product: " . $product->name);
                 }
 
+                // Check and decrement variation stock if variations exist
+                $variationIds = [];
+                if (!empty($item['variations']) && is_array($item['variations'])) {
+                    foreach ($item['variations'] as $variationData) {
+                        $variation = \App\Models\ProductVariation::lockForUpdate()
+                            ->where('id', $variationData['id'])
+                            ->where('product_id', $product->id)
+                            ->first();
+
+                        if (!$variation) {
+                            throw new \Exception("Variation not found for product: " . $product->name);
+                        }
+
+                        // Check variation stock
+                        if ($variation->stock !== null && $variation->stock < $item['quantity']) {
+                            throw new \Exception("Insufficient stock for variation: " . $variation->value . " of product: " . $product->name);
+                        }
+
+                        // Decrement variation stock
+                        if ($variation->stock !== null) {
+                            $variation->decrement('stock', $item['quantity']);
+                        }
+
+                        $variationIds[] = $variation->id;
+                    }
+                }
+                // Decrement product stock
                 $product->decrement('stock', $item['quantity']);
 
                 OrderItem::create([
@@ -97,6 +125,7 @@ class CheckoutController extends Controller
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
+                    'variation_ids' => !empty($variationIds) ? $variationIds : null,
                 ]);
             }
 
@@ -122,7 +151,10 @@ class CheckoutController extends Controller
         ]);
 
         $orders = Order::whereIn('id', $request->order_ids)
-            ->with('items.product') // Eager load items and products
+            ->with([
+                'items.product',
+                'items.product.product_variations.product_attribute'
+            ]) // Eager load items, products, and variations
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -143,6 +175,16 @@ class CheckoutController extends Controller
                 $product = $item->product;
                 if ($product) {
                     $product->increment('stock', $item->quantity);
+                }
+
+                // Restore variation stock if variations exist
+                if (!empty($item->variation_ids) && is_array($item->variation_ids)) {
+                    foreach ($item->variation_ids as $variationId) {
+                        $variation = \App\Models\ProductVariation::find($variationId);
+                        if ($variation && $variation->stock !== null) {
+                            $variation->increment('stock', $item->quantity);
+                        }
+                    }
                 }
             }
 

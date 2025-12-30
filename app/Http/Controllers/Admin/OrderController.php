@@ -116,7 +116,11 @@ class OrderController extends Controller
 
     public function invoice(Order $order)
     {
-        $order->load(['items.product', 'deliveryCharge']);
+        $order->load([
+            'items.product',
+            'items.product.product_variations.product_attribute',
+            'deliveryCharge'
+        ]);
         // For now, we'll just return the order data to a view or download a PDF.
         // Let's assume we render a simple invoice page for now.
         return Inertia::render('Admin/Order/Invoice', [
@@ -126,7 +130,11 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['items.product', 'deliveryCharge']);
+        $order->load([
+            'items.product',
+            'items.product.product_variations.product_attribute',
+            'deliveryCharge'
+        ]);
 
         return Inertia::render('Admin/Order/Show', [
             'order' => $order,
@@ -136,7 +144,11 @@ class OrderController extends Controller
     public function bulkInvoice(Request $request)
     {
         $ids = explode(',', $request->ids);
-        $orders = Order::whereIn('id', $ids)->with(['items.product', 'deliveryCharge'])->get();
+        $orders = Order::whereIn('id', $ids)->with([
+            'items.product',
+            'items.product.product_variations.product_attribute',
+            'deliveryCharge'
+        ])->get();
 
         return Inertia::render('Admin/Order/Print', [
             'orders' => $orders,
@@ -146,7 +158,11 @@ class OrderController extends Controller
     public function bulkDetails(Request $request)
     {
         $ids = explode(',', $request->ids);
-        $orders = Order::whereIn('id', $ids)->with(['items.product', 'deliveryCharge'])->get();
+        $orders = Order::whereIn('id', $ids)->with([
+            'items.product',
+            'items.product.product_variations.product_attribute',
+            'deliveryCharge'
+        ])->get();
 
         return Inertia::render('Admin/Order/BulkDetails', [
             'orders' => $orders,

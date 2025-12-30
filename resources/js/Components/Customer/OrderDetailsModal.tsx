@@ -7,9 +7,17 @@ interface OrderItem {
     product: {
         name: string;
         images: string[];
+        product_variations?: Array<{
+            id: number;
+            value: string;
+            product_attribute?: {
+                name: string;
+            };
+        }>;
     };
     quantity: number;
     price: number;
+    variation_ids?: number[];
 }
 
 interface Order {
@@ -138,6 +146,24 @@ const OrderDetailsModal = ({
                 <h5 className="text-sm font-medium text-gray-900 truncate" >
                 { item.product.name }
                 </h5>
+                {item.variation_ids && item.variation_ids.length > 0 && item.product.product_variations && (
+                    <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                        {item.variation_ids.map((variationId) => {
+                            const variation = item.product.product_variations?.find(
+                                (v) => v.id === variationId
+                            );
+                            if (!variation) return null;
+                            return (
+                                <div key={variationId}>
+                                    <span className="font-medium">
+                                        {variation.product_attribute?.name || "Option"}:
+                                    </span>{" "}
+                                    <span>{variation.value}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             < p className = "text-sm text-gray-500" >
             Qty: { item.quantity } ×{ " "}
                                             { formatPrice(item.price)
