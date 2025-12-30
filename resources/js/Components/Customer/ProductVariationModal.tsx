@@ -1,8 +1,8 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useMemo } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Product, ProductVariation } from "@/types";
 import { X, Check } from "lucide-react";
-import { formatPrice } from "@/Utils/helpers";
+import { formatPrice, getAssetUrl } from "@/Utils/helpers";
 
 interface ProductVariationModalProps {
     isOpen: boolean;
@@ -75,15 +75,41 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
             (attrId) => selectedVariations[Number(attrId)]
         );
 
+    // Calculate available stock from selected variations
+    const availableStock = useMemo(() => {
+        if (!isAllSelected || Object.keys(selectedVariations).length === 0) {
+            return product.stock;
+        }
+
+        const selectedVariationList = Object.values(selectedVariations);
+        const variationStocks = selectedVariationList
+            .map((v) => v.stock ?? product.stock)
+            .filter((s) => s !== undefined && s !== null && !isNaN(s));
+
+        if (variationStocks.length === 0) {
+            return product.stock;
+        }
+
+        // Return minimum stock from all selected variations
+        return Math.min(...variationStocks);
+    }, [selectedVariations, isAllSelected, product.stock]);
+
+    const handleQuantityChange = (newQuantity: number) => {
+        const maxQty = product.is_preorder ? undefined : availableStock;
+        if (maxQty !== undefined && newQuantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (newQuantity < 1) {
+            setQuantity(1);
+        } else {
+            setQuantity(newQuantity);
+        }
+    };
+
     const handleAddToCart = () => {
         if (!isAllSelected) return;
         onAddToCart(Object.values(selectedVariations), quantity);
         onClose();
     };
-
-    // Calculate dynamic price/stock if needed (simple logic for now)
-    // If variations have specific prices, we might want to show that.
-    // For now, using base product price.
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
@@ -133,7 +159,7 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                         {product.images?.[0] && (
                                             <div className="w-20 h-20 rounded-lg border border-gray-200 overflow-hidden flex-shrink-0">
                                                 <img
-                                                    src={`/storage/${product.images[0]}`} // Assuming storage path, replace with helper if needed
+                                                    src={getAssetUrl(product.images[0])}
                                                     alt={product.name}
                                                     className="w-full h-full object-cover"
                                                 />
@@ -201,6 +227,26 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                         ))}
                                     </div>
 
+                                    {/* Stock Info */}
+                                    {isAllSelected && (
+                                        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-gray-600">
+                                                    Available Stock:
+                                                </span>
+                                                <span
+                                                    className={`font-semibold ${
+                                                        availableStock > 0
+                                                            ? "text-green-600"
+                                                            : "text-red-600"
+                                                    }`}
+                                                >
+                                                    {availableStock}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     {/* Quantity */}
                                     <div className="mt-6 flex items-center justify-between">
                                         <span className="text-sm font-medium text-gray-700">
@@ -210,14 +256,16 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                         <div className="flex items-center border border-gray-300 rounded-lg">
                                             <button
                                                 onClick={() =>
-                                                    setQuantity(
-                                                        Math.max(
-                                                            1,
-                                                            quantity - 1
-                                                        )
+                                                    handleQuantityChange(
+                                                        quantity - 1
                                                     )
                                                 }
-                                                className="px-3 py-1 hover:bg-gray-50 text-gray-600"
+                                                disabled={
+                                                    quantity <= 1 ||
+                                                    (!product.is_preorder &&
+                                                        availableStock === 0)
+                                                }
+                                                className="px-3 py-1 hover:bg-gray-50 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 -
                                             </button>
@@ -226,9 +274,15 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                             </span>
                                             <button
                                                 onClick={() =>
-                                                    setQuantity(quantity + 1)
+                                                    handleQuantityChange(
+                                                        quantity + 1
+                                                    )
                                                 }
-                                                className="px-3 py-1 hover:bg-gray-50 text-gray-600"
+                                                disabled={
+                                                    !product.is_preorder &&
+                                                    quantity >= availableStock
+                                                }
+                                                className="px-3 py-1 hover:bg-gray-50 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 +
                                             </button>
@@ -240,14 +294,23 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                     <button
                                         type="button"
                                         className={`w-full inline-flex justify-center rounded-lg border border-transparent px-4 py-3 text-sm font-medium text-white shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
-                                            isAllSelected
+                                            isAllSelected &&
+                                            (product.is_preorder ||
+                                                availableStock > 0)
                                                 ? "bg-indigo-600 hover:bg-indigo-700"
                                                 : "bg-gray-300 cursor-not-allowed"
                                         }`}
                                         onClick={handleAddToCart}
-                                        disabled={!isAllSelected}
+                                        disabled={
+                                            !isAllSelected ||
+                                            (!product.is_preorder &&
+                                                availableStock === 0)
+                                        }
                                     >
-                                        Add to Cart
+                                        {!product.is_preorder &&
+                                        availableStock === 0
+                                            ? "Out of Stock"
+                                            : "Add to Cart"}
                                     </button>
                                 </div>
                             </Dialog.Panel>

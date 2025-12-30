@@ -117,7 +117,7 @@ export default function ImagesVariations({
                                         <Trash2Icon size={18} />
                                     </button>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     <div>
                                         <InputLabel
                                             htmlFor={`variation-attribute-${variation.id}`}
@@ -160,6 +160,28 @@ export default function ImagesVariations({
                                                 )
                                             }
                                             placeholder="e.g., Red, Large"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <InputLabel
+                                            htmlFor={`variation-stock-${variation.id}`}
+                                            value="Stock Available"
+                                            required
+                                        />
+                                        <TextInput
+                                            id={`variation-stock-${variation.id}`}
+                                            name={`variations[${index}][stock]`}
+                                            type="number"
+                                            value={variation.stock || ""}
+                                            onChange={(e) =>
+                                                updateVariation(
+                                                    variation.id,
+                                                    "stock",
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="e.g., 100"
                                             required
                                         />
                                     </div>

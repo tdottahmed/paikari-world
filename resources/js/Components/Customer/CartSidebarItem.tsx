@@ -49,10 +49,25 @@ const CartSidebarItem: React.FC<CartSidebarItemProps> = ({ item }) => {
 
             <div className="flex-1">
                 <div className="flex items-start justify-between">
-                    <div>
+                    <div className="flex-1 min-w-0">
                         <div className="font-medium text-gray-900">
                             {item.name}
                         </div>
+                        {item.variations && item.variations.length > 0 && (
+                            <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                                {item.variations.map((variation, index) => (
+                                    <div key={variation.id || index}>
+                                        <span className="font-medium">
+                                            {variation.product_attribute?.name ||
+                                                variation.attribute?.name ||
+                                                "Option"}
+                                            :
+                                        </span>{" "}
+                                        <span>{variation.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                         <p className="text-xs text-gray-500 mt-0.5">
                             {formatPrice(item.price)} / unit
                         </p>

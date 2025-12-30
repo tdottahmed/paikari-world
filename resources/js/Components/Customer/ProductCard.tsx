@@ -7,6 +7,7 @@ import Image from "../Ui/Image";
 import { useCartStore } from "@/Stores/useCartStore";
 import { useDebounce } from "@/Hooks/useDebounce";
 import QuantitySelector from "../Ui/QuantitySelector";
+import ProductVariationModal from "./ProductVariationModal";
 
 interface ProductCardProps {
     product: Product;
@@ -16,7 +17,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const { cart, addToCart, removeFromCart, updateQuantity } = useCartStore();
     const cartItem = cart[String(product.id)];
     const isInCart = !!cartItem;
+    const hasVariations =
+        product.product_variations &&
+        product.product_variations.length > 0;
     const [quantity, setQuantity] = React.useState(cartItem?.quantity || 0);
+    const [showVariationModal, setShowVariationModal] = React.useState(false);
     const debouncedQuantity = useDebounce(quantity, 300);
 
     React.useEffect(() => {
@@ -34,7 +39,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }, [debouncedQuantity, updateQuantity, product.id]);
 
     const handleAddToCart = () => {
-        addToCart(product, 1);
+        if (hasVariations) {
+            setShowVariationModal(true);
+        } else {
+            addToCart(product, 1);
+        }
+    };
+
+    const handleVariationAddToCart = (
+        variations: any[],
+        quantity: number
+    ) => {
+        addToCart(product, quantity, variations);
     };
 
     const handleUpdateQuantity = (newQuantity: number) => {
@@ -160,6 +176,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     )}
                 </div>
             </div>
+
+            {/* Variation Modal */}
+            {hasVariations && (
+                <ProductVariationModal
+                    isOpen={showVariationModal}
+                    onClose={() => setShowVariationModal(false)}
+                    product={product}
+                    onAddToCart={handleVariationAddToCart}
+                />
+            )}
         </div>
     );
 };

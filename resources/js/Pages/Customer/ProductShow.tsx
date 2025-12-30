@@ -8,6 +8,7 @@ import { getAssetUrl } from "@/Utils/helpers";
 import { useCartStore } from "@/Stores/useCartStore";
 import { useDebounce } from "@/Hooks/useDebounce";
 import QuantitySelector from "@/Components/Ui/QuantitySelector";
+import ProductVariationModal from "@/Components/Customer/ProductVariationModal";
 
 interface ProductShowProps {
     product: Product;
@@ -21,11 +22,15 @@ export default function ProductShow({
     const { cart, addToCart, updateQuantity, setIsOpen } = useCartStore();
     const cartItem = cart[String(product.id)];
     const isInCart = !!cartItem;
+    const hasVariations =
+        product.product_variations &&
+        product.product_variations.length > 0;
 
     const [quantity, setQuantity] = useState(cartItem?.quantity || 1);
     const [selectedImage, setSelectedImage] = useState(
         product.images?.[0] || null
     );
+    const [showVariationModal, setShowVariationModal] = useState(false);
     const debouncedQuantity = useDebounce(quantity, 300);
 
     // Sync local quantity with store quantity (handling external updates)
@@ -57,9 +62,18 @@ export default function ProductShow({
     const handleAddToCart = () => {
         if (isInCart) {
             setIsOpen(true);
+        } else if (hasVariations) {
+            setShowVariationModal(true);
         } else {
             addToCart(product, quantity);
         }
+    };
+
+    const handleVariationAddToCart = (
+        variations: any[],
+        quantity: number
+    ) => {
+        addToCart(product, quantity, variations);
     };
 
     return (
@@ -288,6 +302,16 @@ strokeWidth = { 3}
     </div>
     </div>
     </div>
+
+    {/* Variation Modal */}
+    {hasVariations && (
+        <ProductVariationModal
+            isOpen={showVariationModal}
+            onClose={() => setShowVariationModal(false)}
+            product={product}
+            onAddToCart={handleVariationAddToCart}
+        />
+    )}
     </CustomerLayout>
     );
 }

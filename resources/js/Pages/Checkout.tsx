@@ -28,6 +28,12 @@ export default function Checkout({
             product_id: item.product_id,
             quantity: item.quantity,
             price: item.price,
+            variations:
+                item.variations?.map((v) => ({
+                    id: v.id,
+                    attribute_id: v.attribute_id || v.product_attribute_id,
+                    value: v.value,
+                })) || [],
         })),
     });
 
@@ -39,6 +45,12 @@ export default function Checkout({
                 product_id: item.product_id,
                 quantity: item.quantity,
                 price: item.price,
+                variations:
+                    item.variations?.map((v) => ({
+                        id: v.id,
+                        attribute_id: v.attribute_id || v.product_attribute_id,
+                        value: v.value,
+                    })) || [],
             }))
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,59 +132,59 @@ export default function Checkout({
 
     return (
         <CustomerLayout>
-        <Head title= "Checkout" />
-        <div className="min-h-screen bg-[#F8F9FA] py-8 px-4 sm:px-6 lg:px-8" >
-            <div className="max-w-7xl mx-auto" >
-                <div className="flex items-center justify-between mb-4 md:mb-8" >
-                    <Link
+            <Head title="Checkout" />
+            <div className="min-h-screen bg-[#F8F9FA] py-8 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex items-center justify-between mb-4 md:mb-8">
+                        <Link
                             href="/"
-    className = "p-2 hover:bg-gray-200 rounded-full transition-colors"
-        >
-        <ArrowLeft className="w-6 h-6 text-gray-700" />
-            </Link>
-            < div className = "text-xl font-bold text-[#1A1A1A]" >
-                Paikari World
-                    </div>
+                            className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                        >
+                            <ArrowLeft className="w-6 h-6 text-gray-700" />
+                        </Link>
+                        <div className="text-xl font-bold text-[#1A1A1A]">
+                            Paikari World
+                        </div>
                     </div>
 
-                    < div className = "grid grid-cols-1 lg:grid-cols-12 gap-8" >
-                        {/* Left Column: Form & Delivery */ }
-                        < div className = "lg:col-span-7 space-y-6" >
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        {/* Left Column: Form & Delivery */}
+                        <div className="lg:col-span-7 space-y-6">
                             <CustomerForm
-                                data={ data }
-    setData = { setData }
-    errors = { errors }
-    handleSubmit = { handleSubmit }
-        />
+                                data={data}
+                                setData={setData}
+                                errors={errors}
+                                handleSubmit={handleSubmit}
+                            />
 
-        <DeliveryOptions
-                                deliveryCharges={ deliveryCharges }
-    selectedId = { data.delivery_charge_id }
-    onChange = { handleDeliveryChange }
-    error = { errors.delivery_charge_id }
-        />
-        </div>
+                            <DeliveryOptions
+                                deliveryCharges={deliveryCharges}
+                                selectedId={data.delivery_charge_id}
+                                onChange={handleDeliveryChange}
+                                error={errors.delivery_charge_id}
+                            />
+                        </div>
 
-    {/* Right Column: Order Summary */ }
-    <div className="lg:col-span-5" >
-        <OrderSummary
-                                cartItems={ cartItems }
-    cartTotal = { cartTotal }
-    deliveryCost = {
-        selectedDelivery
-        ? Number(selectedDelivery.cost)
+                        {/* Right Column: Order Summary */}
+                        <div className="lg:col-span-5">
+                            <OrderSummary
+                                cartItems={cartItems}
+                                cartTotal={cartTotal}
+                                deliveryCost={
+                                    selectedDelivery
+                                        ? Number(selectedDelivery.cost)
                                         : 0
                                 }
-    discountAmount = { discountAmount }
-    total = { total }
-    processing = { processing }
-    onRemoveItem = { handleRemoveItem }
-    onQuantityChange = { handleQuantityChange }
-        />
-        </div>
-        </div>
-        </div>
-        </div>
+                                discountAmount={discountAmount}
+                                total={total}
+                                processing={processing}
+                                onRemoveItem={handleRemoveItem}
+                                onQuantityChange={handleQuantityChange}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </CustomerLayout>
     );
 }

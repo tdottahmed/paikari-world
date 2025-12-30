@@ -113,6 +113,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Variation Modal */}
+            {hasVariations && (
+                <ProductVariationModal
+                    isOpen={showVariationModal}
+                    onClose={() => setShowVariationModal(false)}
+                    product={product}
+                    onAddToCart={handleVariationAddToCart}
+                />
+            )}
         </div>
     );
 };
