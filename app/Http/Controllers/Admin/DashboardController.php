@@ -53,22 +53,27 @@ class DashboardController extends Controller
 
         $totalSell = $orders->sum('total');
         
-        // Profit Calculation: (Selling Price - Purchase Price) * Quantity
+        // Get additional cost from settings
+        $additionalCost = get_setting('additional_cost', 0);
+        
+        // Profit Calculation: (Selling Price - (Purchase Price + Additional Cost)) * Quantity
         // Note: Using current product purchase price as historical cost is not stored in order_items
-        $profit = $orders->sum(function ($order) {
-            return $order->items->sum(function ($item) {
+        $profit = $orders->sum(function ($order) use ($additionalCost) {
+            return $order->items->sum(function ($item) use ($additionalCost) {
                 $purchasePrice = $item->product->purchase_price ?? 0;
-                return ($item->price - $purchasePrice) * $item->quantity;
+                $actualCost = $purchasePrice + $additionalCost;
+                return ($item->price - $actualCost) * $item->quantity;
             });
         });
 
         $completedOrders = $orders->where('status', 'completed');
         $completedSell = $completedOrders->sum('total');
         
-        $completedProfit = $completedOrders->sum(function ($order) {
-            return $order->items->sum(function ($item) {
+        $completedProfit = $completedOrders->sum(function ($order) use ($additionalCost) {
+            return $order->items->sum(function ($item) use ($additionalCost) {
                 $purchasePrice = $item->product->purchase_price ?? 0;
-                return ($item->price - $purchasePrice) * $item->quantity;
+                $actualCost = $purchasePrice + $additionalCost;
+                return ($item->price - $actualCost) * $item->quantity;
             });
         });
 

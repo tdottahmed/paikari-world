@@ -1,4 +1,4 @@
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import Master from "@/Layouts/Master";
 import { Order, PageProps } from "@/types";
 import {
@@ -25,6 +25,7 @@ interface Props extends PageProps {
 }
 
 export default function Show({ order }: Props) {
+    const { additionalCost } = usePage().props as any;
     const [isUpdating, setIsUpdating] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState("");
@@ -92,10 +93,12 @@ export default function Show({ order }: Props) {
     };
 
     const calculateProfit = () => {
+        const additional = parseFloat(additionalCost) || 0;
         return (
             order.items?.reduce((total, item) => {
-                const cost = item.product?.purchase_price || 0;
-                return total + (item.price - cost) * item.quantity;
+                const purchasePrice = item.product?.purchase_price || 0;
+                const actualCost = purchasePrice + additional;
+                return total + (item.price - actualCost) * item.quantity;
             }, 0) || 0
         );
     };
@@ -446,11 +449,10 @@ export default function Show({ order }: Props) {
                                         </thead>
                                         <tbody>
                                             {order.items?.map((item, idx) => {
+                                                const purchasePrice = item.product?.purchase_price || 0;
+                                                const actualCost = purchasePrice + (parseFloat(additionalCost) || 0);
                                                 const itemProfit =
-                                                    (item.price -
-                                                        (item.product
-                                                            ?.purchase_price ||
-                                                            0)) *
+                                                    (item.price - actualCost) *
                                                     item.quantity;
                                                 return (
                                                     <tr
@@ -547,10 +549,10 @@ export default function Show({ order }: Props) {
                                 {/* Mobile View */}
                                 <div className="md:hidden space-y-4">
                                     {order.items?.map((item, idx) => {
+                                        const purchasePrice = item.product?.purchase_price || 0;
+                                        const actualCost = purchasePrice + (parseFloat(additionalCost) || 0);
                                         const itemProfit =
-                                            (item.price -
-                                                (item.product?.purchase_price ||
-                                                    0)) *
+                                            (item.price - actualCost) *
                                             item.quantity;
                                         return (
                                             <div

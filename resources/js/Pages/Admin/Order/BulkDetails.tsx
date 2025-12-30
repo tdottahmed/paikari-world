@@ -1,4 +1,4 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import Master from "@/Layouts/Master";
 import { Order, PageProps } from "@/types";
 import {
@@ -22,6 +22,9 @@ interface Props extends PageProps {
 }
 
 export default function BulkDetails({ orders }: Props) {
+    const { additionalCost } = usePage().props as any;
+    const additional = parseFloat(additionalCost) || 0;
+    
     const totalAmount = orders.reduce((sum, o) => sum + o.total, 0) || 0;
     const totalItems = orders.reduce(
         (sum, o) => sum + (o.items?.reduce((s, i) => s + i.quantity, 0) || 0),
@@ -30,8 +33,9 @@ export default function BulkDetails({ orders }: Props) {
     const totalProfit = orders.reduce((sum, o) => {
         const orderProfit =
             o.items?.reduce((p, item) => {
-                const cost = item.product?.purchase_price || 0;
-                return p + (item.price - cost) * item.quantity;
+                const purchasePrice = item.product?.purchase_price || 0;
+                const actualCost = purchasePrice + additional;
+                return p + (item.price - actualCost) * item.quantity;
             }, 0) || 0;
         return sum + orderProfit;
     }, 0);
