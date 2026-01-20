@@ -19,6 +19,7 @@ class CourierFraudCheckerService
         }
 
         try {
+            
             $response = CourierFraudCheckerBd::check($phone);
 
             $totalOrders = 0;
