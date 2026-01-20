@@ -22,6 +22,8 @@ class CourierFraudCheckerService
             
             $response = CourierFraudCheckerBd::check($phone);
 
+            Log::info('Courier Fraud Check Response: ' . json_encode($response));
+
             $totalOrders = 0;
             $cancelOrders = 0;
             $successOrders = 0;
