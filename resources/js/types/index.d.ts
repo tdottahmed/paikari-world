@@ -74,6 +74,7 @@ export interface QtyPrice {
 
 // Cart Item type
 export interface CartItem {
+    cart_id: string;
     product_id: number;
     name: string;
     price: number;
@@ -377,11 +378,11 @@ export interface SelectOption {
 // Bulk Action types
 export interface BulkAction {
     type:
-        | "delete"
-        | "activate"
-        | "deactivate"
-        | "update_category"
-        | "update_supplier";
+    | "delete"
+    | "activate"
+    | "deactivate"
+    | "update_category"
+    | "update_supplier";
     ids: number[];
     data?: any;
 }

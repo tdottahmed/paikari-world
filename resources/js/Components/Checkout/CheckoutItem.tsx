@@ -6,11 +6,11 @@ import { formatPrice, getAssetUrl } from "@/Utils/helpers";
 
 interface CheckoutItemProps {
     item: CartItem;
-    onRemove: (e: React.MouseEvent, id: number) => void;
+    onRemove: (e: React.MouseEvent, id: string) => void;
     onQuantityChange: (
-        id: number,
+        id: string,
         newQuantity: number,
-        e?: React.MouseEvent
+        e?: React.MouseEvent,
     ) => void;
 }
 
@@ -20,99 +20,81 @@ export default function CheckoutItem({
     onQuantityChange,
 }: CheckoutItemProps) {
     return (
-        <div className="group relative bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="flex gap-3">
-                {/* Product Image */}
-                <div className="w-20 h-20 flex-shrink-0 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden relative">
-                    {item.image ? (
-                        <img
-                            src={getAssetUrl(item.image)}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            <ShoppingBag size={24} />
-                        </div>
-                    )}
+        <div className="flex gap-4 py-4 border-b border-gray-100 last:border-0">
+            {/* Image */}
+            <div className="w-16 h-16 rounded-lg bg-gray-50 border border-gray-200 overflow-hidden flex-shrink-0">
+                {item.image ? (
+                    <img
+                        src={getAssetUrl(item.image)}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                        <ShoppingBag size={24} />
+                    </div>
+                )}
+            </div>
+
+            <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start mb-1">
+                    <div className="flex justify-start flex-col flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">
+                            {item.name}
+                        </h3>
+                        {item.variations && item.variations.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-1.5">
+                                {item.variations.map((v, idx) => (
+                                    <div
+                                        key={v.id || idx}
+                                        className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200"
+                                    >
+                                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                            {v.attribute?.name ||
+                                                v.product_attribute?.name ||
+                                                "Option"}
+                                            :
+                                        </span>
+                                        <span className="text-xs font-bold text-gray-900">
+                                            {v.value}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    <button
+                        onClick={(e) => onRemove(e, item.cart_id)}
+                        className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                    >
+                        <Trash2 size={16} />
+                    </button>
                 </div>
 
-                {/* Product Details */}
-                <div className="flex-1 flex flex-col justify-between min-w-0">
-                    <div>
-                        <div className="flex justify-between items-start gap-2">
-                            <div className="flex-1 min-w-0">
-                                <h4 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug">
-                                    {item.name}
-                                </h4>
-                                {item.variations &&
-                                    item.variations.length > 0 && (
-                                        <div className="text-xs text-gray-500 mt-1 space-y-0.5">
-                                            {item.variations.map(
-                                                (variation, index) => (
-                                                    <div
-                                                        key={
-                                                            variation.id ||
-                                                            index
-                                                        }
-                                                    >
-                                                        <span className="font-medium">
-                                                            {variation
-                                                                .product_attribute
-                                                                ?.name ||
-                                                                variation
-                                                                    .attribute
-                                                                    ?.name ||
-                                                                "Option"}
-                                                            :
-                                                        </span>{" "}
-                                                        <span>
-                                                            {variation.value}
-                                                        </span>
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    )}
-                            </div>
-                            <button
-                                onClick={(e) => onRemove(e, item.product_id)}
-                                className="text-gray-400 hover:text-red-500 transition-colors p-1 -mr-1 -mt-1 rounded-full hover:bg-red-50"
-                                title="Remove item"
-                                type="button"
-                            >
-                                <Trash2 size={16} />
-                            </button>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                            {formatPrice(item.price)} / unit
-                        </p>
-                    </div>
+                <div className="flex justify-between items-end mt-2">
+                    {/* Quantity Controls */}
+                    <QuantitySelector
+                        quantity={item.quantity}
+                        onDecrease={() =>
+                            onQuantityChange(item.cart_id, item.quantity - 1)
+                        }
+                        onIncrease={() =>
+                            onQuantityChange(item.cart_id, item.quantity + 1)
+                        }
+                        min={1}
+                        max={item.is_preorder ? undefined : item.stock}
+                        size="sm"
+                    />
 
-                    <div className="flex items-end justify-between mt-2">
-                        <div className="font-bold text-gray-900 text-base">
+                    <div className="text-right">
+                        <div className="text-sm font-bold text-gray-900">
                             {formatPrice(item.price * item.quantity)}
                         </div>
-
-                        {/* Quantity Controls */}
-                        <QuantitySelector
-                            quantity={item.quantity}
-                            onDecrease={() =>
-                                onQuantityChange(
-                                    item.product_id,
-                                    item.quantity - 1
-                                )
-                            }
-                            onIncrease={() =>
-                                onQuantityChange(
-                                    item.product_id,
-                                    item.quantity + 1
-                                )
-                            }
-                            min={1}
-                            max={item.is_preorder ? undefined : item.stock}
-                            size="sm"
-                        />
+                        {item.quantity > 1 && (
+                            <div className="text-xs text-gray-500">
+                                {formatPrice(item.price)} / unit
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

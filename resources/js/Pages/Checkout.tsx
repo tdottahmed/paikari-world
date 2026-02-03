@@ -51,7 +51,7 @@ export default function Checkout({
                         attribute_id: v.attribute_id || v.product_attribute_id,
                         value: v.value,
                     })) || [],
-            }))
+            })),
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cart]);
@@ -98,35 +98,41 @@ export default function Checkout({
         setSelectedDelivery(charge);
     };
 
-    const handleUpdateQuantity = (id: number, quantity: number) => {
+    const handleUpdateQuantity = (cartId: string, quantity: number) => {
         if (quantity < 1) return;
 
-        const item = cartItems.find((i) => i.product_id === id);
-        if (item && item.stock && quantity > item.stock) {
-            toast.warning(`Only ${item.stock} items available in stock`);
-            return;
+        const item = cartItems.find((i) => i.cart_id === cartId);
+        // Correct stock checking mechanism for variations
+        if (item) {
+            // For variations, we need to respect the available stock for that variation
+            // The store already calculates `item.stock` correctly as min(variation stocks) or product stock
+            // So relying on item.stock is correct here.
+            if (item.stock && quantity > item.stock) {
+                toast.warning(`Only ${item.stock} items available in stock`);
+                return;
+            }
         }
 
-        updateQuantity(id, quantity);
+        updateQuantity(cartId, quantity);
     };
 
     const handleQuantityChange = (
-        id: number,
+        cartId: string,
         newQuantity: number,
-        e?: React.MouseEvent
+        e?: React.MouseEvent,
     ) => {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
-        handleUpdateQuantity(id, newQuantity);
+        handleUpdateQuantity(cartId, newQuantity);
     };
 
-    const handleRemoveItem = (e: React.MouseEvent, id: number) => {
+    const handleRemoveItem = (e: React.MouseEvent, cartId: string) => {
         e.preventDefault();
         e.stopPropagation();
         if (confirm("Are you sure you want to remove this item?")) {
-            removeFromCart(id);
+            removeFromCart(cartId);
         }
     };
 
