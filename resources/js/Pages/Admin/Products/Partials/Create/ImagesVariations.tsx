@@ -56,17 +56,17 @@ export default function ImagesVariations({
     const removeVariation = (id: string) => {
         setData(
             "variations",
-            data.variations.filter((item: Variation) => item.id !== id)
+            data.variations.filter((item: Variation) => item.id !== id),
         );
     };
 
     const updateVariation = (
         id: string,
         field: keyof Variation,
-        value: string
+        value: string,
     ) => {
         const updated = data.variations.map((item: Variation) =>
-            item.id === id ? { ...item, [field]: value } : item
+            item.id === id ? { ...item, [field]: value } : item,
         );
         setData("variations", updated);
     };
@@ -117,7 +117,7 @@ export default function ImagesVariations({
                                         <Trash2Icon size={18} />
                                     </button>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     <div>
                                         <InputLabel
                                             htmlFor={`variation-attribute-${variation.id}`}
@@ -132,7 +132,7 @@ export default function ImagesVariations({
                                                 updateVariation(
                                                     variation.id,
                                                     "attribute_id",
-                                                    val
+                                                    val,
                                                 )
                                             }
                                             options={attributes.map((attr) => ({
@@ -156,10 +156,32 @@ export default function ImagesVariations({
                                                 updateVariation(
                                                     variation.id,
                                                     "value",
-                                                    e.target.value
+                                                    e.target.value,
                                                 )
                                             }
                                             placeholder="e.g., Red, Large"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <InputLabel
+                                            htmlFor={`variation-price-${variation.id}`}
+                                            value="Price"
+                                            required
+                                        />
+                                        <TextInput
+                                            id={`variation-price-${variation.id}`}
+                                            name={`variations[${index}][price]`}
+                                            type="number"
+                                            value={variation.price || ""}
+                                            onChange={(e) =>
+                                                updateVariation(
+                                                    variation.id,
+                                                    "price",
+                                                    e.target.value,
+                                                )
+                                            }
+                                            placeholder="e.g., 50.00"
                                             required
                                         />
                                     </div>
@@ -178,7 +200,7 @@ export default function ImagesVariations({
                                                 updateVariation(
                                                     variation.id,
                                                     "stock",
-                                                    e.target.value
+                                                    e.target.value,
                                                 )
                                             }
                                             placeholder="e.g., 100"

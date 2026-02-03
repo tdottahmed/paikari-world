@@ -73,103 +73,103 @@ const Home: React.FC<HomeProps> = ({
 
     return (
         <CustomerLayout>
-        <Head title= { category? category.title : "Home"} />
-        <FilterSidebar
-                isOpen={ isFilterOpen }
-    onClose = {() => setIsFilterOpen(false)}
-filters = { filters }
-currentUrl = { currentUrl }
-    />
-    {/* Hero Section */ }
-    < Hero
-bannerImages = {
-    website_settings?.banner_active
-    ? website_settings.banner_images
+            <Head title={category ? category.title : "Home"} />
+            <FilterSidebar
+                isOpen={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+                filters={filters}
+                currentUrl={currentUrl}
+            />
+            {/* Hero Section */}
+            <Hero
+                bannerImages={
+                    website_settings?.banner_active
+                        ? website_settings.banner_images
                         : []
                 }
-    />
-    {/* Categories */ }
-    < div className = "bg-white border-b border-gray-100" >
-        <CategorySlider
-                    categories={ categories }
-activeCategory = { category }
-    />
-    </div>
+            />
+            {/* Categories */}
+            <div className="bg-white border-b border-gray-100">
+                <CategorySlider
+                    categories={categories}
+                    activeCategory={category}
+                />
+            </div>
 
-{/* Search and Filters Section */ }
-<ProductFilters
-                sort={ sort }
-setSort = { setSort }
-setIsFilterOpen = { setIsFilterOpen }
-filters = { filters }
-togglePreorder = {() => {
-    const params: Record<string, string> = {};
-    if (filters.search) params.search = filters.search;
-    if (filters.min_price) params.min_price = filters.min_price;
-    if (filters.max_price) params.max_price = filters.max_price;
-    if (sort && sort !== "latest") params.sort = sort;
-    if (filters.in_stock) params.in_stock = filters.in_stock;
-    if (filters.stock_out) params.stock_out = filters.stock_out;
+            {/* Search and Filters Section */}
+            <ProductFilters
+                sort={sort}
+                setSort={setSort}
+                setIsFilterOpen={setIsFilterOpen}
+                filters={filters}
+                togglePreorder={() => {
+                    const params: Record<string, string> = {};
+                    if (filters.search) params.search = filters.search;
+                    if (filters.min_price) params.min_price = filters.min_price;
+                    if (filters.max_price) params.max_price = filters.max_price;
+                    if (sort && sort !== "latest") params.sort = sort;
+                    if (filters.in_stock) params.in_stock = filters.in_stock;
+                    if (filters.stock_out) params.stock_out = filters.stock_out;
 
-    // Toggle preorder
-    if (filters.is_preorder === "true") {
-        delete params.is_preorder;
-    } else {
-        params.is_preorder = "true";
-    }
+                    // Toggle preorder
+                    if (filters.is_preorder === "true") {
+                        delete params.is_preorder;
+                    } else {
+                        params.is_preorder = "true";
+                    }
 
-    router.visit(currentUrl, {
-        data: params,
-        preserveState: true,
-        preserveScroll: false,
-        replace: true,
-        only: ["products", "filters"],
-        onSuccess: () => {
-            document
-                .getElementById("products-section")
-                ?.scrollIntoView({ behavior: "smooth" });
-        },
-    });
-}}
-toggleStockOut = {() => {
-    const params: Record<string, string> = {};
-    if (filters.search) params.search = filters.search;
-    if (filters.min_price) params.min_price = filters.min_price;
-    if (filters.max_price) params.max_price = filters.max_price;
-    if (sort && sort !== "latest") params.sort = sort;
-    if (filters.in_stock) params.in_stock = filters.in_stock;
-    if (filters.is_preorder)
-        params.is_preorder = filters.is_preorder;
+                    router.visit(currentUrl, {
+                        data: params,
+                        preserveState: true,
+                        preserveScroll: false,
+                        replace: true,
+                        only: ["products", "filters"],
+                        onSuccess: () => {
+                            document
+                                .getElementById("products-section")
+                                ?.scrollIntoView({ behavior: "smooth" });
+                        },
+                    });
+                }}
+                toggleStockOut={() => {
+                    const params: Record<string, string> = {};
+                    if (filters.search) params.search = filters.search;
+                    if (filters.min_price) params.min_price = filters.min_price;
+                    if (filters.max_price) params.max_price = filters.max_price;
+                    if (sort && sort !== "latest") params.sort = sort;
+                    if (filters.in_stock) params.in_stock = filters.in_stock;
+                    if (filters.is_preorder)
+                        params.is_preorder = filters.is_preorder;
 
-    // Toggle stock_out
-    if (filters.stock_out === "true") {
-        delete params.stock_out;
-    } else {
-        params.stock_out = "true";
-    }
+                    // Toggle stock_out
+                    if (filters.stock_out === "true") {
+                        delete params.stock_out;
+                    } else {
+                        params.stock_out = "true";
+                    }
 
-    router.visit(currentUrl, {
-        data: params,
-        preserveState: true,
-        preserveScroll: false,
-        replace: true,
-        only: ["products", "filters"],
-        onSuccess: () => {
-            document
-                .getElementById("products-section")
-                ?.scrollIntoView({ behavior: "smooth" });
-        },
-    });
-}}
+                    router.visit(currentUrl, {
+                        data: params,
+                        preserveState: true,
+                        preserveScroll: false,
+                        replace: true,
+                        only: ["products", "filters"],
+                        onSuccess: () => {
+                            document
+                                .getElementById("products-section")
+                                ?.scrollIntoView({ behavior: "smooth" });
+                        },
+                    });
+                }}
             />
 
-{/* Products */ }
-<div
+            {/* Products */}
+            <div
                 className="bg-gray-50 min-h-screen py-2 md:py-6"
-id = "products-section"
-    >
-    <ProductGrid products={ products } />
-        </div>
+                id="products-section"
+            >
+                <ProductGrid products={products} />
+            </div>
         </CustomerLayout>
     );
 };

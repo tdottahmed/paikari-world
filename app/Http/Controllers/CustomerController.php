@@ -108,7 +108,7 @@ class CustomerController extends Controller
             $query->where('stock', '>', 0);
         }
         if ($request->input('stock_out') === 'true') {
-            $query->where('stock', '<=', 0);
+            $query->where('stock', '<=', 0)->orderBy('updated_at', 'desc');
         } else {
             $query->where('stock', '>', 0);
         }

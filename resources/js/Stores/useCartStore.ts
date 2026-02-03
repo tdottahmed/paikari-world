@@ -2,16 +2,23 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { CartItem, Product, ProductVariation } from "@/types";
 
+// Helper to generate unique cart key
+const generateCartKey = (productId: number, variations: ProductVariation[] = []) => {
+    if (!variations || variations.length === 0) return String(productId);
+    const sortedVarIds = variations.map(v => v.id).sort((a, b) => a - b);
+    return `${productId}-${sortedVarIds.join("-")}`;
+};
+
 interface CartState {
-    cart: Record<string, CartItem>;
+    cart: Record<string, CartItem & { cart_id: string }>;
     isOpen: boolean;
     addToCart: (
         product: Product,
         quantity?: number,
         variations?: ProductVariation[]
     ) => void;
-    removeFromCart: (productId: number) => void;
-    updateQuantity: (productId: number, quantity: number) => void;
+    removeFromCart: (cartId: string) => void;
+    updateQuantity: (cartId: string, quantity: number) => void;
     clearCart: () => void;
     setIsOpen: (isOpen: boolean) => void;
     getCartTotal: () => number;
@@ -27,20 +34,18 @@ export const useCartStore = create<CartState>()(
             addToCart: (
                 product: Product,
                 quantity: number = 1,
-                variations?: ProductVariation[]
+                variations: ProductVariation[] = []
             ) => {
                 set((state) => {
-                    const key = String(product.id);
+                    const key = generateCartKey(product.id, variations);
                     const existingItem = state.cart[key];
                     const newQuantity = existingItem
                         ? existingItem.quantity + quantity
                         : quantity;
 
-                    // Calculate stock: use minimum of product stock and variation stocks
-                    // Stock decreases from both product main stock AND variation stock
+                    // Calculate stock logic
                     let stock = product.stock;
                     if (variations && variations.length > 0) {
-                        // Find minimum stock from selected variations
                         const variationStocks = variations
                             .map((v) => v.stock ?? product.stock)
                             .filter(
@@ -48,8 +53,22 @@ export const useCartStore = create<CartState>()(
                                     s !== undefined && s !== null && !isNaN(s)
                             );
                         if (variationStocks.length > 0) {
-                            // Use minimum of product stock and all variation stocks
                             stock = Math.min(product.stock, ...variationStocks);
+                        }
+                    }
+
+                    // Calculate price logic
+                    // If variations are present and have specific prices, we use the highest price among selected (override logic)
+                    // or just checking if any override exists.
+                    // Based on ProductVariationModal logic: max of variation prices if present, else product sale_price.
+                    let price = product.sale_price;
+                    if (variations && variations.length > 0) {
+                        const varPrices = variations
+                            .map(v => v.price ? parseFloat(String(v.price)) : null)
+                            .filter(p => p !== null) as number[];
+
+                        if (varPrices.length > 0) {
+                            price = Math.max(...varPrices);
                         }
                     }
 
@@ -57,9 +76,10 @@ export const useCartStore = create<CartState>()(
                         cart: {
                             ...state.cart,
                             [key]: {
+                                cart_id: key,
                                 product_id: product.id,
                                 name: product.name,
-                                price: product.sale_price,
+                                price: price,
                                 stock: stock,
                                 quantity: newQuantity,
                                 image: product.images?.[0] || null,
@@ -72,24 +92,23 @@ export const useCartStore = create<CartState>()(
                 });
             },
 
-            removeFromCart: (productId: number) => {
+            removeFromCart: (cartId: string) => {
                 set((state) => {
                     const newCart = { ...state.cart };
-                    delete newCart[String(productId)];
+                    delete newCart[cartId];
                     return { cart: newCart };
                 });
             },
 
-            updateQuantity: (productId: number, quantity: number) => {
+            updateQuantity: (cartId: string, quantity: number) => {
                 if (quantity < 1) return;
                 set((state) => {
-                    const key = String(productId);
-                    if (!state.cart[key]) return state;
+                    if (!state.cart[cartId]) return state;
                     return {
                         cart: {
                             ...state.cart,
-                            [key]: {
-                                ...state.cart[key],
+                            [cartId]: {
+                                ...state.cart[cartId],
                                 quantity: quantity,
                             },
                         },
