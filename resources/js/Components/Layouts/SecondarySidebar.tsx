@@ -31,57 +31,64 @@ export const secondaryMenuItems: MenuItem[] = [
     {
         key: "categories",
         label: "Categories",
-        icon: <Layers size={18} />,
-        route: "admin.categories.index",
-        urlPattern: "/admin/categories",
+        icon: <Layers size={ 18} />,
+    route: "admin.categories.index",
+    urlPattern: "/admin/categories",
     },
-    {
-        key: "discounts",
+{
+    key: "suppliers",
+        label: "Suppliers",
+            icon: <Users size={ 18 } />,
+    route: "admin.suppliers.index",
+        urlPattern: "/admin/suppliers",
+    },
+{
+    key: "discounts",
         label: "Discounts",
-        icon: <BadgePercent size={18} />,
-        route: "admin.discounts.index",
+            icon: <BadgePercent size={ 18 } />,
+    route: "admin.discounts.index",
         urlPattern: "/admin/discounts",
     },
-    {
-        key: "website",
+{
+    key: "website",
         label: "Website",
-        icon: <Globe size={18} />,
-        route: "admin.website.index",
+            icon: <Globe size={ 18 } />,
+    route: "admin.website.index",
         urlPattern: "/admin/website",
     },
-    {
-        key: "users",
+{
+    key: "users",
         label: "Users",
-        icon: <Users size={18} />,
-        route: "admin.users.index",
+            icon: <Users size={ 18 } />,
+    route: "admin.users.index",
         urlPattern: "/admin/users",
     },
-    {
-        key: "gateway",
+{
+    key: "gateway",
         label: "Payment Gateways",
-        icon: <Truck size={18} />,
-        route: "admin.payment-gateways.index",
+            icon: <Truck size={ 18 } />,
+    route: "admin.payment-gateways.index",
         urlPattern: "/admin/payment-gateways",
     },
-    {
-        key: "courier",
+{
+    key: "courier",
         label: "Courier",
-        icon: <Truck size={18} />,
-        route: "admin.courier.index",
+            icon: <Truck size={ 18 } />,
+    route: "admin.courier.index",
         urlPattern: "/admin/courier",
     },
-    {
-        key: "price",
+{
+    key: "price",
         label: "Price Calculator",
-        icon: <Calculator size={18} />,
-        route: "admin.price-calculator.index",
+            icon: <Calculator size={ 18 } />,
+    route: "admin.price-calculator.index",
         urlPattern: "/admin/price-calculator",
     },
-    {
-        key: "marketing",
+{
+    key: "marketing",
         label: "Marketing",
-        icon: <Target size={18} />,
-        route: "admin.marketing.index",
+            icon: <Target size={ 18 } />,
+    route: "admin.marketing.index",
         urlPattern: "/admin/marketing",
     },
 ];
@@ -97,33 +104,31 @@ const MenuLink = ({
 }) =>
     item.route && item.route !== "#" ? (
         <Link
-            href={route(item.route)}
-            onClick={onClick}
-            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
-                isActive
-                    ? "bg-[#0F1A18] text-[#2DE3A7]"
-                    : "text-gray-300 hover:bg-[#151F1D] hover:text-white"
-            }`}
+            href= { route(item.route) }
+            onClick = { onClick }
+className = {`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${isActive
+        ? "bg-[#0F1A18] text-[#2DE3A7]"
+        : "text-gray-300 hover:bg-[#151F1D] hover:text-white"
+    }`}
         >
-            {item.icon}
-            <span> {item.label} </span>
-        </Link>
+    { item.icon }
+    < span > { item.label } </span>
+    </Link>
     ) : (
-        <a
-            href="#"
-            onClick={(e) => {
-                e.preventDefault();
-                onClick?.();
-            }}
-            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
-                isActive
-                    ? "bg-[#0F1A18] text-[#2DE3A7]"
-                    : "text-gray-300 hover:bg-[#151F1D] hover:text-white"
-            }`}
+    <a
+            href= "#"
+onClick = {(e) => {
+    e.preventDefault();
+    onClick?.();
+}}
+className = {`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${isActive
+        ? "bg-[#0F1A18] text-[#2DE3A7]"
+        : "text-gray-300 hover:bg-[#151F1D] hover:text-white"
+    }`}
         >
-            {item.icon}
-            <span> {item.label} </span>
-        </a>
+    { item.icon }
+    < span > { item.label } </span>
+    </a>
     );
 
 const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
@@ -146,79 +151,83 @@ const SecondarySidebar: React.FC<SecondarySidebarProps> = ({
     /* MOBILE SIDEBAR */
     if (mobile) {
         return (
-            <div className="bg-[#0E1614] p-6 max-h-96 overflow-y-auto">
-                <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold"> Menu </h3>
-                    <button
-                        onClick={onClose}
-                        className="p-2 rounded-lg hover:bg-[#151F1D]"
-                    >
-                        <X size={20} />
-                    </button>
+            <div className= "bg-[#0E1614] p-6 max-h-96 overflow-y-auto" >
+            <div className="flex items-center justify-between mb-6" >
+                <h3 className="text-lg font-semibold" > Menu </h3>
+                    < button
+        onClick = { onClose }
+        className = "p-2 rounded-lg hover:bg-[#151F1D]"
+            >
+            <X size={ 20 } />
+                </button>
                 </div>
 
-                <nav className="space-y-2">
-                    {secondaryMenuItems.map((item) => (
+                < nav className = "space-y-2" >
+                {
+                    secondaryMenuItems.map((item) => (
                         <MenuLink
-                            key={item.key}
-                            item={item}
-                            onClick={onClose}
-                            isActive={isMenuItemActive(item)}
+                            key= { item.key }
+                            item = { item }
+                            onClick = { onClose }
+                            isActive = { isMenuItemActive(item) }
                         />
-                    ))}
+                    ))
+                }
 
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:bg-red-600/10 transition-all w-full text-left"
-                    >
-                        <LogOutIcon size={18} />
-                        <span> Logout </span>
-                    </button>
+                    < button
+        onClick = { handleLogout }
+        className = "flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:bg-red-600/10 transition-all w-full text-left"
+            >
+            <LogOutIcon size={ 18 } />
+                < span > Logout </span>
+                </button>
                 </nav>
-            </div>
+                </div>
         );
     }
 
-    return (
-        <aside className="w-64 bg-[#0E1614] border-r border-gray-800 flex flex-col">
-            <div className="p-5">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-xl font-semibold">
-                            {" "}
-                            Paikari World{" "}
-                        </h2>
-                        <p className="text-sm text-gray-400"> pw@gmail.com</p>
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 rounded-lg hover:bg-[#151F1D] text-gray-400 hover:text-white transition-colors"
-                        title="Close menu"
-                    >
-                        <ArrowLeft size={20} />
-                    </button>
-                </div>
-            </div>
+return (
+    <aside className= "w-64 bg-[#0E1614] border-r border-gray-800 flex flex-col" >
+    <div className="p-5" >
+        <div className="flex items-center justify-between" >
+            <div>
+            <h2 className="text-xl font-semibold" >
+                { " "}
+                            Paikari World{ " " }
+</h2>
+    < p className = "text-sm text-gray-400" > pw@gmail.com</p>
+        </div>
+        < button
+onClick = { onClose }
+className = "p-2 rounded-lg hover:bg-[#151F1D] text-gray-400 hover:text-white transition-colors"
+title = "Close menu"
+    >
+    <ArrowLeft size={ 20 } />
+        </button>
+        </div>
+        </div>
 
-            <nav className="flex-1 p-4 space-y-1">
-                {secondaryMenuItems.map((item) => (
-                    <MenuLink
-                        key={item.key}
-                        item={item}
-                        isActive={isMenuItemActive(item)}
-                    />
-                ))}
+        < nav className = "flex-1 p-4 space-y-1" >
+        {
+            secondaryMenuItems.map((item) => (
+                <MenuLink
+                        key= { item.key }
+                        item = { item }
+                        isActive = { isMenuItemActive(item) }
+                />
+                ))
+        }
             </nav>
 
-            <div className="p-4 border-t border-gray-800">
+            < div className = "p-4 border-t border-gray-800" >
                 <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:bg-red-600/10 transition-all w-full text-left"
-                >
-                    <LogOutIcon size={18} />
-                    <span> Logout </span>
-                </button>
-            </div>
+                    onClick={ handleLogout }
+className = "flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:bg-red-600/10 transition-all w-full text-left"
+    >
+    <LogOutIcon size={ 18 } />
+        < span > Logout </span>
+        </button>
+        </div>
         </aside>
     );
 };

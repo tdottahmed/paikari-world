@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CourierController;
 use App\Http\Controllers\Admin\PriceCalculatorController;
 use App\Http\Controllers\Admin\MarketingController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
@@ -24,6 +25,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
   Route::get('products/show/{product}', [ProductController::class, 'show'])->name('product.show');
 
   Route::resource('categories', CategoryController::class);
+  Route::resource('suppliers', SupplierController::class);
 
   // New Modules
   Route::get('discounts', [DiscountController::class, 'index'])->name('discounts.index');
