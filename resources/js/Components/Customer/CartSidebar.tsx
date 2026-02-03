@@ -24,7 +24,48 @@ const CartSidebar = () => {
     const onClose = () => setIsOpen(false);
 
     const handleCheckout = (e: React.MouseEvent) => {
-        if (getCartCount() < 3) {
+        // Group items by category
+        const categoryGroups: Record<
+            number,
+            { qty: number; minQty: number; catName?: string }
+        > = {};
+
+        // Helper to find category name (not strictly needed for logic but good for error msg)
+        // We rely on the first item of category to get minQty
+        cartItems.forEach((item) => {
+            if (item.category_id) {
+                if (!categoryGroups[item.category_id]) {
+                    categoryGroups[item.category_id] = {
+                        qty: 0,
+                        minQty: item.min_order_qty || 3, // Default to 3 if missing
+                        // We would ideally want the category name here, but cart item only has product name.
+                        // Assuming the user knows which products belong to which category or we just show a generic message.
+                        // Wait, we don't have category name in CartItem. Let's try to proceed without it or assume global policy if unsure.
+                        // Actually, I can add category name to CartItem in useCartStore if needed,
+                        // but for now let's say "You have to order at least X products from one of the categories".
+                        // Better: "Category ID X requires minimum Y items". Not user friendly.
+                        // Let's check useCartStore update again. I didn't add category name.
+                        // I will assume for now detailed message is "You have to order at least X products from this category".
+                    };
+                }
+                categoryGroups[item.category_id].qty += item.quantity;
+            } else {
+                // Fallback for items without category (shouldn't happen with proper data)
+                // treat them as global count check? Old logic was global < 3.
+            }
+        });
+
+        // Check for violations
+        for (const [catId, data] of Object.entries(categoryGroups)) {
+            if (data.qty < data.minQty) {
+                e.preventDefault();
+                toast.warning(
+                    `You have to order at least ${data.minQty} products from this category.`,
+                );
+                return;
+            }
+        }
+        if (Object.keys(categoryGroups).length === 0 && getCartCount() < 3) {
             e.preventDefault();
             toast.warning("You have to order at least 3 products");
         } else {

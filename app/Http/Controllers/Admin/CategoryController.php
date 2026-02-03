@@ -69,6 +69,9 @@ class CategoryController extends Controller
                 'categories'
             );
             $data['image'] = $uploadedImage;
+        } else {
+            // Prevent overwriting existing image with null
+            unset($data['image']);
         }
 
         $category->update($data);

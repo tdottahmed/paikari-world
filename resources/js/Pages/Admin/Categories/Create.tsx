@@ -15,6 +15,7 @@ const Create: React.FC = () => {
         title: "",
         slug: "",
         image: null as File | null,
+        min_order_qty: 3,
     });
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -62,12 +63,12 @@ const Create: React.FC = () => {
                 <div className="mb-6">
                     <Link
                         href={route("admin.categories.index")}
-                        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
+                        className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-4"
                     >
                         <ArrowLeft size={20} />
                         <span> Back to Categories </span>
                     </Link>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white">
                         Create Category
                     </h1>
                 </div>
@@ -137,6 +138,34 @@ const Create: React.FC = () => {
                             />
                             <InputError
                                 message={errors.image}
+                                className="mt-2"
+                            />
+                        </div>
+
+                        {/* Min Order Qty */}
+                        <div className="mt-3">
+                            <InputLabel
+                                htmlFor="min_order_qty"
+                                value="Mini. Order Qty"
+                            />
+                            <TextInput
+                                id="min_order_qty"
+                                name="min_order_qty"
+                                type="number"
+                                value={String(data.min_order_qty)}
+                                onChange={(e) =>
+                                    setData(
+                                        "min_order_qty",
+                                        parseInt(e.target.value),
+                                    )
+                                }
+                                className="mt-1 block w-full"
+                                placeholder="Enter minimum order quantity"
+                                required
+                                min="1"
+                            />
+                            <InputError
+                                message={errors.min_order_qty}
                                 className="mt-2"
                             />
                         </div>

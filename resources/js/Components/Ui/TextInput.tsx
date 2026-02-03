@@ -12,6 +12,8 @@ interface TextInputProps {
     required?: boolean;
     step?: string;
     disabled?: boolean;
+    min?: string | number;
+    max?: string | number;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -29,9 +31,11 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             required = false,
             step,
             disabled = false,
+            min,
+            max,
             onChange,
         },
-        ref
+        ref,
     ) => {
         const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -70,7 +74,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                 disabled={disabled}
             />
         );
-    }
+    },
 );
 
 export default TextInput;

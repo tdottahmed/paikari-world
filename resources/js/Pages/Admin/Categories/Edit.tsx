@@ -20,6 +20,7 @@ const Edit: React.FC<EditProps> = ({ category }) => {
         title: category.title,
         slug: category.slug,
         image: null as File | null,
+        min_order_qty: category.min_order_qty || 3,
         _method: "PUT",
     });
 
@@ -38,26 +39,7 @@ const Edit: React.FC<EditProps> = ({ category }) => {
     };
 
     const handleRemoveExisting = () => {
-        // In this specific case, we don't have a separate "deleted_images" array in the backend
-        // for categories yet (based on typical implementations), but usually setting image to null
-        // or sending a flag might be needed.
-        // However, the ImageUploader's onRemoveExisting is mostly for UI updates in this context
-        // unless we add a specific field to track deletion.
-        // For now, if the user uploads a new image, it replaces the old one.
-        // If they just want to delete the old one without replacing, we might need a way to signal that.
-        // Given the current simple implementation, we'll just acknowledge the removal from UI.
-        // If the backend expects a specific field to delete the image, we should add it.
-        // Looking at the original code, there was no explicit "delete image" checkbox, just replacement.
-        // But let's assume if they remove it in the uploader, they want it gone.
-        // We might need to send a flag like `delete_image: true` if `image` is null and we want to remove existing.
-        // For now, let's just keep it simple as per original requirement: "correct ImageUploader component".
-        // The original code had a "removeImage" function that set data.image to null and reset preview.
-        // If we want to support explicit deletion of existing image without replacement:
-        // We might need to add `delete_image` to useForm if the backend supports it.
-        // Since I don't see the backend code, I will assume standard behavior:
-        // If a new image is sent, it replaces.
-        // If we want to delete, we might need to handle that.
-        // Let's just pass the handler to satisfy the interface.
+       
     };
 
     const handleTitleChange = (value: string) => {
@@ -72,7 +54,7 @@ const Edit: React.FC<EditProps> = ({ category }) => {
     const handleDelete = () => {
         if (
             confirm(
-                "Are you sure you want to delete this category? This action cannot be undone."
+                "Are you sure you want to delete this category? This action cannot be undone.",
             )
         ) {
             setDeleting(true);
@@ -90,13 +72,13 @@ const Edit: React.FC<EditProps> = ({ category }) => {
                 <div className="mb-6">
                     <Link
                         href={route("admin.categories.index")}
-                        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
+                        className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-4"
                     >
                         <ArrowLeft size={20} />
                         <span> Back to Categories </span>
                     </Link>
                     <div className="flex items-center justify-between">
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl md:text-3xl font-bold text-white">
                             Edit Category
                         </h1>
                         <button
@@ -177,6 +159,34 @@ const Edit: React.FC<EditProps> = ({ category }) => {
                                 />
                                 <InputError
                                     message={errors.image}
+                                    className="mt-2"
+                                />
+                            </div>
+
+                            {/* Min Order Qty */}
+                            <div className="mt-4">
+                                <InputLabel
+                                    htmlFor="min_order_qty"
+                                    value="Mini. Order Qty"
+                                />
+                                <TextInput
+                                    id="min_order_qty"
+                                    name="min_order_qty"
+                                    type="number"
+                                    value={String(data.min_order_qty)}
+                                    onChange={(e) =>
+                                        setData(
+                                            "min_order_qty",
+                                            parseInt(e.target.value),
+                                        )
+                                    }
+                                    className="mt-1 block w-full"
+                                    placeholder="Enter minimum order quantity"
+                                    required
+                                    min="1"
+                                />
+                                <InputError
+                                    message={errors.min_order_qty}
                                     className="mt-2"
                                 />
                             </div>

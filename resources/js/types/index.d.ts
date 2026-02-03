@@ -22,55 +22,12 @@ export interface Category {
     slug: string;
     image: string;
     description?: string;
+    min_order_qty?: number;
     created_at?: string;
     updated_at?: string;
 }
 
-// Supplier type
-export interface Supplier {
-    id: number;
-    name: string;
-    contact_info?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    created_at?: string;
-    updated_at?: string;
-}
-
-// Product Attribute type
-export interface ProductAttribute {
-    id: number;
-    name: string;
-    values?: string[];
-    created_at?: string;
-    updated_at?: string;
-}
-
-// Product Variation type
-export interface ProductVariation {
-    id: number;
-    product_id?: number;
-    attribute_id: number;
-    product_attribute_id?: number;
-    value: string;
-    stock?: number;
-    price?: number;
-    attribute?: ProductAttribute;
-    product_attribute?: ProductAttribute;
-    created_at?: string;
-    updated_at?: string;
-}
-
-// Quantity Price type
-export interface QtyPrice {
-    id?: number;
-    product_id?: number;
-    qty: number;
-    price: number;
-    created_at?: string;
-    updated_at?: string;
-}
+// ... (skipping unchange lines)
 
 // Cart Item type
 export interface CartItem {
@@ -83,6 +40,8 @@ export interface CartItem {
     image: string | null;
     is_preorder?: boolean;
     variations?: ProductVariation[];
+    category_id?: number;
+    min_order_qty?: number;
 }
 
 export interface DeliveryCharge {

@@ -85,6 +85,8 @@ export const useCartStore = create<CartState>()(
                                 image: product.images?.[0] || null,
                                 is_preorder: product.is_preorder,
                                 variations: variations,
+                                category_id: product.category_id,
+                                min_order_qty: product.category?.min_order_qty,
                             },
                         },
                         isOpen: window.innerWidth >= 768,
