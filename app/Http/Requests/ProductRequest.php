@@ -31,6 +31,7 @@ class ProductRequest extends FormRequest
             'qty_prices.*.qty_price' => 'required|numeric|min:0',
             'deleted_images' => 'nullable|array',
             'variations' => 'nullable|array',
+            'variations.*.id' => 'nullable',
             'variations.*.attribute_id' => 'required_with:variations|exists:product_attributes,id',
             'variations.*.value' => 'required_with:variations|string',
             'variations.*.stock' => 'nullable|integer|min:0',

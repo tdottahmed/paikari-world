@@ -224,18 +224,52 @@ class ProductController extends Controller
                 'qty_price' => $qtyPriceData,
                 'is_preorder' => $request->is_preorder ?? false,
             ]);
-            if ($request->has('variations') && !empty($request->variations)) {
-                $product->product_variations()->delete();
-                foreach ($request->variations as $variationData) {
-                    ProductVariation::create([
-                        'product_id' => $product->id,
-                        'product_attribute_id' => $variationData['attribute_id'],
-                        'value' => $variationData['value'],
-                        'stock' => $variationData['stock'] ?? null,
-                        'price' => $variationData['price'] ?? null,
-                    ]);
+            // Handle Variations Update (Sync Logic)
+            if ($request->has('variations')) {
+                $submittedVariations = $request->variations ?? [];
+                
+                // 1. Get IDs of submitted variations that already exist in DB
+                $submittedIds = collect($submittedVariations)
+                    ->pluck('id')
+                    ->filter(function ($id) {
+                        return is_numeric($id); // Filter out temp IDs like "0.1234"
+                    })
+                    ->toArray();
+
+                // 2. Delete variations that are NOT in the submitted list
+                $product->product_variations()
+                    ->whereNotIn('id', $submittedIds)
+                    ->delete();
+
+                // 3. Update existing or Create new
+                foreach ($submittedVariations as $variationData) {
+                    // Check if it's an update (has valid numeric ID)
+                    if (isset($variationData['id']) && is_numeric($variationData['id'])) {
+                        // Update existing variation
+                        $variation = \App\Models\ProductVariation::find($variationData['id']);
+                        if ($variation && $variation->product_id == $product->id) {
+                            $variation->update([
+                                'product_attribute_id' => $variationData['attribute_id'],
+                                'value' => $variationData['value'],
+                                'stock' => $variationData['stock'] ?? null,
+                                'price' => $variationData['price'] ?? null,
+                            ]);
+                        }
+                    } else {
+                        // Create new variation
+                        ProductVariation::create([
+                            'product_id' => $product->id,
+                            'product_attribute_id' => $variationData['attribute_id'],
+                            'value' => $variationData['value'],
+                            'stock' => $variationData['stock'] ?? null,
+                            'price' => $variationData['price'] ?? null,
+                        ]);
+                    }
                 }
             } else {
+                // If variations field is missing or null, assume no variations or user cleared them? 
+                // Wait, if empty array is sent, we should clear all.
+                // The frontend sends empty array if all removed.
                 $product->product_variations()->delete();
             }
 

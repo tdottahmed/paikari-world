@@ -87,13 +87,11 @@ class CheckoutController extends Controller
                     throw new \Exception("Product not found");
                 }
 
-                if (!$product->is_preorder && $product->stock < $item['quantity']) {
-                    throw new \Exception("Insufficient stock for product: " . $product->name);
-                }
-
                 // Check and decrement variation stock if variations exist
                 $variationIds = [];
-                if (!empty($item['variations']) && is_array($item['variations'])) {
+                $hasVariations = !empty($item['variations']) && is_array($item['variations']);
+
+                if ($hasVariations) {
                     foreach ($item['variations'] as $variationData) {
                         $variation = \App\Models\ProductVariation::lockForUpdate()
                             ->where('id', $variationData['id'])
@@ -105,7 +103,7 @@ class CheckoutController extends Controller
                         }
 
                         // Check variation stock
-                        if ($variation->stock !== null && $variation->stock < $item['quantity']) {
+                        if ($variation->stock !== null && !$product->is_preorder && $variation->stock < $item['quantity']) {
                             throw new \Exception("Insufficient stock for variation: " . $variation->value . " of product: " . $product->name);
                         }
 
@@ -117,7 +115,16 @@ class CheckoutController extends Controller
                         $variationIds[] = $variation->id;
                     }
                 }
-                // Decrement product stock
+
+                // Check main product stock only if no variations are selected (Simple Product)
+                // OR if we want to enforce main stock limits even for variable products (optional, usually not if main stock is 0 but variations have stock)
+                // Here we assume if variations are checked, we trust variation stock.
+                if (!$hasVariations && !$product->is_preorder && $product->stock < $item['quantity']) {
+                    throw new \Exception("Insufficient stock for product: " . $product->name);
+                }
+
+                // Decrement product stock (Keep it largely in sync, or go negative if tracking allows)
+                // We typically assume product stock should track total, but if it doesn't, we shouldn't block sales if variation has stock.
                 $product->decrement('stock', $item['quantity']);
 
                 OrderItem::create([
@@ -134,7 +141,9 @@ class CheckoutController extends Controller
             return redirect()->route('order.success', ['order' => $order->id])->with('success', 'Order placed successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Something went wrong. Please try again.');
+            \Illuminate\Support\Facades\Log::error('Checkout Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again. Error: ' . $e->getMessage());
         }
     }
 
