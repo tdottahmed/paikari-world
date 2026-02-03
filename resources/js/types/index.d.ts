@@ -8,7 +8,7 @@ export interface User {
 }
 
 export type PageProps<
-    T extends Record<string, unknown> = Record<string, unknown>
+    T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
     auth: {
         user: User;
@@ -23,6 +23,18 @@ export interface Category {
     image: string;
     description?: string;
     min_order_qty?: number;
+    created_at?: string;
+    updated_at?: string;
+}
+
+// Supplier type
+export interface Supplier {
+    id: number;
+    name: string;
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    contact_info?: string | null;
     created_at?: string;
     updated_at?: string;
 }
@@ -337,11 +349,11 @@ export interface SelectOption {
 // Bulk Action types
 export interface BulkAction {
     type:
-    | "delete"
-    | "activate"
-    | "deactivate"
-    | "update_category"
-    | "update_supplier";
+        | "delete"
+        | "activate"
+        | "deactivate"
+        | "update_category"
+        | "update_supplier";
     ids: number[];
     data?: any;
 }

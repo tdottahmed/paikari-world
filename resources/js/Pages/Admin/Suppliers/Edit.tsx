@@ -49,7 +49,7 @@ const Edit: React.FC<EditProps> = ({ supplier }) => {
                         className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-4"
                     >
                         <ArrowLeft size={20} />
-                        <span> Back to Suppliers </span>
+                        <span>Back to Suppliers</span>
                     </Link>
                     <div className="flex items-center justify-between">
                         <h1 className="text-2xl md:text-3xl font-bold text-white">
@@ -61,7 +61,7 @@ const Edit: React.FC<EditProps> = ({ supplier }) => {
                             className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
                         >
                             <Trash2 size={18} />
-                            <span> Delete </span>
+                            <span>Delete</span>
                         </button>
                     </div>
                 </div>
@@ -138,6 +138,27 @@ const Edit: React.FC<EditProps> = ({ supplier }) => {
                             />
                             <InputError
                                 message={errors.address}
+                                className="mt-2"
+                            />
+                        </div>
+
+                        <div className="mt-4">
+                            <InputLabel
+                                htmlFor="contact_info"
+                                value="Contact Info"
+                            />
+                            <TextInput
+                                id="contact_info"
+                                name="contact_info"
+                                value={data.contact_info}
+                                onChange={(e) =>
+                                    setData("contact_info", e.target.value)
+                                }
+                                className="mt-1 block w-full"
+                                placeholder="Enter contact information"
+                            />
+                            <InputError
+                                message={errors.contact_info}
                                 className="mt-2"
                             />
                         </div>

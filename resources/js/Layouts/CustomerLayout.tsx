@@ -40,8 +40,6 @@ const CustomerLayout: React.FC<CustomerLayoutProps> = ({ children }) => {
 
             <Header onMenuClick={() => setIsMenuOpen(true)} />
 
-            <CartSidebar />
-
             <CategorySidebar
                 isOpen={isMenuOpen}
                 onClose={() => setIsMenuOpen(false)}
@@ -70,6 +68,8 @@ const CustomerLayout: React.FC<CustomerLayoutProps> = ({ children }) => {
             )}
 
             <Footer />
+
+            <CartSidebar />
         </div>
     );
 };

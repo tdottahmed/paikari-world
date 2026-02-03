@@ -18,12 +18,10 @@ const CartSidebarItem: React.FC<CartSidebarItemProps> = ({ item }) => {
     }, [item.quantity]);
 
     const handleUpdateQuantity = (newQuantity: number) => {
-        if (newQuantity < 1) return;
         updateQuantity(item.cart_id, newQuantity);
     };
 
     const handleQuantityChange = (newQuantity: number) => {
-        if (newQuantity < 1) return;
         setQuantity(newQuantity);
         handleUpdateQuantity(newQuantity);
     };
@@ -102,7 +100,8 @@ const CartSidebarItem: React.FC<CartSidebarItemProps> = ({ item }) => {
                             onClick={() => handleQuantityChange(quantity + 1)}
                             className="w-7 h-full flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-white rounded-r-lg transition-colors border-l border-gray-200"
                             disabled={
-                                !item.is_preorder && quantity >= item.stock
+                                !item.is_preorder &&
+                                quantity >= Number(item.stock)
                             }
                         >
                             <Plus size={12} />

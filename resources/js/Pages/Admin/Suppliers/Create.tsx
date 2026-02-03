@@ -118,6 +118,27 @@ const Create: React.FC = () => {
                             />
                         </div>
 
+                        <div className="mt-4">
+                            <InputLabel
+                                htmlFor="contact_info"
+                                value="Contact Info"
+                            />
+                            <TextInput
+                                id="contact_info"
+                                name="contact_info"
+                                value={data.contact_info}
+                                onChange={(e) =>
+                                    setData("contact_info", e.target.value)
+                                }
+                                className="mt-1 block w-full"
+                                placeholder="Enter contact information"
+                            />
+                            <InputError
+                                message={errors.contact_info}
+                                className="mt-2"
+                            />
+                        </div>
+
                         <div className="flex gap-3 pt-4">
                             <Link
                                 href={route("admin.suppliers.index")}

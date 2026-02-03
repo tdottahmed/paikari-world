@@ -44,28 +44,28 @@ export const useCartStore = create<CartState>()(
                         : quantity;
 
                     // Calculate stock logic
-                    let stock = product.stock;
+                    let stock = Number(product.stock);
                     if (variations && variations.length > 0) {
                         const variationStocks = variations
-                            .map((v) => v.stock ?? product.stock)
+                            .map((v) => (v.stock ?? product.stock))
+                            .map((s) => Number(s))
                             .filter(
                                 (s) =>
-                                    s !== undefined && s !== null && !isNaN(s)
+                                    !isNaN(s)
                             );
                         if (variationStocks.length > 0) {
-                            stock = Math.min(product.stock, ...variationStocks);
+                            stock = Math.min(Number(product.stock), ...variationStocks);
                         }
                     }
 
                     // Calculate price logic
-                    // If variations are present and have specific prices, we use the highest price among selected (override logic)
-                    // or just checking if any override exists.
-                    // Based on ProductVariationModal logic: max of variation prices if present, else product sale_price.
-                    let price = product.sale_price;
+                    let price = Number(product.sale_price);
                     if (variations && variations.length > 0) {
                         const varPrices = variations
-                            .map(v => v.price ? parseFloat(String(v.price)) : null)
-                            .filter(p => p !== null) as number[];
+                            .map((v) =>
+                                v.price ? parseFloat(String(v.price)) : null
+                            )
+                            .filter((p) => p !== null) as number[];
 
                         if (varPrices.length > 0) {
                             price = Math.max(...varPrices);

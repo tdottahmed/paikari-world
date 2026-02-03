@@ -47,7 +47,7 @@ export default function ProductShow({
             cartItem &&
             debouncedQuantity !== cartItem.quantity
         ) {
-            updateQuantity(product.id, debouncedQuantity);
+            updateQuantity(String(product.id), debouncedQuantity);
         }
     }, [debouncedQuantity, updateQuantity, product.id]);
 
@@ -145,24 +145,24 @@ export default function ProductShow({
 </div>
 {
     product.images &&
-    product.images.length > 1 && (
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x" >
-        {
-            product.images.map(
-                (image, index) => (
-                    <button
+        product.images.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x" >
+            {
+                product.images.map(
+                    (image, index) => (
+                        <button
                                                         key= { index }
                                                         onClick = {() =>
-                setSelectedImage(
-                    image
-                )
+                    setSelectedImage(
+                        image
+                    )
                                                         }
     className = {`relative w-16 h-16 md:w-20 md:h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all snap-start ${(selectedImage ||
-            product
-                .images[0]) ===
-            image
-            ? "border-indigo-600 ring-2 ring-indigo-100"
-            : "border-transparent hover:border-gray-200"
+        product
+            .images[0]) ===
+        image
+        ? "border-indigo-600 ring-2 ring-indigo-100"
+        : "border-transparent hover:border-gray-200"
         }`
 }
                                                     >
@@ -225,7 +225,7 @@ size = "lg"
     `w-full sm:flex-1 px-8 py-3.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md ${isInCart
         ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200"
         : "bg-gray-900 hover:bg-gray-800 text-white shadow-gray-200"
-    }`
+        }`
 }
 disabled = {
                                                 !product.is_preorder &&
@@ -303,15 +303,17 @@ strokeWidth = { 3}
     </div>
     </div>
 
-    {/* Variation Modal */}
-    {hasVariations && (
+{/* Variation Modal */ }
+{
+    hasVariations && (
         <ProductVariationModal
-            isOpen={showVariationModal}
-            onClose={() => setShowVariationModal(false)}
-            product={product}
-            onAddToCart={handleVariationAddToCart}
-        />
+            isOpen={ showVariationModal }
+    onClose = {() => setShowVariationModal(false)
+}
+product = { product }
+onAddToCart = { handleVariationAddToCart }
+    />
     )}
-    </CustomerLayout>
+</CustomerLayout>
     );
 }

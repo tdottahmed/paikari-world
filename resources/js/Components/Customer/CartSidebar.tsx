@@ -38,14 +38,6 @@ const CartSidebar = () => {
                     categoryGroups[item.category_id] = {
                         qty: 0,
                         minQty: item.min_order_qty || 3, // Default to 3 if missing
-                        // We would ideally want the category name here, but cart item only has product name.
-                        // Assuming the user knows which products belong to which category or we just show a generic message.
-                        // Wait, we don't have category name in CartItem. Let's try to proceed without it or assume global policy if unsure.
-                        // Actually, I can add category name to CartItem in useCartStore if needed,
-                        // but for now let's say "You have to order at least X products from one of the categories".
-                        // Better: "Category ID X requires minimum Y items". Not user friendly.
-                        // Let's check useCartStore update again. I didn't add category name.
-                        // I will assume for now detailed message is "You have to order at least X products from this category".
                     };
                 }
                 categoryGroups[item.category_id].qty += item.quantity;
