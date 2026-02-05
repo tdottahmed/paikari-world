@@ -129,7 +129,12 @@ const ProductVariationSelector: React.FC<ProductVariationSelectorProps> = ({
     ]);
 
     const handleBatchQuantityUpdate = (index: number, newQty: number) => {
-        if (newQty < 1) return;
+        const minQty =
+            product.category?.add_cart_qty && product.category.add_cart_qty > 0
+                ? product.category.add_cart_qty
+                : 1;
+
+        if (newQty < minQty) return;
 
         // Calculate max stock for this specific item in batch
         const item = cartBatch[index];
@@ -341,7 +346,18 @@ const ProductVariationSelector: React.FC<ProductVariationSelectorProps> = ({
                                                         item.quantity - 1,
                                                     )
                                                 }
-                                                className="w-8 h-full flex items-center justify-center hover:bg-gray-100 text-gray-600 rounded-l-lg transition-colors"
+                                                disabled={
+                                                    item.quantity <=
+                                                    (product.category
+                                                        ?.add_cart_qty || 1)
+                                                }
+                                                className={`w-8 h-full flex items-center justify-center rounded-l-lg transition-colors ${
+                                                    item.quantity <=
+                                                    (product.category
+                                                        ?.add_cart_qty || 1)
+                                                        ? "text-gray-300 cursor-not-allowed"
+                                                        : "hover:bg-gray-100 text-gray-600"
+                                                }`}
                                             >
                                                 -
                                             </button>

@@ -164,7 +164,12 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
     // Once added, existsIndex will be found, so it won't add again.
 
     const handleBatchQuantityUpdate = (index: number, newQty: number) => {
-        if (newQty < 1) return;
+        const minQty =
+            product.category?.add_cart_qty && product.category.add_cart_qty > 0
+                ? product.category.add_cart_qty
+                : 1;
+
+        if (newQty < minQty) return;
 
         // Calculate max stock for this specific item in batch
         const item = cartBatch[index];
@@ -455,11 +460,20 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                                                             .map(
                                                                                 (
                                                                                     v,
-                                                                                ) =>
-                                                                                    v.value,
+                                                                                ) => {
+                                                                                    const attrName =
+                                                                                        v
+                                                                                            .product_attribute
+                                                                                            ?.name ||
+                                                                                        v
+                                                                                            .attribute
+                                                                                            ?.name ||
+                                                                                        "Option";
+                                                                                    return `${attrName}: ${v.value}`;
+                                                                                },
                                                                             )
                                                                             .join(
-                                                                                " / ",
+                                                                                ", ",
                                                                             )}
                                                                     </div>
                                                                     <div className="text-xs text-gray-500 mt-0.5 font-medium">
@@ -488,7 +502,22 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                                                                                     1,
                                                                             )
                                                                         }
-                                                                        className="w-8 h-full flex items-center justify-center hover:bg-gray-100 text-gray-600 rounded-l-lg transition-colors"
+                                                                        disabled={
+                                                                            item.quantity <=
+                                                                            (product
+                                                                                .category
+                                                                                ?.add_cart_qty ||
+                                                                                1)
+                                                                        }
+                                                                        className={`w-8 h-full flex items-center justify-center rounded-l-lg transition-colors ${
+                                                                            item.quantity <=
+                                                                            (product
+                                                                                .category
+                                                                                ?.add_cart_qty ||
+                                                                                1)
+                                                                                ? "text-gray-300 cursor-not-allowed"
+                                                                                : "hover:bg-gray-100 text-gray-600"
+                                                                        }`}
                                                                     >
                                                                         -
                                                                     </button>
