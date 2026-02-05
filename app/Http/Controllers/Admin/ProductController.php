@@ -243,18 +243,19 @@ class ProductController extends Controller
 
                 // 3. Update existing or Create new
                 foreach ($submittedVariations as $variationData) {
-                    // Check if it's an update (has valid numeric ID)
+                    $variation = null;
                     if (isset($variationData['id']) && is_numeric($variationData['id'])) {
-                        // Update existing variation
                         $variation = \App\Models\ProductVariation::find($variationData['id']);
-                        if ($variation && $variation->product_id == $product->id) {
-                            $variation->update([
-                                'product_attribute_id' => $variationData['attribute_id'],
-                                'value' => $variationData['value'],
-                                'stock' => $variationData['stock'] ?? null,
-                                'price' => $variationData['price'] ?? null,
-                            ]);
-                        }
+                    }
+
+                    if ($variation && $variation->product_id == $product->id) {
+                        // Update existing variation
+                        $variation->update([
+                            'product_attribute_id' => $variationData['attribute_id'],
+                            'value' => $variationData['value'],
+                            'stock' => $variationData['stock'] ?? null,
+                            'price' => $variationData['price'] ?? null,
+                        ]);
                     } else {
                         // Create new variation
                         ProductVariation::create([
