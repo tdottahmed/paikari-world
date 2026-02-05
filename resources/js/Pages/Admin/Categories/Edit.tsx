@@ -21,6 +21,7 @@ const Edit: React.FC<EditProps> = ({ category }) => {
         slug: category.slug,
         image: null as File | null,
         min_order_qty: category.min_order_qty || 3,
+        add_cart_qty: category.add_cart_qty || 1,
         _method: "PUT",
     });
 
@@ -38,9 +39,7 @@ const Edit: React.FC<EditProps> = ({ category }) => {
         }
     };
 
-    const handleRemoveExisting = () => {
-       
-    };
+    const handleRemoveExisting = () => {};
 
     const handleTitleChange = (value: string) => {
         setData("title", value);
@@ -163,30 +162,29 @@ const Edit: React.FC<EditProps> = ({ category }) => {
                                 />
                             </div>
 
-                            {/* Min Order Qty */}
+                            {/* Add Cart Qty */}
                             <div className="mt-4">
                                 <InputLabel
-                                    htmlFor="min_order_qty"
-                                    value="Mini. Order Qty"
+                                    htmlFor="add_cart_qty"
+                                    value="Add Cart Qty"
                                 />
                                 <TextInput
-                                    id="min_order_qty"
-                                    name="min_order_qty"
+                                    id="add_cart_qty"
+                                    name="add_cart_qty"
                                     type="number"
-                                    value={String(data.min_order_qty)}
+                                    value={String(data.add_cart_qty)}
                                     onChange={(e) =>
                                         setData(
-                                            "min_order_qty",
+                                            "add_cart_qty",
                                             parseInt(e.target.value),
                                         )
                                     }
                                     className="mt-1 block w-full"
-                                    placeholder="Enter minimum order quantity"
-                                    required
+                                    placeholder="Qty to add on click"
                                     min="1"
                                 />
                                 <InputError
-                                    message={errors.min_order_qty}
+                                    message={errors.add_cart_qty}
                                     className="mt-2"
                                 />
                             </div>

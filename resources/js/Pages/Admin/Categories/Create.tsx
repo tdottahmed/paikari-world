@@ -16,6 +16,7 @@ const Create: React.FC = () => {
         slug: "",
         image: null as File | null,
         min_order_qty: 3,
+        add_cart_qty: 1,
     });
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -142,30 +143,29 @@ const Create: React.FC = () => {
                             />
                         </div>
 
-                        {/* Min Order Qty */}
+                        {/* Add Cart Qty */}
                         <div className="mt-3">
                             <InputLabel
-                                htmlFor="min_order_qty"
-                                value="Mini. Order Qty"
+                                htmlFor="add_cart_qty"
+                                value="Add Cart Qty"
                             />
                             <TextInput
-                                id="min_order_qty"
-                                name="min_order_qty"
+                                id="add_cart_qty"
+                                name="add_cart_qty"
                                 type="number"
-                                value={String(data.min_order_qty)}
+                                value={String(data.add_cart_qty)}
                                 onChange={(e) =>
                                     setData(
-                                        "min_order_qty",
+                                        "add_cart_qty",
                                         parseInt(e.target.value),
                                     )
                                 }
                                 className="mt-1 block w-full"
-                                placeholder="Enter minimum order quantity"
-                                required
+                                placeholder="Qty to add on click"
                                 min="1"
                             />
                             <InputError
-                                message={errors.min_order_qty}
+                                message={errors.add_cart_qty}
                                 className="mt-2"
                             />
                         </div>

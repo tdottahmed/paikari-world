@@ -52,7 +52,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         if (hasVariations) {
             setShowVariationModal(true);
         } else {
-            addToCart(product, 1);
+            // Determine quantity to add based on category settings
+            let qtyToAdd = 1;
+            if (
+                product.category?.add_cart_qty &&
+                product.category.add_cart_qty > 0
+            ) {
+                qtyToAdd = product.category.add_cart_qty;
+            }
+            addToCart(product, qtyToAdd);
         }
     };
 
@@ -61,6 +69,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     };
 
     const handleUpdateQuantity = (newQuantity: number) => {
+        // const minQty = product.category?.min_order_qty || 1;
         if (newQuantity < 1) return;
         setQuantity(newQuantity);
     };
@@ -203,8 +212,8 @@ disabled = {
                                 !product.is_preorder && product.stock <= 0
                             }
 className = {`w-full py-3 rounded-3xl flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${product.stock > 0 || product.is_preorder
-        ? "bg-[#1A1B2E] text-white hover:bg-[#2D2E45] shadow-lg hover:shadow-xl"
-        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+    ? "bg-[#1A1B2E] text-white hover:bg-[#2D2E45] shadow-lg hover:shadow-xl"
+    : "bg-gray-200 text-gray-400 cursor-not-allowed"
     }`}
                         >
 {

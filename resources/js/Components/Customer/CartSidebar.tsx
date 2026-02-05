@@ -24,45 +24,12 @@ const CartSidebar = () => {
     const onClose = () => setIsOpen(false);
 
     const handleCheckout = (e: React.MouseEvent) => {
-        // Group items by category
-        const categoryGroups: Record<
-            number,
-            { qty: number; minQty: number; catName?: string }
-        > = {};
-
-        // Helper to find category name (not strictly needed for logic but good for error msg)
-        // We rely on the first item of category to get minQty
-        cartItems.forEach((item) => {
-            if (item.category_id) {
-                if (!categoryGroups[item.category_id]) {
-                    categoryGroups[item.category_id] = {
-                        qty: 0,
-                        minQty: item.min_order_qty || 3, // Default to 3 if missing
-                    };
-                }
-                categoryGroups[item.category_id].qty += item.quantity;
-            } else {
-                // Fallback for items without category (shouldn't happen with proper data)
-                // treat them as global count check? Old logic was global < 3.
-            }
-        });
-
-        // Check for violations
-        for (const [catId, data] of Object.entries(categoryGroups)) {
-            if (data.qty < data.minQty) {
-                e.preventDefault();
-                toast.warning(
-                    `You have to order at least ${data.minQty} products from this category.`,
-                );
-                return;
-            }
-        }
-        if (Object.keys(categoryGroups).length === 0 && getCartCount() < 3) {
+        if (getCartCount() < 3) {
             e.preventDefault();
-            toast.warning("You have to order at least 3 products");
-        } else {
-            onClose();
+            toast.warning("You have to order at least 3 products.");
+            return;
         }
+        onClose();
     };
 
     const { props } = usePage();

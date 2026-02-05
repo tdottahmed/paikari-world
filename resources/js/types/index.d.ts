@@ -23,6 +23,7 @@ export interface Category {
     image: string;
     description?: string;
     min_order_qty?: number;
+    add_cart_qty?: number;
     created_at?: string;
     updated_at?: string;
 }
@@ -349,11 +350,11 @@ export interface SelectOption {
 // Bulk Action types
 export interface BulkAction {
     type:
-        | "delete"
-        | "activate"
-        | "deactivate"
-        | "update_category"
-        | "update_supplier";
+    | "delete"
+    | "activate"
+    | "deactivate"
+    | "update_category"
+    | "update_supplier";
     ids: number[];
     data?: any;
 }
