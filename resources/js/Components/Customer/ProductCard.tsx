@@ -69,8 +69,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     };
 
     const handleUpdateQuantity = (newQuantity: number) => {
-        // const minQty = product.category?.min_order_qty || 1;
-        if (newQuantity < 1) return;
+        const minQty = product.category?.add_cart_qty || 1;
+        if (newQuantity < minQty) return;
         setQuantity(newQuantity);
     };
 
@@ -193,6 +193,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                                 onIncrease={() =>
                                     handleUpdateQuantity(quantity + 1)
                                 }
+                                min={product.category?.add_cart_qty || 1}
                                 max={
                                     product.is_preorder
                                         ? undefined

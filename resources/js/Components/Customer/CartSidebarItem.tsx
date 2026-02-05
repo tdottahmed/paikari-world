@@ -88,8 +88,12 @@ const CartSidebarItem: React.FC<CartSidebarItemProps> = ({ item }) => {
                     <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg h-7">
                         <button
                             onClick={() => handleQuantityChange(quantity - 1)}
-                            className="w-7 h-full flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-white rounded-l-lg transition-colors border-r border-gray-200"
-                            disabled={quantity <= 1}
+                            className={`w-7 h-full flex items-center justify-center rounded-l-lg transition-colors border-r border-gray-200 ${
+                                quantity <= (item.add_cart_qty || 1)
+                                    ? "text-gray-300 cursor-not-allowed"
+                                    : "text-gray-500 hover:text-gray-700 hover:bg-white"
+                            }`}
+                            disabled={quantity <= (item.add_cart_qty || 1)}
                         >
                             <Minus size={12} />
                         </button>

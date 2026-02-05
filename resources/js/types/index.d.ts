@@ -55,6 +55,7 @@ export interface CartItem {
     variations?: ProductVariation[];
     category_id?: number;
     min_order_qty?: number;
+    add_cart_qty?: number;
 }
 
 export interface DeliveryCharge {
