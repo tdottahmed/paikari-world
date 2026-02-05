@@ -8,7 +8,7 @@ import { getAssetUrl } from "@/Utils/helpers";
 import { useCartStore } from "@/Stores/useCartStore";
 import { useDebounce } from "@/Hooks/useDebounce";
 import QuantitySelector from "@/Components/Ui/QuantitySelector";
-import ProductVariationModal from "@/Components/Customer/ProductVariationModal";
+import ProductVariationSelector from "@/Components/Customer/ProductVariationSelector";
 
 interface ProductShowProps {
     product: Product;
@@ -23,14 +23,12 @@ export default function ProductShow({
     const cartItem = cart[String(product.id)];
     const isInCart = !!cartItem;
     const hasVariations =
-        product.product_variations &&
-        product.product_variations.length > 0;
+        product.product_variations && product.product_variations.length > 0;
 
     const [quantity, setQuantity] = useState(cartItem?.quantity || 1);
     const [selectedImage, setSelectedImage] = useState(
-        product.images?.[0] || null
+        product.images?.[0] || null,
     );
-    const [showVariationModal, setShowVariationModal] = useState(false);
     const debouncedQuantity = useDebounce(quantity, 300);
 
     // Sync local quantity with store quantity (handling external updates)
@@ -62,258 +60,234 @@ export default function ProductShow({
     const handleAddToCart = () => {
         if (isInCart) {
             setIsOpen(true);
-        } else if (hasVariations) {
-            setShowVariationModal(true);
         } else {
             addToCart(product, quantity);
         }
     };
 
-    const handleVariationAddToCart = (
-        variations: any[],
-        quantity: number
-    ) => {
+    const handleVariationAddToCart = (variations: any[], quantity: number) => {
         addToCart(product, quantity, variations);
     };
 
     return (
         <CustomerLayout>
-        <Head title= { product.name } />
+            <Head title={product.name} />
 
-        <div className="bg-gray-50 py-4 md:py-8" >
-            <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 xl:px-16" >
-                {/* Breadcrumbs */ }
-                < nav className = "hidden md:flex items-center text-sm text-gray-500 mb-8" >
-                    <Link href="/" className = "hover:text-gray-900" >
-                        Home
+            <div className="bg-gray-50 py-4 md:py-8">
+                <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
+                    {/* Breadcrumbs */}
+                    <nav className="hidden md:flex items-center text-sm text-gray-500 mb-8">
+                        <Link href="/" className="hover:text-gray-900">
+                            Home
                         </Link>
-                        < ChevronRight size = { 16} className = "mx-2" />
-                            <Link
-                            href={ route("products.index") }
-    className = "hover:text-gray-900"
-        >
-        Products
-        </Link>
-    {
-        product.category && (
-            <>
-            <ChevronRight size={ 16 } className = "mx-2" />
-                <Link
-                                    href={
-            route(
-                "products.category",
-                product.category.slug
-            )
-        }
-        className = "hover:text-gray-900"
-            >
-            { product.category.title }
-            </Link>
-            </>
-                        )
-    }
-    <ChevronRight size={ 16 } className = "mx-2" />
-        <span className="text-gray-900 font-medium truncate max-w-xs" >
-            { product.name }
-            </span>
-            </nav>
-
-            < div className = "bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 p-4 md:p-6 lg:p-8" >
-                    {/* Image Gallery */ }
-                    < div className = "space-y-4" >
-                        <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group" >
-                            <Image
-                                        src={
-        getAssetUrl(
-            selectedImage || product.images[0]
-        )
-    }
-    alt = { product.name }
-    className = "w-full h-full object-cover"
-        />
-        {
-            product.stock <= 0 &&
-                !product.is_preorder && (
-                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
-                        <span className="bg-red-100 text-red-800 px-4 py-2 rounded-full font-bold text-lg">
-                            Out of Stock
-                </ span >
-        </div>
-                                        )
-}
-</div>
-{
-    product.images &&
-        product.images.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x" >
-            {
-                product.images.map(
-                    (image, index) => (
-                        <button
-                                                        key= { index }
-                                                        onClick = {() =>
-                    setSelectedImage(
-                        image
-                    )
-                                                        }
-    className = {`relative w-16 h-16 md:w-20 md:h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all snap-start ${(selectedImage ||
-        product
-            .images[0]) ===
-        image
-        ? "border-indigo-600 ring-2 ring-indigo-100"
-        : "border-transparent hover:border-gray-200"
-        }`
-}
-                                                    >
-    <img
-                                                            src={
-    getAssetUrl(
-        image
-    )
-}
-alt = {`${product.name
-    } ${index + 1}`}
-className = "w-full h-full object-cover"
-    />
-    </button>
-                                                )
-                                            )}
-</div>
+                        <ChevronRight size={16} className="mx-2" />
+                        <Link
+                            href={route("products.index")}
+                            className="hover:text-gray-900"
+                        >
+                            Products
+                        </Link>
+                        {product.category && (
+                            <>
+                                <ChevronRight size={16} className="mx-2" />
+                                <Link
+                                    href={route(
+                                        "products.category",
+                                        product.category.slug,
                                     )}
-</div>
+                                    className="hover:text-gray-900"
+                                >
+                                    {product.category.title}
+                                </Link>
+                            </>
+                        )}
+                        <ChevronRight size={16} className="mx-2" />
+                        <span className="text-gray-900 font-medium truncate max-w-xs">
+                            {product.name}
+                        </span>
+                    </nav>
 
-{/* Product Info */ }
-<div className="flex flex-col" >
-    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4" >
-        { product.name }
-        </h1>
-
-        < div className = "flex items-center gap-4 mb-6" >
-            <div className="text-2xl md:text-3xl font-bold text-indigo-600" >
-                                        ৳{ product.sale_price }
-</div>
-    </div>
-
-    < div className = "prose prose-sm text-gray-600 mb-8 max-w-none" >
-        <p>{ product.description } </p>
-        </div>
-
-        < div className = "mt-auto space-y-6" >
-            <div className="flex flex-col items-center sm:flex-row gap-4 sm:items-center sm:justify-center" >
-                <QuantitySelector
-                                            quantity={ quantity }
-onDecrease = {() =>
-handleQuantityChange(
-    "decrement"
-)
-                                            }
-onIncrease = {() =>
-handleQuantityChange(
-    "increment"
-)
-                                            }
-max = {
-    product.is_preorder
-        ? undefined
-        : product.stock
-}
-size = "lg"
-    />
-    <button
-                                            className={
-    `w-full sm:flex-1 px-8 py-3.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md ${isInCart
-        ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200"
-        : "bg-gray-900 hover:bg-gray-800 text-white shadow-gray-200"
-        }`
-}
-disabled = {
-                                                !product.is_preorder &&
-    product.stock <= 0
-                                            }
-onClick = { handleAddToCart }
-    >
-{
-    isInCart?(
-                                                <>
-    <Check
-                                                        size={ 20 }
-strokeWidth = { 3}
-    />
-    Added to Cart
-        </>
-                                            ) : (
-    <>
-    <ShoppingCart size= { 20} />
-    {
-        product.is_preorder &&
-            product.stock <= 0
-            ? "Pre Order"
-            : "Add to Cart"
-    }
-    </>
-                                            )}
-</button>
-    </div>
-
-{/* Meta Info */ }
-<div className="border-t border-gray-100 pt-6 space-y-3 text-sm text-gray-500" >
-{
-    product.sku && (
-        <div className="flex justify-between">
-            <span>SKU:</span>
-    < span className = "font-medium text-gray-900" >
-        { product.sku }
-        </span>
-        </div>
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 p-4 md:p-6 lg:p-8">
+                            {/* Image Gallery */}
+                            <div className="space-y-4">
+                                <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
+                                    <Image
+                                        src={getAssetUrl(
+                                            selectedImage || product.images[0],
                                         )}
-{
-    product.category && (
-        <div className="flex justify-between" >
-            <span>Category: </span>
-                < Link
-    href = {
-        route(
-                                                        "products.category",
-            product.category.slug
-                                                    )
-    }
-    className = "font-medium text-indigo-600 hover:text-indigo-500"
-        >
-        { product.category.title }
-        </Link>
-        </div>
-                                        )
-}
-{
-    product.supplier && (
-        <div className="flex justify-between" >
-            <span>Supplier: </span>
-                < span className = "font-medium text-gray-900" >
-                    { product.supplier.name }
-                    </span>
-                    </div>
-                                        )
-}
-</div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
+                                        alt={product.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    {product.stock <= 0 &&
+                                        !product.is_preorder && (
+                                            <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                                                <span className="bg-red-100 text-red-800 px-4 py-2 rounded-full font-bold text-lg">
+                                                    Out of Stock
+                                                </span>
+                                            </div>
+                                        )}
+                                </div>
+                                {product.images &&
+                                    product.images.length > 1 && (
+                                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x">
+                                            {product.images.map(
+                                                (image, index) => (
+                                                    <button
+                                                        key={index}
+                                                        onClick={() =>
+                                                            setSelectedImage(
+                                                                image,
+                                                            )
+                                                        }
+                                                        className={`relative w-16 h-16 md:w-20 md:h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all snap-start ${
+                                                            (selectedImage ||
+                                                                product
+                                                                    .images[0]) ===
+                                                            image
+                                                                ? "border-indigo-600 ring-2 ring-indigo-100"
+                                                                : "border-transparent hover:border-gray-200"
+                                                        }`}
+                                                    >
+                                                        <img
+                                                            src={getAssetUrl(
+                                                                image,
+                                                            )}
+                                                            alt={`${product.name} ${index + 1}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </button>
+                                                ),
+                                            )}
+                                        </div>
+                                    )}
+                            </div>
 
-{/* Variation Modal */ }
-{
-    hasVariations && (
-        <ProductVariationModal
-            isOpen={ showVariationModal }
-    onClose = {() => setShowVariationModal(false)
-}
-product = { product }
-onAddToCart = { handleVariationAddToCart }
-    />
-    )}
-</CustomerLayout>
+                            {/* Product Info */}
+                            <div className="flex flex-col">
+                                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                                    {product.name}
+                                </h1>
+
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="text-2xl md:text-3xl font-bold text-indigo-600">
+                                        ৳{product.sale_price}
+                                    </div>
+                                </div>
+
+                                <div className="prose prose-sm text-gray-600 mb-8 max-w-none">
+                                    <p>{product.description} </p>
+                                </div>
+
+                                {/* Variation Selection OR Simple Add to Cart */}
+                                {hasVariations ? (
+                                    <div className="mt-4">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">
+                                            Select Options
+                                        </h3>
+                                        <ProductVariationSelector
+                                            product={product}
+                                            onAddToCart={
+                                                handleVariationAddToCart
+                                            }
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="mt-auto space-y-6">
+                                        <div className="flex flex-col items-center sm:flex-row gap-4 sm:items-center sm:justify-center">
+                                            <QuantitySelector
+                                                quantity={quantity}
+                                                onDecrease={() =>
+                                                    handleQuantityChange(
+                                                        "decrement",
+                                                    )
+                                                }
+                                                onIncrease={() =>
+                                                    handleQuantityChange(
+                                                        "increment",
+                                                    )
+                                                }
+                                                max={
+                                                    product.is_preorder
+                                                        ? undefined
+                                                        : product.stock
+                                                }
+                                                size="lg"
+                                            />
+                                            <button
+                                                className={`w-full sm:flex-1 px-8 py-3.5 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md ${
+                                                    isInCart
+                                                        ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200"
+                                                        : "bg-gray-900 hover:bg-gray-800 text-white shadow-gray-200"
+                                                }`}
+                                                disabled={
+                                                    !product.is_preorder &&
+                                                    product.stock <= 0
+                                                }
+                                                onClick={handleAddToCart}
+                                            >
+                                                {isInCart ? (
+                                                    <>
+                                                        <Check
+                                                            size={20}
+                                                            strokeWidth={3}
+                                                        />
+                                                        Added to Cart
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ShoppingCart
+                                                            size={20}
+                                                        />
+                                                        {product.is_preorder &&
+                                                        product.stock <= 0
+                                                            ? "Pre Order"
+                                                            : "Add to Cart"}
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Meta Info */}
+                                <div className="border-t border-gray-100 pt-6 mt-8 space-y-3 text-sm text-gray-500">
+                                    {product.sku && (
+                                        <div className="flex justify-between">
+                                            <span>SKU:</span>
+                                            <span className="font-medium text-gray-900">
+                                                {product.sku}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {product.category && (
+                                        <div className="flex justify-between">
+                                            <span>Category: </span>
+                                            <Link
+                                                href={route(
+                                                    "products.category",
+                                                    product.category.slug,
+                                                )}
+                                                className="font-medium text-indigo-600 hover:text-indigo-500"
+                                            >
+                                                {product.category.title}
+                                            </Link>
+                                        </div>
+                                    )}
+                                    {product.supplier && (
+                                        <div className="flex justify-between">
+                                            <span>Supplier: </span>
+                                            <span className="font-medium text-gray-900">
+                                                {product.supplier.name}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </CustomerLayout>
     );
 }

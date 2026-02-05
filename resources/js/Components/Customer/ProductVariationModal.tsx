@@ -135,9 +135,15 @@ const ProductVariationModal: React.FC<ProductVariationModalProps> = ({
                 (product.is_preorder || currentSelectionStock > 0)
             ) {
                 // Add new item
+                const initialQty =
+                    product.category?.add_cart_qty &&
+                    product.category.add_cart_qty > 0
+                        ? product.category.add_cart_qty
+                        : 1;
+
                 setCartBatch((prev) => [
                     ...prev,
-                    { variations: currentVariations, quantity: 1 },
+                    { variations: currentVariations, quantity: initialQty },
                 ]);
             }
         }
