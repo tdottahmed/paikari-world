@@ -227,7 +227,7 @@ class ProductController extends Controller
             // Handle Variations Update (Sync Logic)
             if ($request->has('variations')) {
                 $submittedVariations = $request->variations ?? [];
-                
+
                 // 1. Get IDs of submitted variations that already exist in DB
                 $submittedIds = collect($submittedVariations)
                     ->pluck('id')

@@ -77,13 +77,17 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         // In single mode, if we have a new file, we don't show existing images
         const showExisting = multiple || valueArray.length === 0;
 
+        const safeExistingImages = Array.isArray(existingImages)
+            ? existingImages
+            : [];
+
         const existingPreviews: ImageFile[] = showExisting
-            ? existingImages.map((path) => ({
-                id: `existing-${path}`,
-                preview: path,
-                name: path.split("/").pop() || "Existing Image",
-                isExisting: true,
-            }))
+            ? safeExistingImages.map((path) => ({
+                  id: `existing-${path}`,
+                  preview: path,
+                  name: path.split("/").pop() || "Existing Image",
+                  isExisting: true,
+              }))
             : [];
 
         // Create new file previews
@@ -121,8 +125,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         const currentTotal = multiple
             ? existingImages.length + currentNewFilesCount
             : files.length > 0
-                ? 1
-                : 0; // In single mode, result will be 1 file
+              ? 1
+              : 0; // In single mode, result will be 1 file
 
         if (!multiple && files.length > 1) {
             alert("You can only upload one image");
@@ -132,7 +136,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         if (
             multiple &&
             files.length + existingImages.length + currentNewFilesCount >
-            maxFiles
+                maxFiles
         ) {
             alert(`You can only upload up to ${maxFiles} images in total`);
             return;
@@ -141,7 +145,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         // Filter out duplicates (only relevant for multiple mode)
         const existingFileIds = new Set(valueArray.map(generateFileId));
         const newFiles = files.filter(
-            (file) => !existingFileIds.has(generateFileId(file))
+            (file) => !existingFileIds.has(generateFileId(file)),
         );
 
         if (multiple && newFiles.length === 0) {
@@ -175,7 +179,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             if (multiple) {
                 // For multiple: remove the specific file
                 const updatedFiles = valueArray.filter(
-                    (file) => generateFileId(file) !== id
+                    (file) => generateFileId(file) !== id,
                 );
                 onChange(updatedFiles);
             } else {
@@ -207,7 +211,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         e.currentTarget.classList.remove("border-blue-500", "bg-blue-50");
 
         const files = Array.from(e.dataTransfer.files).filter((file) =>
-            file.type.startsWith("image/")
+            file.type.startsWith("image/"),
         );
 
         if (files.length > 0) {
@@ -228,141 +232,131 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     const totalFilesCount = imagePreviews.length;
 
     return (
-        <div className= "space-y-3" >
-        { label && (
-            <InputLabel
+        <div className="space-y-3">
+            {label && (
+                <InputLabel
                     htmlFor="image-upload"
-    value = { label }
-    required = { required }
-    className = "mb-2"
-        />
+                    value={label}
+                    required={required}
+                    className="mb-2"
+                />
             )}
 
-<div
-                className={
-    `border-2 border-dashed border-gray-800 rounded-lg p-6 text-center cursor-pointer transition-colors hover:border-[#2DE3A7] ${error ? "border-red-300" : ""
-    }`
-}
-onDragOver = { handleDragOver }
-onDragLeave = { handleDragLeave }
-onDrop = { handleDrop }
-onClick = { handleContainerClick }
-    >
-    <input
-                    ref={ fileInputRef }
-type = "file"
-multiple = { multiple }
-accept = { accept }
-onChange = { handleFileSelect }
-className = "hidden"
-id = "image-upload"
-    />
-    <Upload className="mx-auto h-12 w-12 text-white-400" />
-        <div className="mt-2" >
-            <p className="text-sm font-medium text-white" >
-                Drop { multiple ? "images" : "an image" } here or click to
-upload
-    </p>
-    < p className = "text-xs text-white" >
-        { totalFilesCount } / { maxFiles } files selected
-{
-    existingImages.length > 0 &&
-    ` (${existingImages.length} existing)`
-}
-</p>
-{
-    !multiple && totalFilesCount > 0 && (
-        <p className="text-xs text-orange-600 mt-1" >
-            Selecting a new image will replace the current one
-                </p>
-                    )
-}
-</div>
-    </div>
-
-{ error && <InputError message={ error } /> }
-
-{
-    imagePreviews.length > 0 && (
-        <div
-                    className={
-        `grid gap-4 mt-4 ${multiple
-            ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-            : "grid-cols-1 max-w-xs"
-        }`
-    }
-                >
-        {
-            imagePreviews.map((image) => (
-                <div
-                            key= { image.id }
-                            className = "relative group overflow-hidden border-2 border-dashed border-gray-700 rounded-lg p-2 lg:p-8 text-center hover:border-[#2DE3A7] transition-colors"
-                >
-                <img
-                                src={
-                image.file
-                    ? image.preview
-                    : getAssetUrl(image.preview)
-            }
-                                alt = { image.name || "Image" }
-                                className = "w-full h-full object-cover"
-                                onError = {(e) => {
-                e.currentTarget.src = "/placeholder.png";
-            }}
-        />
-
-        <div className="absolute inset-0 bg-[#0E1614]/90 rounded-lg p-6 border border-gray-800 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" >
-            <div className="text-white text-center" >
-                {
-                    image.isExisting ? (
-                        <span className= "text-xs bg-blue-600 px-2 py-1 rounded-full" >
-                        Existing
-                        </span>
-                                    ) : (
-                            <p className="text-xs" >
-                        { " "}
-                                            { image.size }{ " "}
+            <div
+                className={`border-2 border-dashed border-gray-800 rounded-lg p-6 text-center cursor-pointer transition-colors hover:border-[#2DE3A7] ${
+                    error ? "border-red-300" : ""
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={handleContainerClick}
+            >
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple={multiple}
+                    accept={accept}
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="image-upload"
+                />
+                <Upload className="mx-auto h-12 w-12 text-white-400" />
+                <div className="mt-2">
+                    <p className="text-sm font-medium text-white">
+                        Drop {multiple ? "images" : "an image"} here or click to
+                        upload
+                    </p>
+                    <p className="text-xs text-white">
+                        {totalFilesCount} / {maxFiles} files selected
+                        {existingImages.length > 0 &&
+                            ` (${existingImages.length} existing)`}
+                    </p>
+                    {!multiple && totalFilesCount > 0 && (
+                        <p className="text-xs text-orange-600 mt-1">
+                            Selecting a new image will replace the current one
                         </p>
-                        )
-}
-</div>
-    </div>
+                    )}
+                </div>
+            </div>
 
-    < div className = "absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity" >
-        <button
+            {error && <InputError message={error} />}
+
+            {imagePreviews.length > 0 && (
+                <div
+                    className={`grid gap-4 mt-4 ${
+                        multiple
+                            ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                            : "grid-cols-1 max-w-xs"
+                    }`}
+                >
+                    {imagePreviews.map((image) => (
+                        <div
+                            key={image.id}
+                            className="relative group overflow-hidden border-2 border-dashed border-gray-700 rounded-lg p-2 lg:p-8 text-center hover:border-[#2DE3A7] transition-colors"
+                        >
+                            <img
+                                src={
+                                    image.file
+                                        ? image.preview
+                                        : getAssetUrl(image.preview)
+                                }
+                                alt={image.name || "Image"}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    e.currentTarget.src = "/placeholder.png";
+                                }}
+                            />
+
+                            <div className="absolute inset-0 bg-[#0E1614]/90 rounded-lg p-6 border border-gray-800 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <div className="text-white text-center">
+                                    {image.isExisting ? (
+                                        <span className="text-xs bg-blue-600 px-2 py-1 rounded-full">
+                                            Existing
+                                        </span>
+                                    ) : (
+                                        <p className="text-xs">
+                                            {" "}
+                                            {image.size}{" "}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
                                     type="button"
-onClick = {(e) => {
-    e.stopPropagation();
-    const imageUrl = image.isExisting
-        ? getAssetUrl(image.preview)
-        : image.preview;
-    window.open(imageUrl, "_blank");
-}}
-className = "p-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-title = "View image"
-    >
-    <Eye size={ 12 } />
-        </button>
-        < button
-type = "button"
-onClick = {(e) => {
-    e.stopPropagation();
-    removeImage(
-        image.id,
-        !!image.isExisting
-    );
-}}
-className = "p-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-title = "Remove image"
-    >
-    <X size={ 12 } />
-        </button>
-        </div>
-        </div>
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const imageUrl = image.isExisting
+                                            ? getAssetUrl(image.preview)
+                                            : image.preview;
+                                        window.open(imageUrl, "_blank");
+                                    }}
+                                    className="p-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                                    title="View image"
+                                >
+                                    <Eye size={12} />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        removeImage(
+                                            image.id,
+                                            !!image.isExisting,
+                                        );
+                                    }}
+                                    className="p-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                    title="Remove image"
+                                >
+                                    <X size={12} />
+                                </button>
+                            </div>
+                        </div>
                     ))}
-</div>
+                </div>
             )}
-</div>
+        </div>
     );
 };
 

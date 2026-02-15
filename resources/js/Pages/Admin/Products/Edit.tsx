@@ -41,9 +41,18 @@ export default function Edit({
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [processingDelete, setProcessingDelete] = useState(false);
 
-    const [existingImages, setExistingImages] = useState<string[]>(
-        product.images || []
-    );
+    const [existingImages, setExistingImages] = useState<string[]>(() => {
+        if (Array.isArray(product.images)) return product.images;
+        if (typeof product.images === "string") {
+            try {
+                const parsed = JSON.parse(product.images);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                return [];
+            }
+        }
+        return [];
+    });
 
     const {
         data,
