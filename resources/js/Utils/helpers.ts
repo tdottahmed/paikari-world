@@ -453,11 +453,14 @@ export const setCookie = (
     // Convert days to seconds for max-age
     const maxAgeSeconds = maxAgeDays * 24 * 60 * 60;
 
+    // Detect if site is HTTPS (critical for iOS Safari cookie persistence)
+    const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+
     // Build cookie string with max-age (more reliable than expires)
     let cookieString = `${name}=${encodeURIComponent(value)}; path=${path}; max-age=${maxAgeSeconds}; SameSite=${sameSite}`;
 
-    // Add secure flag if needed (required for SameSite=None)
-    if (secure || sameSite === "None") {
+    // Add secure flag if HTTPS or explicitly requested (required for SameSite=None and iOS Safari)
+    if (secure || sameSite === "None" || isSecure) {
         cookieString += "; Secure";
     }
 
@@ -471,7 +474,11 @@ export const setCookie = (
  */
 export const deleteCookie = (name: string, path: string = "/"): void => {
     if (typeof document === "undefined") return;
-    document.cookie = `${name}=; path=${path}; max-age=0; SameSite=Lax`;
+    
+    // Include Secure flag if HTTPS (for proper deletion on iOS Safari)
+    const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+    const secureFlag = isSecure ? "; Secure" : "";
+    document.cookie = `${name}=; path=${path}; max-age=0; SameSite=Lax${secureFlag}`;
 };
 
 /**
@@ -508,7 +515,12 @@ export const setGuestOrders = (
 
     // Limit to 50 orders to prevent cookie size issues
     const limitedOrderIds = orderIds.slice(0, 50);
-    setCookie("guest_orders", JSON.stringify(limitedOrderIds), maxAgeDays);
+    
+    // Ensure Secure flag is set for HTTPS sites (critical for iOS Safari)
+    const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+    setCookie("guest_orders", JSON.stringify(limitedOrderIds), maxAgeDays, {
+        secure: isSecure
+    });
 };
 
 /**
