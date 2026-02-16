@@ -24,6 +24,7 @@ export interface Category {
     description?: string;
     min_order_qty?: number;
     add_cart_qty?: number;
+    use_add_cart_qty_as_min?: boolean;
     created_at?: string;
     updated_at?: string;
 }
@@ -56,6 +57,7 @@ export interface CartItem {
     category_id?: number;
     min_order_qty?: number;
     add_cart_qty?: number;
+    use_add_cart_qty_as_min?: boolean;
 }
 
 export interface DeliveryCharge {

@@ -9,6 +9,7 @@ import InputLabel from "@/Components/Ui/InputLabel";
 import InputError from "@/Components/Ui/InputError";
 import Card from "@/Components/Ui/Card";
 import ImageUploader from "@/Components/Ui/ImageUploader";
+import Checkbox from "@/Components/Ui/Checkbox";
 
 const Create: React.FC = () => {
     const { data, setData, post, processing, errors } = useForm({
@@ -17,6 +18,7 @@ const Create: React.FC = () => {
         image: null as File | null,
         min_order_qty: 3,
         add_cart_qty: 1,
+        use_add_cart_qty_as_min: false,
     });
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -168,6 +170,26 @@ const Create: React.FC = () => {
                                 message={errors.add_cart_qty}
                                 className="mt-2"
                             />
+                            <div className="mt-3 flex items-center gap-2">
+                                <Checkbox
+                                    name="use_add_cart_qty_as_min"
+                                    checked={data.use_add_cart_qty_as_min || false}
+                                    onChange={(e) =>
+                                        setData(
+                                            "use_add_cart_qty_as_min",
+                                            e.target.checked,
+                                        )
+                                    }
+                                />
+                                <InputLabel
+                                    htmlFor="use_add_cart_qty_as_min"
+                                    value="Use Add Cart Qty as Minimum Order Quantity"
+                                    className="!mb-0 cursor-pointer"
+                                />
+                            </div>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                When enabled, products in this category will require a minimum order quantity equal to the "Add Cart Qty" value.
+                            </p>
                         </div>
 
                         {/* Actions */}

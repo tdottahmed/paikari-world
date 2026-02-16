@@ -482,51 +482,161 @@ export const deleteCookie = (name: string, path: string = "/"): void => {
 };
 
 /**
- * Get and parse guest orders from cookie
+ * Migrate guest orders from cookie to localStorage (one-time migration)
+ * @returns true if migration was successful, false otherwise
+ */
+const migrateGuestOrdersFromCookie = (): boolean => {
+    if (typeof window === "undefined" || typeof localStorage === "undefined") {
+        return false;
+    }
+
+    try {
+        // Check if migration already happened
+        if (localStorage.getItem("guest_orders") !== null) {
+            return false; // Already migrated
+        }
+
+        // Check for existing cookie
+        const cookieValue = getCookie("guest_orders");
+        if (!cookieValue) {
+            return false; // No cookie to migrate
+        }
+
+        // Parse cookie data
+        const parsed = JSON.parse(decodeURIComponent(cookieValue));
+        if (!Array.isArray(parsed)) {
+            return false; // Invalid cookie data
+        }
+
+        // Write to localStorage
+        const limitedOrderIds = parsed.slice(0, 50); // Limit to 50 orders
+        localStorage.setItem("guest_orders", JSON.stringify(limitedOrderIds));
+
+        // Clean up cookie after successful migration
+        deleteCookie("guest_orders");
+
+        return true;
+    } catch (e) {
+        console.error("Failed to migrate guest orders from cookie to localStorage", e);
+        return false;
+    }
+};
+
+/**
+ * Get and parse guest orders from localStorage
+ * Automatically migrates from cookie on first access if needed
  * @returns Array of order IDs or empty array
  */
 export const getGuestOrders = (): number[] => {
-    const cookieValue = getCookie("guest_orders");
-    if (!cookieValue) return [];
+    if (typeof window === "undefined" || typeof localStorage === "undefined") {
+        // Fallback to cookie if localStorage is not available
+        const cookieValue = getCookie("guest_orders");
+        if (!cookieValue) return [];
+
+        try {
+            const parsed = JSON.parse(decodeURIComponent(cookieValue));
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            console.error("Failed to parse guest orders cookie", e);
+            return [];
+        }
+    }
 
     try {
-        const parsed = JSON.parse(decodeURIComponent(cookieValue));
+        // Attempt migration from cookie if localStorage is empty
+        migrateGuestOrdersFromCookie();
+
+        // Read from localStorage
+        const storedValue = localStorage.getItem("guest_orders");
+        if (!storedValue) return [];
+
+        const parsed = JSON.parse(storedValue);
         return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-        console.error("Failed to parse guest orders cookie", e);
+        // Handle QuotaExceededError, SecurityError, or JSON parse errors
+        if (e instanceof DOMException) {
+            if (e.name === "QuotaExceededError") {
+                console.warn("localStorage quota exceeded for guest orders");
+            } else if (e.name === "SecurityError") {
+                console.warn("localStorage access denied, falling back to cookie");
+                // Fallback to cookie
+                const cookieValue = getCookie("guest_orders");
+                if (!cookieValue) return [];
+                try {
+                    const parsed = JSON.parse(decodeURIComponent(cookieValue));
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (parseError) {
+                    console.error("Failed to parse guest orders cookie", parseError);
+                    return [];
+                }
+            }
+        } else {
+            console.error("Failed to get guest orders from localStorage", e);
+        }
         return [];
     }
 };
 
 /**
- * Set guest orders cookie with automatic expiration refresh
+ * Set guest orders in localStorage
  * @param orderIds - Array of order IDs
- * @param maxAgeDays - Maximum age in days (default: 730 days / 2 years)
+ * @param maxAgeDays - Deprecated parameter (kept for backward compatibility, not used)
  */
 export const setGuestOrders = (
     orderIds: number[],
     maxAgeDays: number = 730
 ): void => {
-    if (!Array.isArray(orderIds) || orderIds.length === 0) {
-        // If empty, don't set cookie (or delete it)
-        deleteCookie("guest_orders");
+    if (typeof window === "undefined" || typeof localStorage === "undefined") {
+        // Fallback to cookie if localStorage is not available
+        if (!Array.isArray(orderIds) || orderIds.length === 0) {
+            deleteCookie("guest_orders");
+            return;
+        }
+        const limitedOrderIds = orderIds.slice(0, 50);
+        const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+        setCookie("guest_orders", JSON.stringify(limitedOrderIds), maxAgeDays, {
+            secure: isSecure
+        });
         return;
     }
 
-    // Limit to 50 orders to prevent cookie size issues
-    const limitedOrderIds = orderIds.slice(0, 50);
-    
-    // Ensure Secure flag is set for HTTPS sites (critical for iOS Safari)
-    const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
-    setCookie("guest_orders", JSON.stringify(limitedOrderIds), maxAgeDays, {
-        secure: isSecure
-    });
+    if (!Array.isArray(orderIds) || orderIds.length === 0) {
+        // If empty, remove from localStorage
+        try {
+            localStorage.removeItem("guest_orders");
+        } catch (e) {
+            console.error("Failed to remove guest orders from localStorage", e);
+        }
+        return;
+    }
+
+    try {
+        // Limit to 50 orders to prevent storage issues
+        const limitedOrderIds = orderIds.slice(0, 50);
+        localStorage.setItem("guest_orders", JSON.stringify(limitedOrderIds));
+    } catch (e) {
+        if (e instanceof DOMException) {
+            if (e.name === "QuotaExceededError") {
+                console.warn("localStorage quota exceeded, cannot save guest orders");
+            } else if (e.name === "SecurityError") {
+                console.warn("localStorage access denied, falling back to cookie");
+                // Fallback to cookie
+                const limitedOrderIds = orderIds.slice(0, 50);
+                const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+                setCookie("guest_orders", JSON.stringify(limitedOrderIds), maxAgeDays, {
+                    secure: isSecure
+                });
+            }
+        } else {
+            console.error("Failed to set guest orders in localStorage", e);
+        }
+    }
 };
 
 /**
- * Add an order ID to guest orders cookie (with expiration refresh)
+ * Add an order ID to guest orders in localStorage
  * @param orderId - Order ID to add
- * @param maxAgeDays - Maximum age in days (default: 730 days / 2 years)
+ * @param maxAgeDays - Deprecated parameter (kept for backward compatibility, not used)
  */
 export const addGuestOrder = (
     orderId: number,
@@ -536,8 +646,7 @@ export const addGuestOrder = (
     
     // Don't add if already exists
     if (existingOrders.includes(orderId)) {
-        // Still refresh expiration even if order already exists
-        setGuestOrders(existingOrders, maxAgeDays);
+        // No need to update if already exists (localStorage persists indefinitely)
         return;
     }
 
@@ -547,9 +656,9 @@ export const addGuestOrder = (
 };
 
 /**
- * Remove an order ID from guest orders cookie (with expiration refresh)
+ * Remove an order ID from guest orders in localStorage
  * @param orderId - Order ID to remove
- * @param maxAgeDays - Maximum age in days (default: 730 days / 2 years)
+ * @param maxAgeDays - Deprecated parameter (kept for backward compatibility, not used)
  */
 export const removeGuestOrder = (
     orderId: number,

@@ -10,6 +10,7 @@ import InputError from "@/Components/Ui/InputError";
 import { Category } from "@/types";
 import ImageUploader from "@/Components/Ui/ImageUploader";
 import Card, { CardContent } from "@/Components/Ui/Card";
+import Checkbox from "@/Components/Ui/Checkbox";
 
 interface EditProps {
     category: Category;
@@ -22,6 +23,7 @@ const Edit: React.FC<EditProps> = ({ category }) => {
         image: null as File | null,
         min_order_qty: category.min_order_qty || 3,
         add_cart_qty: category.add_cart_qty || 1,
+        use_add_cart_qty_as_min: category.use_add_cart_qty_as_min || false,
         _method: "PUT",
     });
 
@@ -187,6 +189,26 @@ const Edit: React.FC<EditProps> = ({ category }) => {
                                     message={errors.add_cart_qty}
                                     className="mt-2"
                                 />
+                                <div className="mt-3 flex items-center gap-2">
+                                    <Checkbox
+                                        name="use_add_cart_qty_as_min"
+                                        checked={data.use_add_cart_qty_as_min || false}
+                                        onChange={(e) =>
+                                            setData(
+                                                "use_add_cart_qty_as_min",
+                                                e.target.checked,
+                                            )
+                                        }
+                                    />
+                                    <InputLabel
+                                        htmlFor="use_add_cart_qty_as_min"
+                                        value="Use Add Cart Qty as Minimum Order Quantity"
+                                        className="!mb-0 cursor-pointer"
+                                    />
+                                </div>
+                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    When enabled, products in this category will require a minimum order quantity equal to the "Add Cart Qty" value.
+                                </p>
                             </div>
 
                             {/* Actions */}
