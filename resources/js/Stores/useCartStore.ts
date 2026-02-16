@@ -88,6 +88,7 @@ export const useCartStore = create<CartState>()(
                                 category_id: product.category_id,
                                 min_order_qty: product.category?.min_order_qty,
                                 add_cart_qty: product.category?.add_cart_qty,
+                                use_add_cart_qty_as_min: product.category?.use_add_cart_qty_as_min,
                             },
                         },
                         isOpen: window.innerWidth >= 768,
