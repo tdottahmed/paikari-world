@@ -112,14 +112,14 @@ export default function Checkout({
             }
         });
 
-        if (invalidItems.length > 0) {
-            const minQty = invalidItems[0].minQty;
-            const itemNames = invalidItems.map((i) => i.name).join(", ");
-            toast.warning(
-                `Some products require a minimum order quantity of ${minQty}. Please check: ${itemNames}`,
-            );
-            return;
-        }
+        // if (invalidItems.length > 0) {
+        //     const minQty = invalidItems[0].minQty;
+        //     const itemNames = invalidItems.map((i) => i.name).join(", ");
+        //     toast.warning(
+        //         `Some products require a minimum order quantity of ${minQty}. Please check: ${itemNames}`,
+        //     );
+        //     return;
+        // }
 
         // Fallback: Check global minimum order quantity only if no category-specific rules
         if (!hasCategorySpecificRules) {
