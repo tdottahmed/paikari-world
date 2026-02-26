@@ -51,14 +51,14 @@ class DashboardController extends Controller
 
         $orders = $query->with(['items.product'])->get();
 
-        $totalSell = $orders->sum('total');
+        $totalSell = $orders->where('status', '!=', 'cancelled')->sum('total');
         
         // Get additional cost from settings
         $additionalCost = get_setting('additional_cost', 0);
         
         // Profit Calculation: (Selling Price - (Purchase Price + Additional Cost)) * Quantity
         // Note: Using current product purchase price as historical cost is not stored in order_items
-        $profit = $orders->sum(function ($order) use ($additionalCost) {
+        $profit = $orders->where('status', '!=', 'cancelled')->sum(function ($order) use ($additionalCost) {
             return $order->items->sum(function ($item) use ($additionalCost) {
                 $purchasePrice = $item->product->purchase_price ?? 0;
                 $actualCost = $purchasePrice + $additionalCost;
