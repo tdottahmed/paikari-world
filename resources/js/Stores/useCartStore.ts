@@ -2,12 +2,101 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { CartItem, Product, ProductVariation } from "@/types";
 
+const CART_STORAGE_KEY = "cart-storage";
+
 // Helper to generate unique cart key
 const generateCartKey = (productId: number, variations: ProductVariation[] = []) => {
     if (!variations || variations.length === 0) return String(productId);
     const sortedVarIds = variations.map(v => v.id).sort((a, b) => a - b);
     return `${productId}-${sortedVarIds.join("-")}`;
 };
+
+/** Sanitize persisted cart so stale/deleted products and bad data don't break the UI. */
+function sanitizeCart(
+    cart: Record<string, unknown>
+): Record<string, CartItem & { cart_id: string }> {
+    const result: Record<string, CartItem & { cart_id: string }> = {};
+    for (const [key, value] of Object.entries(cart)) {
+        if (!key || !value || typeof value !== "object") continue;
+        const item = value as Record<string, unknown>;
+        const productId = Number(item.product_id);
+        const price = Number(item.price);
+        const quantity = Number(item.quantity);
+        // Keep only items with valid required fields and quantity >= 1
+        if (isNaN(productId) || isNaN(price) || quantity < 1 || isNaN(quantity))
+            continue;
+        const name =
+            typeof item.name === "string" && item.name.trim()
+                ? item.name
+                : "Unknown product";
+        const stock =
+            typeof item.stock === "number" && !isNaN(item.stock)
+                ? item.stock
+                : Number(item.stock) || 0;
+        result[key] = {
+            cart_id: key,
+            product_id: productId,
+            name,
+            price: isNaN(price) ? 0 : price,
+            quantity: Math.floor(quantity),
+            stock: isNaN(stock) ? 0 : stock,
+            image:
+                typeof item.image === "string" || item.image === null
+                    ? item.image
+                    : null,
+            is_preorder: Boolean(item.is_preorder),
+            variations: Array.isArray(item.variations) ? item.variations : undefined,
+            category_id:
+                typeof item.category_id === "number" ? item.category_id : undefined,
+            min_order_qty:
+                typeof item.min_order_qty === "number"
+                    ? item.min_order_qty
+                    : undefined,
+            add_cart_qty:
+                typeof item.add_cart_qty === "number"
+                    ? item.add_cart_qty
+                    : undefined,
+            use_add_cart_qty_as_min: Boolean(item.use_add_cart_qty_as_min),
+        };
+    }
+    return result;
+}
+
+/** Safe storage: parse errors or invalid data don't crash the app; cart is sanitized on load. */
+function createSafeCartStorage() {
+    return {
+        getItem: (name: string): string | null => {
+            try {
+                const raw = localStorage.getItem(name);
+                if (!raw) return null;
+                const parsed = JSON.parse(raw) as {
+                    state?: { cart?: Record<string, unknown>; isOpen?: boolean };
+                    version?: number;
+                };
+                if (parsed?.state && parsed.state.cart && typeof parsed.state.cart === "object") {
+                    parsed.state.cart = sanitizeCart(parsed.state.cart);
+                }
+                return JSON.stringify(parsed);
+            } catch {
+                return null;
+            }
+        },
+        setItem: (name: string, value: string): void => {
+            try {
+                localStorage.setItem(name, value);
+            } catch {
+                // quota exceeded or storage disabled
+            }
+        },
+        removeItem: (name: string): void => {
+            try {
+                localStorage.removeItem(name);
+            } catch {
+                // ignore
+            }
+        },
+    };
+}
 
 interface CartState {
     cart: Record<string, CartItem & { cart_id: string }>;
@@ -97,6 +186,7 @@ export const useCartStore = create<CartState>()(
             },
 
             removeFromCart: (cartId: string) => {
+                if (!cartId) return;
                 set((state) => {
                     const newCart = { ...state.cart };
                     delete newCart[cartId];
@@ -105,7 +195,11 @@ export const useCartStore = create<CartState>()(
             },
 
             updateQuantity: (cartId: string, quantity: number) => {
-                if (quantity < 1) return;
+                if (quantity < 1) {
+                    // Allow removing by setting quantity to 0 (e.g. for unavailable items)
+                    get().removeFromCart(cartId);
+                    return;
+                }
                 set((state) => {
                     if (!state.cart[cartId]) return state;
                     return {
@@ -126,23 +220,24 @@ export const useCartStore = create<CartState>()(
 
             getCartTotal: () => {
                 const state = get();
-                return Object.values(state.cart).reduce(
-                    (total, item) => total + item.price * item.quantity,
-                    0
-                );
+                return Object.values(state.cart).reduce((total, item) => {
+                    const price = Number(item.price);
+                    const qty = Number(item.quantity);
+                    return total + (isNaN(price) || isNaN(qty) ? 0 : price * qty);
+                }, 0);
             },
 
             getCartCount: () => {
                 const state = get();
-                return Object.values(state.cart).reduce(
-                    (count, item) => count + item.quantity,
-                    0
-                );
+                return Object.values(state.cart).reduce((count, item) => {
+                    const qty = Number(item.quantity);
+                    return count + (isNaN(qty) ? 0 : qty);
+                }, 0);
             },
         }),
         {
-            name: "cart-storage",
-            storage: createJSONStorage(() => localStorage),
+            name: CART_STORAGE_KEY,
+            storage: createJSONStorage(() => createSafeCartStorage()),
         }
     )
 );
